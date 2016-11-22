@@ -5,3 +5,11 @@ c:\users\user\documents\visual studio 2015\Projects\GMLConverter\GMLConverter\ob
 c:\users\user\documents\visual studio 2015\Projects\GMLConverter\GMLConverter\obj\Debug\GMLConverter.csproj.GenerateResource.Cache
 c:\users\user\documents\visual studio 2015\Projects\GMLConverter\GMLConverter\obj\Debug\GMLConverter.exe
 c:\users\user\documents\visual studio 2015\Projects\GMLConverter\GMLConverter\obj\Debug\GMLConverter.pdb
+C:\Users\user\Desktop\VS_PROJECT\GMLConverter\GMLConverter\bin\Debug\GMLConverter.exe.config
+C:\Users\user\Desktop\VS_PROJECT\GMLConverter\GMLConverter\obj\Debug\GMLConverter.exe
+C:\Users\user\Desktop\VS_PROJECT\GMLConverter\GMLConverter\obj\Debug\GMLConverter.pdb
+C:\Users\user\Desktop\VS_PROJECT\GMLConverter\GMLConverter\bin\Debug\GMLConverter.exe
+C:\Users\user\Desktop\VS_PROJECT\GMLConverter\GMLConverter\bin\Debug\GMLConverter.pdb
+C:\Users\user\Desktop\VS_PROJECT\GMLConverter\GMLConverter\obj\Debug\GMLConverter.Properties.Resources.resources
+C:\Users\user\Desktop\VS_PROJECT\GMLConverter\GMLConverter\obj\Debug\GMLConverter.csproj.GenerateResource.Cache
+C:\Users\user\Desktop\VS_PROJECT\GMLConverter\GMLConverter\obj\Debug\GMLConverter.Form1.resources
