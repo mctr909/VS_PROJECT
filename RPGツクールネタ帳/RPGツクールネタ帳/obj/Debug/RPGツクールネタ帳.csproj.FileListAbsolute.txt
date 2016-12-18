@@ -6,3 +6,11 @@ c:\users\user\documents\visual studio 2015\Projects\RPGツクールネタ帳\RPG
 c:\users\user\documents\visual studio 2015\Projects\RPGツクールネタ帳\RPGツクールネタ帳\obj\Debug\RPGツクールネタ帳.csproj.GenerateResource.Cache
 c:\users\user\documents\visual studio 2015\Projects\RPGツクールネタ帳\RPGツクールネタ帳\obj\Debug\RPGツクールネタ帳.exe
 c:\users\user\documents\visual studio 2015\Projects\RPGツクールネタ帳\RPGツクールネタ帳\obj\Debug\RPGツクールネタ帳.pdb
+C:\Users\owner\Desktop\Git\VS_PROJECT\RPGツクールネタ帳\RPGツクールネタ帳\bin\Debug\RPGツクールネタ帳.exe.config
+C:\Users\owner\Desktop\Git\VS_PROJECT\RPGツクールネタ帳\RPGツクールネタ帳\obj\Debug\RPGツクールネタ帳.exe
+C:\Users\owner\Desktop\Git\VS_PROJECT\RPGツクールネタ帳\RPGツクールネタ帳\obj\Debug\RPGツクールネタ帳.pdb
+C:\Users\owner\Desktop\Git\VS_PROJECT\RPGツクールネタ帳\RPGツクールネタ帳\bin\Debug\RPGツクールネタ帳.exe
+C:\Users\owner\Desktop\Git\VS_PROJECT\RPGツクールネタ帳\RPGツクールネタ帳\bin\Debug\RPGツクールネタ帳.pdb
+C:\Users\owner\Desktop\Git\VS_PROJECT\RPGツクールネタ帳\RPGツクールネタ帳\obj\Debug\RPGツクールネタ帳.Form1.resources
+C:\Users\owner\Desktop\Git\VS_PROJECT\RPGツクールネタ帳\RPGツクールネタ帳\obj\Debug\RPGツクールネタ帳.Properties.Resources.resources
+C:\Users\owner\Desktop\Git\VS_PROJECT\RPGツクールネタ帳\RPGツクールネタ帳\obj\Debug\RPGツクールネタ帳.csproj.GenerateResource.Cache
