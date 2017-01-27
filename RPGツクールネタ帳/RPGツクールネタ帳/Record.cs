@@ -100,6 +100,9 @@ namespace RPGツクールネタ帳
     {
         private DataTable dt;
         
+        /// <summary>
+        /// 初期化
+        /// </summary>
         public Record()
         {
             dt = new DataTable();
@@ -113,11 +116,19 @@ namespace RPGツクールネタ帳
             dt.Columns.Add(ColumnID.CharChipFile, Type.GetType("System.String"));
         }
 
+        /// <summary>
+        /// ファイルを読み込む
+        /// </summary>
+        /// <param name="fileName"></param>
         public void Read(string fileName)
         {
 
         }
 
+        /// <summary>
+        /// 対象項目の保存
+        /// </summary>
+        /// <param name="col"></param>
         public void Save(Column col)
         {
             DataRow[] rows = dt.Select(ColumnID.SeqNo + " = " + col.SeqNo);
