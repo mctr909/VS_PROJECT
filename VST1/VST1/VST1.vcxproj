@@ -74,6 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\owner\Desktop\Git\VS_PROJECT\VST3 SDK\public.sdk\source\vst2.x;C:\Users\owner\Desktop\Git\VS_PROJECT\VST3 SDK\pluginterfaces\vst2.x;C:\Users\owner\Desktop\Git\VS_PROJECT\VST3 SDK\vstgui.sf\vstgui;C:\Users\owner\Desktop\Git\VS_PROJECT\VST3 SDK;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
