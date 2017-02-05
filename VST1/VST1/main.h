@@ -8,14 +8,13 @@
 // ============================================================================================
 #define SAMPLE_RATE		44100
 #define MASTER_PITCH	8.1757989
-#define OSC_MAXNUM		128
-#define MIDIMSG_MAXNUM	256
-#define PI2				6.283185307
+#define OSC_MAXNUM		32
+#define MIDIMSG_MAXNUM	4410
 
 // ============================================================================================
 // 構造体
 // ============================================================================================
-struct MidiMessage
+typedef struct MidiMessage
 {
 	VstInt32 deltaFrames;  //MIDIメッセージを処理するタイミング
 	unsigned char message; //MIDIメッセージ番号
@@ -23,29 +22,53 @@ struct MidiMessage
 	unsigned char data1;   //MIDIデータ1
 	unsigned char data2;   //MIDIデータ2
 };
-struct Channel
+
+typedef struct ADSR
+{
+	float attackTime;
+	float decayTime;
+	float sustainTime;
+	float releaseTime;
+
+	float attackLevel;
+	float decayLevel;
+	float sustainLevel;
+};
+
+typedef struct Channel
 {
 	unsigned char volume;
 	unsigned char expression;
 	unsigned char pan;
+
 	unsigned char program;
+	unsigned char bankMsb;
+	unsigned char bankLsb;
+
+	signed char	  rpnMsb;
+	signed char	  rpnLsb;
 	unsigned char bendWidth;
 
-	signed char	rpnMsb;
-	signed char	rpnLsb;
-	
-	float		pitch;
-};
-struct Osc
-{
-	char channel;
-	char noteNo;
-	unsigned char velocity;
+	float		  pitch;
 
-	float		env;
-	float		amp;
-	float		freq;
-	float		counter;
+	ADSR*         adsrAMP;
+	ADSR*         adsrEQ;
+};
+
+typedef struct Osc
+{
+	unsigned char channel;
+	signed char   noteNo;
+	unsigned char release;
+
+	float counter;
+	float tempCounter;
+	float time;
+
+	float level;
+	float amplitude;
+	float frequency;
+	float nois;
 };
 
 // ============================================================================================
@@ -56,6 +79,7 @@ class VST1 : public AudioEffectX
 private:
 	void clearChannel(Channel *channel);
 	void clearOsc(Osc *osc);
+	void releaseOsc(Osc *osc);
 	void readMidiMsg(MidiMessage *midiMsg, Channel *channel, Osc *osc);
 
 	float sqr50(Osc *osc);

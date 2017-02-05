@@ -35,11 +35,13 @@ VST1::VST1(audioMasterCallback audioMaster)
 	m_MidiMsgNum = 0;
 	memset(m_MidiMsgList, 0, sizeof(MidiMessage) * MIDIMSG_MAXNUM);
 
+	// チャンネルのクリア
 	memset(channel, 0, sizeof(Channel) * OSC_MAXNUM);
 	for (int ch = 0; ch < 16; ch++) {
 		clearChannel(&channel[ch]);
 	}
 
+	// 発振器のクリア
 	memset(osc, 0, sizeof(Osc) * OSC_MAXNUM);
 	for (int oscCnt = 0; oscCnt < OSC_MAXNUM; oscCnt++) {
 		clearOsc(&osc[oscCnt]);
@@ -59,6 +61,32 @@ void VST1::clearChannel(Channel *channel)
 	channel->bendWidth = 2;
 	channel->rpnMsb = -1;
 	channel->rpnLsb = -1;
+	channel->bankMsb = 0;
+	channel->bankLsb = 0;
+
+	if (NULL != channel->adsrAMP) {
+		free(channel->adsrAMP);
+	}
+	channel->adsrAMP = (ADSR*)malloc(sizeof(ADSR));
+	channel->adsrAMP->attackLevel = 1.0f;
+	channel->adsrAMP->decayLevel = 0.5f;
+	channel->adsrAMP->sustainLevel = 0.2f;
+	channel->adsrAMP->attackTime = 0.001f * SAMPLE_RATE / 5.4f;
+	channel->adsrAMP->decayTime = 0.2f * SAMPLE_RATE / 5.4;
+	channel->adsrAMP->sustainTime = 1.0f * SAMPLE_RATE / 5.4;
+	channel->adsrAMP->releaseTime = 0.02f * SAMPLE_RATE / 5.4;
+
+	if (NULL != channel->adsrEQ) {
+		free(channel->adsrEQ);
+	}
+	channel->adsrEQ = (ADSR*)malloc(sizeof(ADSR));
+	channel->adsrEQ->attackLevel = 1.0f;
+	channel->adsrEQ->decayLevel = 1.0f;
+	channel->adsrEQ->sustainLevel = 1.0f;
+	channel->adsrEQ->attackTime = 0.001f * SAMPLE_RATE / 5.4;
+	channel->adsrEQ->decayTime = 0.001f * SAMPLE_RATE / 5.4;
+	channel->adsrEQ->sustainTime = 0.001f * SAMPLE_RATE / 5.4;
+	channel->adsrEQ->releaseTime = 0.001f * SAMPLE_RATE / 5.4;
 }
 
 // ============================================================================================
@@ -68,12 +96,24 @@ void VST1::clearOsc(Osc *osc)
 {
 	osc->channel = 0;
 	osc->noteNo = -1;
-	osc->velocity = 0;
+	osc->release = 0;
 
-	osc->amp = 0.0f;
-	osc->env = 0.0f;
-	osc->freq = 0.0f;
 	osc->counter = 0.0f;
+	osc->tempCounter = 0.0f;
+	osc->time = 0.0f;
+
+	osc->level = 0.0f;
+	osc->amplitude = 1 / 256.0;
+	osc->frequency = 0.0f;
+	osc->nois = 0.0f;
+}
+
+void VST1::releaseOsc(Osc *osc)
+{
+	osc->noteNo = -1;
+	osc->release = 0;
+
+	osc->time = 0.0f;
 }
 
 // ============================================================================================
@@ -93,14 +133,20 @@ float VST1::sqr12(Osc *osc)
 }
 float VST1::tri(Osc *osc)
 {
-	float a = 32.0 * osc->counter / SAMPLE_RATE;
-	if (a < 8.0)   return (int)(a - 0.5) / 4.0;
-	else if (a < 24.0)	return (int)(16.0 - a - 0.5) / 4.0;
-	else				return (int)(a - 32.0 - 0.5) / 4.0;
+	osc->tempCounter = 32 * osc->counter / SAMPLE_RATE;
+	if      (osc->tempCounter < 8)  return (int)osc->tempCounter / 3.0f;
+	else if (osc->tempCounter < 24) return (16 - (int)osc->tempCounter) / 3.0f;
+	else				            return ((int)osc->tempCounter - 32) / 3.0f;
 }
 float VST1::nois(Osc *osc)
 {
-	return 2048 * (1.0 / 1024.0 - 128 * rand() / 2147483647.0);
+	osc->tempCounter += 64 * osc->frequency;
+	if (osc->tempCounter >= SAMPLE_RATE) {
+		osc->tempCounter -= SAMPLE_RATE;
+		osc->nois = 2048 * (1 / 1024.0f - 128 * rand() / 2147483647.0f);
+	}
+
+	return osc->nois;
 }
 
 // ============================================================================================
@@ -115,7 +161,7 @@ void VST1::readMidiMsg(MidiMessage *midiMsg, Channel *channel, Osc *osc)
 		for (oscCnt = 0; oscCnt < OSC_MAXNUM; ++oscCnt) {
 			if (osc[oscCnt].channel == midiMsg->channel
 				&& osc[oscCnt].noteNo == midiMsg->data1) {
-				osc[oscCnt].env = 1.0f - 100.0f / SAMPLE_RATE;
+				osc[oscCnt].release = 1;
 			}
 		}
 	}
@@ -123,16 +169,15 @@ void VST1::readMidiMsg(MidiMessage *midiMsg, Channel *channel, Osc *osc)
 	//*** NoteOn ***//
 	if (midiMsg->message == 0x90) {
 		for (oscCnt = 0; oscCnt < OSC_MAXNUM; ++oscCnt) {
+			if (osc[oscCnt].channel == midiMsg->channel && osc[oscCnt].noteNo == midiMsg->data1) {
+				releaseOsc(&osc[oscCnt]);
+			}
+			
 			if (osc[oscCnt].noteNo < 0) {
 				osc[oscCnt].channel = midiMsg->channel;
 				osc[oscCnt].noteNo = midiMsg->data1;
-				osc[oscCnt].velocity = midiMsg->data2;
-
-				osc[oscCnt].amp = osc[oscCnt].velocity / 127.0f;
-				osc[oscCnt].env = 1.0f - 0.25f / SAMPLE_RATE;
-				osc[oscCnt].freq = MASTER_PITCH * pow(2.0, osc[oscCnt].noteNo / 12.0);
-				osc[oscCnt].counter = 0.0f;
-
+				osc[oscCnt].level = midiMsg->data2 / 127.0f;
+				osc[oscCnt].frequency = MASTER_PITCH * pow(2.0, osc[oscCnt].noteNo / 12.0);
 				break;
 			}
 		}
@@ -141,8 +186,17 @@ void VST1::readMidiMsg(MidiMessage *midiMsg, Channel *channel, Osc *osc)
 	//*** C.C. ***//
 	if (midiMsg->message == 0xB0)
 	{
+		// Bank MSB
+		if (midiMsg->data1 == 0x00) {
+			channel[midiMsg->channel].bankMsb = midiMsg->data2;
+		}
+		// Bank LSB
+		if (midiMsg->data1 == 0x20) {
+			channel[midiMsg->channel].bankLsb = midiMsg->data2;
+		}
+
 		// DataEntry
-		if (midiMsg->data1 == 0x6)
+		if (midiMsg->data1 == 0x06)
 		{
 			// RPN BendWidth
 			if (channel[midiMsg->channel].rpnMsb == 0 && channel[midiMsg->channel].rpnLsb == 0)
@@ -158,19 +212,28 @@ void VST1::readMidiMsg(MidiMessage *midiMsg, Channel *channel, Osc *osc)
 			}
 		}
 		// Volume
-		if (midiMsg->data1 == 0x7)
+		if (midiMsg->data1 == 0x07)
 		{
 			channel[midiMsg->channel].volume = midiMsg->data2;
 		}
 		// Pan
-		if (midiMsg->data1 == 0xA)
+		if (midiMsg->data1 == 0x0A)
 		{
 			channel[midiMsg->channel].pan = midiMsg->data2;
 		}
 		// Expression
-		if (midiMsg->data1 == 0xB)
+		if (midiMsg->data1 == 0x0B)
 		{
 			channel[midiMsg->channel].expression = midiMsg->data2;
+		}
+
+		// Release
+		if (midiMsg->data1 == 0x48) {
+			channel[midiMsg->channel].adsrAMP->releaseTime = midiMsg->data2 < 64 ? 0.01f : (6 * midiMsg->data2 / 64.0f - 5.99) * SAMPLE_RATE / 5.4;
+		}
+		// Attack
+		if (midiMsg->data1 == 0x49) {
+			channel[midiMsg->channel].adsrAMP->attackTime = ((midiMsg->data2 / 64.0f) + 0.01f) * SAMPLE_RATE / 5.4;
 		}
 
 		// RPN MSB
@@ -249,6 +312,9 @@ void VST1::processReplacing(float** inputs, float** outputs, VstInt32 sampleFram
 	float* outL = outputs[0];	//出力 左用
 	float* outR = outputs[1];	//出力 右用
 
+	Channel* pCh;
+	Osc* pOsc;
+
 	int midiMsgCur = 0;			// midieventlistの読み込み位置
 	int oscCnt = 0;
 	float wave = 0.0f;
@@ -268,8 +334,8 @@ void VST1::processReplacing(float** inputs, float** outputs, VstInt32 sampleFram
 
 				// midimsgbufからMIDIメッセージを読み出したので
 				// 読み込み位置を進め、MIDIメッセージの数を減らす
-				m_MidiMsgNum--;
-				midiMsgCur++;
+				--m_MidiMsgNum;
+				++midiMsgCur;
 			}
 		}
 
@@ -278,43 +344,57 @@ void VST1::processReplacing(float** inputs, float** outputs, VstInt32 sampleFram
 		outR[i] = 0.0f;
 		for (oscCnt = 0; oscCnt < OSC_MAXNUM; ++oscCnt)
 		{
+			pOsc = &osc[oscCnt];
+			pCh = &channel[pOsc->channel];
 
-			if (osc[oscCnt].channel == 0)
-			{
-				wave = sqr12(&osc[oscCnt]);
+			if (pOsc->noteNo < 0) continue;
+
+			if (pOsc->channel == 0) {
+				wave = sqr12(pOsc);
 			}
-			else if (osc[oscCnt].channel == 1)
-			{
-				wave = sqr25(&osc[oscCnt]);
+			else if (pOsc->channel == 1) {
+				wave = sqr25(pOsc);
 			}
-			else if (osc[oscCnt].channel == 2)
-			{
-				wave = sqr50(&osc[oscCnt]);
+			else if (pOsc->channel == 2) {
+				wave = sqr50(pOsc);
 			}
-			else if (osc[oscCnt].channel == 9)
-			{
-				wave = nois(&osc[oscCnt]);
+			else if (pOsc->channel == 9) {
+				wave = nois(pOsc);
 			}
-			else
-			{
-				wave = tri(&osc[oscCnt]);
+			else {
+				wave = tri(pOsc);
 			}
 
-			wave *= 0.25
-				* channel[osc[oscCnt].channel].volume
-				* channel[osc[oscCnt].channel].expression
-				* osc[oscCnt].amp
+			wave *= 0.25f
+				* pCh->volume
+				* pCh->expression
+				* pOsc->level
+				* pOsc->amplitude
 				/ (127 * 127);
 
-			outL[i] += wave * (1.0 - channel[osc[oscCnt].channel].pan / 128.0);
-			outR[i] += wave * (channel[osc[oscCnt].channel].pan / 128.0);
+			outL[i] += wave * (1 - pCh->pan / 128.0f);
+			outR[i] += wave * (pCh->pan / 128.0f);
 
-			osc[oscCnt].counter += osc[oscCnt].freq * channel[osc[oscCnt].channel].pitch;
-			if (osc[oscCnt].counter >= SAMPLE_RATE) osc[oscCnt].counter -= SAMPLE_RATE;
+			if (pOsc->release) {
+				pOsc->amplitude -= pOsc->amplitude / pCh->adsrAMP->releaseTime;
+			}
+			else {
+				if (pOsc->time < pCh->adsrAMP->attackTime) {
+					pOsc->amplitude += (pCh->adsrAMP->attackLevel - pOsc->amplitude) / pCh->adsrAMP->attackTime;
+				}
+				else if (pOsc->time < (pCh->adsrAMP->attackTime + pCh->adsrAMP->decayTime)) {
+					pOsc->amplitude += (pCh->adsrAMP->decayLevel - pOsc->amplitude) / pCh->adsrAMP->decayTime;
+				}
+				else if (pOsc->time < (pCh->adsrAMP->attackTime + pCh->adsrAMP->decayTime + pCh->adsrAMP->sustainTime)) {
+					pOsc->amplitude += (pCh->adsrAMP->sustainLevel - pOsc->amplitude) / pCh->adsrAMP->sustainTime;
+				}
+			}
 
-			osc[oscCnt].amp *= osc[oscCnt].env;
-			if (osc[oscCnt].amp < 1.0 / 1024.0) {
-				clearOsc(&osc[oscCnt]);
+			pOsc->time += 1.0f;
+			pOsc->counter += pOsc->frequency * pCh->pitch;
+			if (pOsc->counter >= SAMPLE_RATE) pOsc->counter -= SAMPLE_RATE;
+			if (pOsc->amplitude < 1 / 256.0f) {
+				clearOsc(pOsc);
 			}
 		}
 	}
