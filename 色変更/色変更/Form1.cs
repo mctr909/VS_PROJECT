@@ -45,7 +45,7 @@ namespace 色変更
             Bitmap input = new Bitmap(strFileNames[0]);
             fm.BmpWork[0] = new Bitmap(input.Width, input.Height);
             Graphics g = Graphics.FromImage(fm.BmpWork[0]);
-            g.DrawImage(input, 0, 0);
+            g.DrawImage(input, 0, 0, fm.BmpWork[0].Width, fm.BmpWork[0].Height);
             input.Dispose();
 
             pict.Width = fm.BmpWork[0].Width;
