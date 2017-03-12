@@ -133,7 +133,7 @@
             this.trkCondALight.Size = new System.Drawing.Size(250, 45);
             this.trkCondALight.TabIndex = 10;
             this.trkCondALight.Tag = "";
-            this.trkCondALight.TickFrequency = 20;
+            this.trkCondALight.TickFrequency = 10;
             this.trkCondALight.Value = 100;
             this.trkCondALight.Scroll += new System.EventHandler(this.trkCondALight_Scroll);
             // 
@@ -145,7 +145,7 @@
             this.trkCondBLight.Name = "trkCondBLight";
             this.trkCondBLight.Size = new System.Drawing.Size(250, 45);
             this.trkCondBLight.TabIndex = 11;
-            this.trkCondBLight.TickFrequency = 20;
+            this.trkCondBLight.TickFrequency = 10;
             this.trkCondBLight.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
             this.trkCondBLight.Scroll += new System.EventHandler(this.trkCondBLight_Scroll);
             // 
@@ -370,7 +370,7 @@
             this.trkChgALight.Size = new System.Drawing.Size(250, 45);
             this.trkChgALight.TabIndex = 14;
             this.trkChgALight.Tag = "";
-            this.trkChgALight.TickFrequency = 20;
+            this.trkChgALight.TickFrequency = 10;
             this.trkChgALight.Value = 100;
             this.trkChgALight.Scroll += new System.EventHandler(this.trkChgALight_Scroll);
             // 
@@ -390,7 +390,7 @@
             this.trkChgBLight.Name = "trkChgBLight";
             this.trkChgBLight.Size = new System.Drawing.Size(250, 45);
             this.trkChgBLight.TabIndex = 15;
-            this.trkChgBLight.TickFrequency = 20;
+            this.trkChgBLight.TickFrequency = 10;
             this.trkChgBLight.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
             this.trkChgBLight.Scroll += new System.EventHandler(this.trkChgBLight_Scroll);
             // 

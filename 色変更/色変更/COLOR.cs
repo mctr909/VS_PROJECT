@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 public class COLOR
 {
@@ -32,27 +34,27 @@ public class COLOR
         public Param After;
     }
 
-    public static void RGBtoHSL(Color rgb, ref HSL hsl)
+    public static void RGBtoHSL(ref byte b, ref byte g, ref byte r, ref byte a, ref HSL hsl)
     {
-        byte max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
-        byte min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
+        byte max = Math.Max(r, Math.Max(g, b));
+        byte min = Math.Min(r, Math.Min(g, b));
 
         #region Hue
-        if (rgb.R == rgb.G && rgb.G == rgb.B)
+        if (r == g && g == b)
         {
             hsl.H = 0;
         }
-        else if (rgb.R == max)
+        else if (r == max)
         {
-            hsl.H = 60 * (rgb.G - rgb.B) / (max - min);
+            hsl.H = 60 * (g - b) / (max - min);
         }
-        else if (rgb.G == max)
+        else if (g == max)
         {
-            hsl.H = 60 * (rgb.B - rgb.R) / (max - min) + 120;
+            hsl.H = 60 * (b - r) / (max - min) + 120;
         }
-        else if (rgb.B == max)
+        else if (b == max)
         {
-            hsl.H = 60 * (rgb.R - rgb.G) / (max - min) + 240;
+            hsl.H = 60 * (r - g) / (max - min) + 240;
         }
 
         if (hsl.H < -180)
@@ -89,23 +91,12 @@ public class COLOR
         // Light
         hsl.L = 100 * cnt / 255;
 
-        hsl.A = rgb.A;
+        hsl.A = a;
     }
 
-    public static void HSLtoRGB(ref HSL hsl, ref Color rgb)
+    public static void HSLtoRGB(ref HSL hsl, ref byte[] pix, ref int offset)
     {
         float max, min, width;
-
-        if (hsl.L == 100)
-        {
-            rgb = Color.FromArgb(hsl.A, 255, 255, 255);
-            return;
-        }
-        else if (hsl.L == 0)
-        {
-            rgb = Color.FromArgb(hsl.A, 0, 0, 0);
-            return;
-        }
 
         if (hsl.L < 50)
         {
@@ -128,42 +119,75 @@ public class COLOR
         switch (hsl.H / 60)
         {
             case 0:
-                rgb = Color.FromArgb(hsl.A, (int)max, (int)(hsl.H * width + min), (int)min);
+                pix[offset] = (byte)min;
+                pix[offset + 1] = (byte)(hsl.H * width + min);
+                pix[offset + 2] = (byte)max;
+                pix[offset + 3] = hsl.A;
                 return;
             case 1:
-                rgb = Color.FromArgb(hsl.A, (int)((120 - hsl.H) * width + min), (int)max, (int)min);
+                pix[offset] = (byte)min;
+                pix[offset + 1] = (byte)max;
+                pix[offset + 2] = (byte)((120 - hsl.H) * width + min);
+                pix[offset + 3] = hsl.A;
                 return;
             case 2:
-                rgb = Color.FromArgb(hsl.A, (int)min, (int)max, (int)((hsl.H - 120) * width + min));
+                pix[offset] = (byte)((hsl.H - 120) * width + min);
+                pix[offset + 1] = (byte)max;
+                pix[offset + 2] = (byte)min;
+                pix[offset + 3] = hsl.A;
                 return;
             case 3:
-                rgb = Color.FromArgb(hsl.A, (int)min, (int)((240 - hsl.H) * width + min), (int)max);
+                pix[offset] = (byte)max;
+                pix[offset + 1] = (byte)((240 - hsl.H) * width + min);
+                pix[offset + 2] = (byte)min;
+                pix[offset + 3] = hsl.A;
                 return;
             case 4:
-                rgb = Color.FromArgb(hsl.A, (int)((hsl.H - 240) * width + min), (int)min, (int)max);
+                pix[offset] = (byte)max;
+                pix[offset + 1] = (byte)min;
+                pix[offset + 2] = (byte)((hsl.H - 240) * width + min);
+                pix[offset + 3] = hsl.A;
                 return;
             default:
-                rgb = Color.FromArgb(hsl.A, (int)max, (int)min, (int)((360 - hsl.H) * width + min));
+                pix[offset] = (byte)((360 - hsl.H) * width + min);
+                pix[offset + 1] = (byte)min;
+                pix[offset + 2] = (byte)max;
+                pix[offset + 3] = hsl.A;
                 return;
         }
     }
 
     public static Bitmap ChangeColor(Bitmap bmp, Config config)
     {
-        Bitmap ret = new Bitmap(bmp.Width, bmp.Height);
+        if (bmp == null) return bmp;
+
         HSL hsl = new HSL();
-        Color rgb = Color.FromArgb(0, 0, 0, 0);
-        
+
+        Bitmap ret = new Bitmap(bmp.Width, bmp.Height);
+        BitmapData bmpRetData = ret.LockBits(
+            new Rectangle(0, 0, ret.Width, ret.Height)
+            , ImageLockMode.ReadOnly
+            , ret.PixelFormat
+        );
+
+        BitmapData bmpSrcData = bmp.LockBits(
+            new Rectangle(0, 0, bmp.Width, bmp.Height)
+            , ImageLockMode.ReadOnly
+            , bmp.PixelFormat
+        );
+        byte[] pix = new byte[bmp.Width * bmp.Height * 4];
+        Marshal.Copy(bmpSrcData.Scan0, pix, 0, pix.Length);
+        bmp.UnlockBits(bmpSrcData);
+
         int hDiff;
         float sWidth = (config.After.SMax - config.After.SMin) / 100.0f;
         float lWidth = (config.After.LMax - config.After.LMin) / 100.0f;
 
         for (int py = 0; py < bmp.Height; ++py)
         {
-            for (int px = 0; px < bmp.Width; ++px)
+            for (int px = 0, s = bmpRetData.Stride * py; px < bmp.Width; ++px, s += 4)
             {
-                rgb = bmp.GetPixel(px, py);
-                RGBtoHSL(rgb, ref hsl);
+                RGBtoHSL(ref pix[s], ref pix[s + 1], ref pix[s + 2], ref pix[s + 3], ref hsl);
 
                 hDiff = config.Before.H - hsl.H;
                 if (hDiff > 180) hDiff -= 360;
@@ -178,11 +202,12 @@ public class COLOR
                     hsl.L = (int)(hsl.L * lWidth) + config.After.LMin;
                 }
 
-                HSLtoRGB(ref hsl, ref rgb);
-                ret.SetPixel(px, py, rgb);
+                HSLtoRGB(ref hsl, ref pix, ref s);
             }
         }
 
+        Marshal.Copy(pix, 0, bmpRetData.Scan0, pix.Length);
+        ret.UnlockBits(bmpRetData);
         return ret;
     }
 }

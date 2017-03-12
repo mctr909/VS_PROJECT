@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace 色変更
 {
@@ -48,13 +50,19 @@ namespace 色変更
 
             //*** 色相環画像生成 ***//
             BmpHue = new Bitmap(picCondHue.Width - 2, picCondHue.Height - 2);
+            byte[] pix = new byte[BmpHue.Width * BmpHue.Height * 4];
+            BitmapData bmpData = BmpHue.LockBits(
+                new Rectangle(0, 0, BmpHue.Width, BmpHue.Height)
+                , ImageLockMode.ReadOnly
+                , BmpHue.PixelFormat
+            );
+
             double x, y, r;
             COLOR.HSL hsl = new COLOR.HSL();
-            Color rgb = new Color();
 
             for (int py = 0; py < BmpHue.Height; ++py)
             {
-                for (int px = 0; px < BmpHue.Width; ++px)
+                for (int px = 0, s = py * bmpData.Stride; px < BmpHue.Width; ++px, s += 4)
                 {
                     x = 2.0 * px / BmpHue.Width - 1.0;
                     y = 1.0 - 2.0 * py / BmpHue.Height;
@@ -66,11 +74,13 @@ namespace 色変更
                         hsl.S = 100;
                         hsl.L = 50;
                         hsl.A = 255;
-                        COLOR.HSLtoRGB(ref hsl, ref rgb);
-                        BmpHue.SetPixel(px, py, rgb);
+                        COLOR.HSLtoRGB(ref hsl, ref pix, ref s);
                     }
                 }
             }
+
+            Marshal.Copy(pix, 0, bmpData.Scan0, pix.Length);
+            BmpHue.UnlockBits(bmpData);
 
             //*** 設定の読み込み ***//
             InitSetting();
@@ -494,7 +504,8 @@ namespace 色変更
         {
             Pen penNorm = new Pen(Color.Black, 1.0f);
             Pen penBold = new Pen(Color.Black, 4.0f);
-            Pen penBlock = new Pen(Color.Black, 8.0f);
+
+            COLOR.HSL hsl = new COLOR.HSL();
 
             //*** 色相環の描画 ***//
             Bitmap bmpHue = new Bitmap(BmpHue.Width, BmpHue.Height);
@@ -518,31 +529,49 @@ namespace 色変更
             //*** 彩度と明度の描画 ***//
             Bitmap bmpS = new Bitmap(pictS.Width, pictS.Height);
             Bitmap bmpL = new Bitmap(pictL.Width, pictL.Height);
-            Graphics gS = Graphics.FromImage(bmpS);
-            Graphics gL = Graphics.FromImage(bmpL);
+            byte[] pixS = new byte[bmpS.Width * bmpS.Height * 4];
+            byte[] pixL = new byte[bmpL.Width * bmpL.Height * 4];
 
-            COLOR.HSL hsl = new COLOR.HSL();
-            Color rgb = new Color();
+            BitmapData bmpSData = bmpS.LockBits(
+                new Rectangle(0, 0, bmpS.Width, bmpS.Height)
+                , ImageLockMode.ReadOnly
+                , bmpS.PixelFormat
+            );
+
+            BitmapData bmpLData = bmpL.LockBits(
+                new Rectangle(0, 0, bmpL.Width, bmpL.Height)
+                , ImageLockMode.ReadOnly
+                , bmpL.PixelFormat
+            );
+
             double k = 100.0 / bmpS.Width;
 
-            for (float px = 0; px < bmpS.Width; px += penBlock.Width)
+            for (int px = 0, s = 0; px < bmpS.Width; ++px, s += 4)
             {
                 hsl.H = param.H;
                 hsl.S = (int)(k * px);
                 hsl.L = 50;
                 hsl.A = 255;
-                COLOR.HSLtoRGB(ref hsl, ref rgb);
-                penBlock.Color = rgb;
-                gS.DrawLine(penBlock, px, 0, px, bmpS.Height - 1);
+                COLOR.HSLtoRGB(ref hsl, ref pixS, ref s);
 
                 hsl.H = param.H;
                 hsl.S = param.SMax;
                 hsl.L = (int)(k * px);
                 hsl.A = 255;
-                COLOR.HSLtoRGB(ref hsl, ref rgb);
-                penBlock.Color = rgb;
-                gL.DrawLine(penBlock, px, 0, px, bmpL.Height - 1);
+                COLOR.HSLtoRGB(ref hsl, ref pixL, ref s);
             }
+
+            for (int py = 0, s = 0; py < bmpS.Height; ++py, s += bmpSData.Stride)
+            {
+                Array.Copy(pixS, 0, pixS, s, bmpSData.Stride);
+                Array.Copy(pixL, 0, pixL, s, bmpSData.Stride);
+            }
+
+            Marshal.Copy(pixS, 0, bmpSData.Scan0, pixS.Length);
+            Marshal.Copy(pixL, 0, bmpLData.Scan0, pixL.Length);
+
+            bmpS.UnlockBits(bmpSData);
+            bmpL.UnlockBits(bmpLData);
 
             pictS.Image = bmpS;
             pictL.Image = bmpL;
