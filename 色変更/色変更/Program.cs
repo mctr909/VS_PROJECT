@@ -8,7 +8,7 @@ namespace 色変更
 {
     static class Program
     {
-        public static 設定 MainForm;
+        public static ColorEdit MainForm;
 
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
@@ -18,7 +18,7 @@ namespace 色変更
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            MainForm = new 設定();
+            MainForm = new ColorEdit();
             Application.Run(MainForm);
         }
     }

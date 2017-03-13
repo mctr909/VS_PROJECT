@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-public class COLOR
+public class Color
 {
     public struct HSL
     {
@@ -38,8 +38,8 @@ public class COLOR
     {
         byte max = Math.Max(r, Math.Max(g, b));
         byte min = Math.Min(r, Math.Min(g, b));
+        int cnt = (max + min) / 2;
 
-        #region Hue
         if (r == g && g == b)
         {
             hsl.H = 0;
@@ -65,10 +65,6 @@ public class COLOR
         {
             hsl.H -= 360;
         }
-        #endregion
-
-        #region Saturation
-        int cnt = (max + min) / 2;
 
         if (cnt == 255)
         {
@@ -86,9 +82,7 @@ public class COLOR
         {
             hsl.S = 100 * (cnt - min) / cnt;
         }
-        #endregion
 
-        // Light
         hsl.L = 100 * cnt / 255;
 
         hsl.A = a;

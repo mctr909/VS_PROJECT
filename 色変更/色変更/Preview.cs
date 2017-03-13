@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace 色変更
 {
-    public partial class Form1 : Form
+    public partial class Preview : Form
     {
-        public Form1()
+        public Preview()
         {
             InitializeComponent();
             pict.AllowDrop = true;
@@ -35,7 +35,7 @@ namespace 色変更
             if (strFileNames.Length < 1) return;
             if (!System.IO.File.Exists(strFileNames[0])) return;
 
-            設定 fm = Program.MainForm;
+            ColorEdit fm = Program.MainForm;
 
             for (int i = 0; i < fm.BmpWork.Length; ++i)
             {

@@ -46,23 +46,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="Preview.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Preview.Designer.cs">
+      <DependentUpon>Preview.cs</DependentUpon>
     </Compile>
-    <Compile Include="COLOR.cs" />
+    <Compile Include="Color.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="設定.cs">
+    <Compile Include="ColorEdit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="設定.Designer.cs">
-      <DependentUpon>設定.cs</DependentUpon>
+    <Compile Include="ColorEdit.Designer.cs">
+      <DependentUpon>ColorEdit.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="Preview.resx">
+      <DependentUpon>Preview.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -73,8 +73,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="設定.resx">
-      <DependentUpon>設定.cs</DependentUpon>
+    <EmbeddedResource Include="ColorEdit.resx">
+      <DependentUpon>ColorEdit.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

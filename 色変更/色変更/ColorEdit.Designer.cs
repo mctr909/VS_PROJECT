@@ -1,6 +1,6 @@
 ﻿namespace 色変更
 {
-    partial class 設定
+    partial class ColorEdit
     {
         /// <summary>
         /// Required designer variable.

@@ -1,6 +1,6 @@
 ﻿namespace 色変更
 {
-    partial class Form1
+    partial class Preview
     {
         /// <summary>
         /// 必要なデザイナー変数です。

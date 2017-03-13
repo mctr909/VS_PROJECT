@@ -13,20 +13,20 @@ using System.Runtime.InteropServices;
 
 namespace 色変更
 {
-    public partial class 設定 : Form
+    public partial class ColorEdit : Form
     {
         #region フィールド
         /// <summary>画像編集用ワーク</summary>
         public Bitmap[] BmpWork = new Bitmap[64];
 
         /// <summary>プレビュー子画面</summary>
-        private static Form1 FmPreview = new 色変更.Form1();
+        private static Preview FmPreview = new 色変更.Preview();
 
         /// <summary>設定情報リスト</summary>
-        private Dictionary<string, COLOR.Config> ConfigList;
+        private Dictionary<string, Color.Config> ConfigList;
 
         /// <summary>設定情報</summary>
-        private COLOR.Config Config;
+        private Color.Config Config;
 
         /// <summary>色相環画像</summary>
         private Bitmap BmpHue;
@@ -41,7 +41,7 @@ namespace 色変更
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public 設定()
+        public ColorEdit()
         {
             InitializeComponent();
 
@@ -58,7 +58,7 @@ namespace 色変更
             );
 
             double x, y, r;
-            COLOR.HSL hsl = new COLOR.HSL();
+            Color.HSL hsl = new Color.HSL();
 
             for (int py = 0; py < BmpHue.Height; ++py)
             {
@@ -74,7 +74,7 @@ namespace 色変更
                         hsl.S = 100;
                         hsl.L = 50;
                         hsl.A = 255;
-                        COLOR.HSLtoRGB(ref hsl, ref pix, ref s);
+                        Color.HSLtoRGB(ref hsl, ref pix, ref s);
                     }
                 }
             }
@@ -157,7 +157,7 @@ namespace 色変更
             btnUndo.Enabled = (BmpWork[1] != null);
             btnRedo.Enabled = (BmpWork[BmpWork.Length - 1] != null);
 
-            BmpWork[0] = COLOR.ChangeColor(BmpWork[0], Config);
+            BmpWork[0] = Color.ChangeColor(BmpWork[0], Config);
             FmPreview.Draw(BmpWork[0]);
         }
 
@@ -484,7 +484,7 @@ namespace 色変更
         /// <param name="grp"></param>
         /// <param name="pict"></param>
         /// <param name="param"></param>
-        private void GetHue(GroupBox grp, PictureBox pict, ref COLOR.Param param)
+        private void GetHue(GroupBox grp, PictureBox pict, ref Color.Param param)
         {
             int ix = Cursor.Position.X - (Location.X + grp.Location.X + pict.Location.X + 9);
             int iy = Cursor.Position.Y - (Location.Y + grp.Location.Y + pict.Location.Y + 31);
@@ -500,12 +500,12 @@ namespace 色変更
         /// <param name="pictS"></param>
         /// <param name="pictL"></param>
         /// <param name="param"></param>
-        private void DrawHSL(PictureBox pictH, PictureBox pictS, PictureBox pictL, COLOR.Param param)
+        private void DrawHSL(PictureBox pictH, PictureBox pictS, PictureBox pictL, Color.Param param)
         {
-            Pen penNorm = new Pen(Color.Black, 1.0f);
-            Pen penBold = new Pen(Color.Black, 4.0f);
+            Pen penNorm = new Pen(System.Drawing.Color.Black, 1.0f);
+            Pen penBold = new Pen(System.Drawing.Color.Black, 4.0f);
 
-            COLOR.HSL hsl = new COLOR.HSL();
+            Color.HSL hsl = new Color.HSL();
 
             //*** 色相環の描画 ***//
             Bitmap bmpHue = new Bitmap(BmpHue.Width, BmpHue.Height);
@@ -552,13 +552,13 @@ namespace 色変更
                 hsl.S = (int)(k * px);
                 hsl.L = 50;
                 hsl.A = 255;
-                COLOR.HSLtoRGB(ref hsl, ref pixS, ref s);
+                Color.HSLtoRGB(ref hsl, ref pixS, ref s);
 
                 hsl.H = param.H;
                 hsl.S = param.SMax;
                 hsl.L = (int)(k * px);
                 hsl.A = 255;
-                COLOR.HSLtoRGB(ref hsl, ref pixL, ref s);
+                Color.HSLtoRGB(ref hsl, ref pixL, ref s);
             }
 
             for (int py = 0, s = 0; py < bmpS.Height; ++py, s += bmpSData.Stride)
@@ -591,8 +591,8 @@ namespace 色変更
             }
             else
             {
-                COLOR.Config config = new COLOR.Config();
-                ConfigList = new Dictionary<string, COLOR.Config>();
+                Color.Config config = new Color.Config();
+                ConfigList = new Dictionary<string, Color.Config>();
 
                 config.Before.H = 0;
                 config.Before.HWidth = 180;
@@ -626,7 +626,7 @@ namespace 色変更
             }
 
             cmbSetting.Items.Clear();
-            foreach (KeyValuePair<string, COLOR.Config> item in ConfigList.ToArray())
+            foreach (KeyValuePair<string, Color.Config> item in ConfigList.ToArray())
             {
                 cmbSetting.Items.Add(item.Key);
             }
@@ -640,9 +640,9 @@ namespace 色変更
         {
             if (!File.Exists(fileName)) return;
 
-            ConfigList = new Dictionary<string, COLOR.Config>();
+            ConfigList = new Dictionary<string, Color.Config>();
 
-            COLOR.Config config = new COLOR.Config();
+            Color.Config config = new Color.Config();
             StreamReader sr = new StreamReader(fileName);
             while(!sr.EndOfStream)
             {
@@ -678,7 +678,7 @@ namespace 色変更
             }
 
             StreamWriter sw = new StreamWriter(fileName);
-            foreach (KeyValuePair<string, COLOR.Config> item in ConfigList.ToArray())
+            foreach (KeyValuePair<string, Color.Config> item in ConfigList.ToArray())
             {
                 sw.WriteLine(
                     "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}"
