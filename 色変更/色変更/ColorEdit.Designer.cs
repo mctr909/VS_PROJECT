@@ -99,7 +99,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Meiryo UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(263, 614);
+            this.groupBox1.Size = new System.Drawing.Size(213, 537);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "抽出条件";
@@ -108,7 +108,7 @@
             // 
             this.lblCondLight.AutoSize = true;
             this.lblCondLight.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblCondLight.Location = new System.Drawing.Point(6, 500);
+            this.lblCondLight.Location = new System.Drawing.Point(6, 426);
             this.lblCondLight.Name = "lblCondLight";
             this.lblCondLight.Size = new System.Drawing.Size(77, 19);
             this.lblCondLight.TabIndex = 12;
@@ -117,20 +117,20 @@
             // picCondLight
             // 
             this.picCondLight.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picCondLight.Location = new System.Drawing.Point(18, 547);
+            this.picCondLight.Location = new System.Drawing.Point(18, 473);
             this.picCondLight.Margin = new System.Windows.Forms.Padding(0);
             this.picCondLight.Name = "picCondLight";
-            this.picCondLight.Size = new System.Drawing.Size(226, 20);
+            this.picCondLight.Size = new System.Drawing.Size(176, 20);
             this.picCondLight.TabIndex = 9;
             this.picCondLight.TabStop = false;
             // 
             // trkCondALight
             // 
             this.trkCondALight.AutoSize = false;
-            this.trkCondALight.Location = new System.Drawing.Point(6, 522);
+            this.trkCondALight.Location = new System.Drawing.Point(6, 448);
             this.trkCondALight.Maximum = 100;
             this.trkCondALight.Name = "trkCondALight";
-            this.trkCondALight.Size = new System.Drawing.Size(250, 45);
+            this.trkCondALight.Size = new System.Drawing.Size(200, 45);
             this.trkCondALight.TabIndex = 10;
             this.trkCondALight.Tag = "";
             this.trkCondALight.TickFrequency = 10;
@@ -140,10 +140,10 @@
             // trkCondBLight
             // 
             this.trkCondBLight.AutoSize = false;
-            this.trkCondBLight.Location = new System.Drawing.Point(6, 561);
+            this.trkCondBLight.Location = new System.Drawing.Point(6, 487);
             this.trkCondBLight.Maximum = 100;
             this.trkCondBLight.Name = "trkCondBLight";
-            this.trkCondBLight.Size = new System.Drawing.Size(250, 45);
+            this.trkCondBLight.Size = new System.Drawing.Size(200, 45);
             this.trkCondBLight.TabIndex = 11;
             this.trkCondBLight.TickFrequency = 10;
             this.trkCondBLight.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
@@ -153,7 +153,7 @@
             // 
             this.lblCondSaturation.AutoSize = true;
             this.lblCondSaturation.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblCondSaturation.Location = new System.Drawing.Point(6, 402);
+            this.lblCondSaturation.Location = new System.Drawing.Point(6, 328);
             this.lblCondSaturation.Name = "lblCondSaturation";
             this.lblCondSaturation.Size = new System.Drawing.Size(77, 19);
             this.lblCondSaturation.TabIndex = 8;
@@ -162,10 +162,10 @@
             // picCondSaturation
             // 
             this.picCondSaturation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picCondSaturation.Location = new System.Drawing.Point(18, 449);
+            this.picCondSaturation.Location = new System.Drawing.Point(18, 375);
             this.picCondSaturation.Margin = new System.Windows.Forms.Padding(0);
             this.picCondSaturation.Name = "picCondSaturation";
-            this.picCondSaturation.Size = new System.Drawing.Size(226, 20);
+            this.picCondSaturation.Size = new System.Drawing.Size(176, 20);
             this.picCondSaturation.TabIndex = 5;
             this.picCondSaturation.TabStop = false;
             // 
@@ -173,7 +173,7 @@
             // 
             this.lblCondHueWidth.AutoSize = true;
             this.lblCondHueWidth.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblCondHueWidth.Location = new System.Drawing.Point(6, 332);
+            this.lblCondHueWidth.Location = new System.Drawing.Point(6, 258);
             this.lblCondHueWidth.Name = "lblCondHueWidth";
             this.lblCondHueWidth.Size = new System.Drawing.Size(97, 19);
             this.lblCondHueWidth.TabIndex = 4;
@@ -181,10 +181,10 @@
             // 
             // trkCondHueWidth
             // 
-            this.trkCondHueWidth.Location = new System.Drawing.Point(6, 354);
+            this.trkCondHueWidth.Location = new System.Drawing.Point(6, 280);
             this.trkCondHueWidth.Maximum = 180;
             this.trkCondHueWidth.Name = "trkCondHueWidth";
-            this.trkCondHueWidth.Size = new System.Drawing.Size(250, 45);
+            this.trkCondHueWidth.Size = new System.Drawing.Size(200, 45);
             this.trkCondHueWidth.TabIndex = 3;
             this.trkCondHueWidth.TickFrequency = 15;
             this.trkCondHueWidth.TickStyle = System.Windows.Forms.TickStyle.Both;
@@ -206,9 +206,10 @@
             this.picCondHue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picCondHue.Location = new System.Drawing.Point(6, 55);
             this.picCondHue.Name = "picCondHue";
-            this.picCondHue.Size = new System.Drawing.Size(250, 261);
+            this.picCondHue.Size = new System.Drawing.Size(200, 200);
             this.picCondHue.TabIndex = 1;
             this.picCondHue.TabStop = false;
+            this.picCondHue.WaitOnLoad = true;
             this.picCondHue.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picCondHue_MouseDown);
             this.picCondHue.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picCondHue_MouseMove);
             this.picCondHue.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picCondHue_MouseUp);
@@ -216,11 +217,11 @@
             // trkCondASaturation
             // 
             this.trkCondASaturation.AutoSize = false;
-            this.trkCondASaturation.Location = new System.Drawing.Point(6, 424);
+            this.trkCondASaturation.Location = new System.Drawing.Point(6, 350);
             this.trkCondASaturation.Margin = new System.Windows.Forms.Padding(0);
             this.trkCondASaturation.Maximum = 100;
             this.trkCondASaturation.Name = "trkCondASaturation";
-            this.trkCondASaturation.Size = new System.Drawing.Size(250, 45);
+            this.trkCondASaturation.Size = new System.Drawing.Size(200, 45);
             this.trkCondASaturation.TabIndex = 6;
             this.trkCondASaturation.TickFrequency = 10;
             this.trkCondASaturation.Value = 100;
@@ -229,11 +230,11 @@
             // trkCondBSaturation
             // 
             this.trkCondBSaturation.AutoSize = false;
-            this.trkCondBSaturation.Location = new System.Drawing.Point(6, 463);
+            this.trkCondBSaturation.Location = new System.Drawing.Point(6, 389);
             this.trkCondBSaturation.Margin = new System.Windows.Forms.Padding(0);
             this.trkCondBSaturation.Maximum = 100;
             this.trkCondBSaturation.Name = "trkCondBSaturation";
-            this.trkCondBSaturation.Size = new System.Drawing.Size(250, 45);
+            this.trkCondBSaturation.Size = new System.Drawing.Size(200, 45);
             this.trkCondBSaturation.TabIndex = 7;
             this.trkCondBSaturation.TickFrequency = 10;
             this.trkCondBSaturation.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
@@ -258,9 +259,9 @@
             this.groupBox2.Controls.Add(this.lblChgHue);
             this.groupBox2.Controls.Add(this.picChgHue);
             this.groupBox2.Font = new System.Drawing.Font("Meiryo UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.groupBox2.Location = new System.Drawing.Point(295, 12);
+            this.groupBox2.Location = new System.Drawing.Point(241, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(263, 614);
+            this.groupBox2.Size = new System.Drawing.Size(241, 537);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "変更色";
@@ -268,7 +269,7 @@
             // btnDeleteSetting
             // 
             this.btnDeleteSetting.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnDeleteSetting.Location = new System.Drawing.Point(98, 365);
+            this.btnDeleteSetting.Location = new System.Drawing.Point(48, 294);
             this.btnDeleteSetting.Name = "btnDeleteSetting";
             this.btnDeleteSetting.Size = new System.Drawing.Size(75, 23);
             this.btnDeleteSetting.TabIndex = 21;
@@ -279,7 +280,7 @@
             // btnSaveSetting
             // 
             this.btnSaveSetting.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnSaveSetting.Location = new System.Drawing.Point(179, 365);
+            this.btnSaveSetting.Location = new System.Drawing.Point(129, 294);
             this.btnSaveSetting.Name = "btnSaveSetting";
             this.btnSaveSetting.Size = new System.Drawing.Size(77, 23);
             this.btnSaveSetting.TabIndex = 6;
@@ -291,19 +292,19 @@
             // 
             this.cmbSetting.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.cmbSetting.FormattingEnabled = true;
-            this.cmbSetting.Location = new System.Drawing.Point(6, 332);
+            this.cmbSetting.Location = new System.Drawing.Point(6, 261);
             this.cmbSetting.Name = "cmbSetting";
-            this.cmbSetting.Size = new System.Drawing.Size(250, 27);
+            this.cmbSetting.Size = new System.Drawing.Size(200, 27);
             this.cmbSetting.TabIndex = 6;
             this.cmbSetting.SelectedIndexChanged += new System.EventHandler(this.cmbSetting_SelectedIndexChanged);
             // 
             // chkLightNoChg
             // 
             this.chkLightNoChg.AutoSize = true;
-            this.chkLightNoChg.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.chkLightNoChg.Location = new System.Drawing.Point(134, 500);
+            this.chkLightNoChg.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.chkLightNoChg.Location = new System.Drawing.Point(134, 426);
             this.chkLightNoChg.Name = "chkLightNoChg";
-            this.chkLightNoChg.Size = new System.Drawing.Size(123, 23);
+            this.chkLightNoChg.Size = new System.Drawing.Size(103, 19);
             this.chkLightNoChg.TabIndex = 20;
             this.chkLightNoChg.Text = "抽出条件と同じ";
             this.chkLightNoChg.UseVisualStyleBackColor = true;
@@ -312,10 +313,10 @@
             // chkSaturationNoChg
             // 
             this.chkSaturationNoChg.AutoSize = true;
-            this.chkSaturationNoChg.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.chkSaturationNoChg.Location = new System.Drawing.Point(134, 402);
+            this.chkSaturationNoChg.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.chkSaturationNoChg.Location = new System.Drawing.Point(134, 328);
             this.chkSaturationNoChg.Name = "chkSaturationNoChg";
-            this.chkSaturationNoChg.Size = new System.Drawing.Size(123, 23);
+            this.chkSaturationNoChg.Size = new System.Drawing.Size(103, 19);
             this.chkSaturationNoChg.TabIndex = 19;
             this.chkSaturationNoChg.Text = "抽出条件と同じ";
             this.chkSaturationNoChg.UseVisualStyleBackColor = true;
@@ -324,10 +325,10 @@
             // chkHueNoChg
             // 
             this.chkHueNoChg.AutoSize = true;
-            this.chkHueNoChg.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.chkHueNoChg.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.chkHueNoChg.Location = new System.Drawing.Point(134, 32);
             this.chkHueNoChg.Name = "chkHueNoChg";
-            this.chkHueNoChg.Size = new System.Drawing.Size(123, 23);
+            this.chkHueNoChg.Size = new System.Drawing.Size(103, 19);
             this.chkHueNoChg.TabIndex = 17;
             this.chkHueNoChg.Text = "抽出条件と同じ";
             this.chkHueNoChg.UseVisualStyleBackColor = true;
@@ -337,7 +338,7 @@
             // 
             this.lblChgLight.AutoSize = true;
             this.lblChgLight.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblChgLight.Location = new System.Drawing.Point(6, 500);
+            this.lblChgLight.Location = new System.Drawing.Point(6, 426);
             this.lblChgLight.Name = "lblChgLight";
             this.lblChgLight.Size = new System.Drawing.Size(77, 19);
             this.lblChgLight.TabIndex = 16;
@@ -346,9 +347,9 @@
             // picChgLight
             // 
             this.picChgLight.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picChgLight.Location = new System.Drawing.Point(18, 547);
+            this.picChgLight.Location = new System.Drawing.Point(18, 473);
             this.picChgLight.Name = "picChgLight";
-            this.picChgLight.Size = new System.Drawing.Size(226, 20);
+            this.picChgLight.Size = new System.Drawing.Size(176, 20);
             this.picChgLight.TabIndex = 13;
             this.picChgLight.TabStop = false;
             // 
@@ -356,7 +357,7 @@
             // 
             this.lblChgSaturation.AutoSize = true;
             this.lblChgSaturation.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblChgSaturation.Location = new System.Drawing.Point(6, 402);
+            this.lblChgSaturation.Location = new System.Drawing.Point(6, 328);
             this.lblChgSaturation.Name = "lblChgSaturation";
             this.lblChgSaturation.Size = new System.Drawing.Size(77, 19);
             this.lblChgSaturation.TabIndex = 12;
@@ -364,10 +365,10 @@
             // 
             // trkChgALight
             // 
-            this.trkChgALight.Location = new System.Drawing.Point(6, 522);
+            this.trkChgALight.Location = new System.Drawing.Point(6, 448);
             this.trkChgALight.Maximum = 100;
             this.trkChgALight.Name = "trkChgALight";
-            this.trkChgALight.Size = new System.Drawing.Size(250, 45);
+            this.trkChgALight.Size = new System.Drawing.Size(200, 45);
             this.trkChgALight.TabIndex = 14;
             this.trkChgALight.Tag = "";
             this.trkChgALight.TickFrequency = 10;
@@ -377,18 +378,18 @@
             // picChgSaturation
             // 
             this.picChgSaturation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picChgSaturation.Location = new System.Drawing.Point(18, 449);
+            this.picChgSaturation.Location = new System.Drawing.Point(18, 375);
             this.picChgSaturation.Name = "picChgSaturation";
-            this.picChgSaturation.Size = new System.Drawing.Size(226, 20);
+            this.picChgSaturation.Size = new System.Drawing.Size(176, 20);
             this.picChgSaturation.TabIndex = 9;
             this.picChgSaturation.TabStop = false;
             // 
             // trkChgBLight
             // 
-            this.trkChgBLight.Location = new System.Drawing.Point(6, 561);
+            this.trkChgBLight.Location = new System.Drawing.Point(6, 487);
             this.trkChgBLight.Maximum = 100;
             this.trkChgBLight.Name = "trkChgBLight";
-            this.trkChgBLight.Size = new System.Drawing.Size(250, 45);
+            this.trkChgBLight.Size = new System.Drawing.Size(200, 45);
             this.trkChgBLight.TabIndex = 15;
             this.trkChgBLight.TickFrequency = 10;
             this.trkChgBLight.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
@@ -396,10 +397,10 @@
             // 
             // trkChgASaturation
             // 
-            this.trkChgASaturation.Location = new System.Drawing.Point(6, 424);
+            this.trkChgASaturation.Location = new System.Drawing.Point(6, 350);
             this.trkChgASaturation.Maximum = 100;
             this.trkChgASaturation.Name = "trkChgASaturation";
-            this.trkChgASaturation.Size = new System.Drawing.Size(250, 45);
+            this.trkChgASaturation.Size = new System.Drawing.Size(200, 45);
             this.trkChgASaturation.TabIndex = 10;
             this.trkChgASaturation.TickFrequency = 10;
             this.trkChgASaturation.Value = 100;
@@ -407,10 +408,10 @@
             // 
             // trkChgBSaturation
             // 
-            this.trkChgBSaturation.Location = new System.Drawing.Point(6, 463);
+            this.trkChgBSaturation.Location = new System.Drawing.Point(6, 389);
             this.trkChgBSaturation.Maximum = 100;
             this.trkChgBSaturation.Name = "trkChgBSaturation";
-            this.trkChgBSaturation.Size = new System.Drawing.Size(250, 45);
+            this.trkChgBSaturation.Size = new System.Drawing.Size(200, 45);
             this.trkChgBSaturation.TabIndex = 11;
             this.trkChgBSaturation.TickFrequency = 10;
             this.trkChgBSaturation.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
@@ -431,9 +432,10 @@
             this.picChgHue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picChgHue.Location = new System.Drawing.Point(6, 55);
             this.picChgHue.Name = "picChgHue";
-            this.picChgHue.Size = new System.Drawing.Size(250, 261);
+            this.picChgHue.Size = new System.Drawing.Size(200, 200);
             this.picChgHue.TabIndex = 2;
             this.picChgHue.TabStop = false;
+            this.picChgHue.WaitOnLoad = true;
             this.picChgHue.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picChgHue_MouseDown);
             this.picChgHue.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picChgHue_MouseMove);
             this.picChgHue.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picChgHue_MouseUp);
@@ -441,7 +443,7 @@
             // btnSave
             // 
             this.btnSave.Font = new System.Drawing.Font("Meiryo UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnSave.Location = new System.Drawing.Point(564, 28);
+            this.btnSave.Location = new System.Drawing.Point(488, 28);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(118, 36);
             this.btnSave.TabIndex = 2;
@@ -452,7 +454,7 @@
             // btnPreview
             // 
             this.btnPreview.Font = new System.Drawing.Font("Meiryo UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnPreview.Location = new System.Drawing.Point(564, 90);
+            this.btnPreview.Location = new System.Drawing.Point(488, 90);
             this.btnPreview.Name = "btnPreview";
             this.btnPreview.Size = new System.Drawing.Size(118, 36);
             this.btnPreview.TabIndex = 3;
@@ -464,7 +466,7 @@
             // 
             this.btnUndo.Enabled = false;
             this.btnUndo.Font = new System.Drawing.Font("Meiryo UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnUndo.Location = new System.Drawing.Point(564, 153);
+            this.btnUndo.Location = new System.Drawing.Point(488, 153);
             this.btnUndo.Name = "btnUndo";
             this.btnUndo.Size = new System.Drawing.Size(118, 36);
             this.btnUndo.TabIndex = 4;
@@ -476,7 +478,7 @@
             // 
             this.btnRedo.Enabled = false;
             this.btnRedo.Font = new System.Drawing.Font("Meiryo UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnRedo.Location = new System.Drawing.Point(564, 195);
+            this.btnRedo.Location = new System.Drawing.Point(488, 195);
             this.btnRedo.Name = "btnRedo";
             this.btnRedo.Size = new System.Drawing.Size(118, 36);
             this.btnRedo.TabIndex = 5;
@@ -484,11 +486,11 @@
             this.btnRedo.UseVisualStyleBackColor = true;
             this.btnRedo.Click += new System.EventHandler(this.btnRedo_Click);
             // 
-            // 設定
+            // ColorEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(694, 638);
+            this.ClientSize = new System.Drawing.Size(610, 558);
             this.Controls.Add(this.btnRedo);
             this.Controls.Add(this.btnUndo);
             this.Controls.Add(this.btnPreview);
@@ -497,7 +499,7 @@
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
-            this.Name = "設定";
+            this.Name = "ColorEdit";
             this.Text = "編集";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
