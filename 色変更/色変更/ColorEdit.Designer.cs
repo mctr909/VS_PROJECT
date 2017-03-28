@@ -47,7 +47,7 @@
             this.cmbSetting = new System.Windows.Forms.ComboBox();
             this.chkLightNoChg = new System.Windows.Forms.CheckBox();
             this.chkSaturationNoChg = new System.Windows.Forms.CheckBox();
-            this.chkHueNoChg = new System.Windows.Forms.CheckBox();
+            this.chkHueSame = new System.Windows.Forms.CheckBox();
             this.lblChgLight = new System.Windows.Forms.Label();
             this.picChgLight = new System.Windows.Forms.PictureBox();
             this.lblChgSaturation = new System.Windows.Forms.Label();
@@ -63,6 +63,7 @@
             this.btnUndo = new System.Windows.Forms.Button();
             this.btnRedo = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.chkHueNoChg = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picCondLight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkCondALight)).BeginInit();
@@ -242,12 +243,13 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.chkHueNoChg);
             this.groupBox2.Controls.Add(this.btnDeleteSetting);
             this.groupBox2.Controls.Add(this.btnSaveSetting);
             this.groupBox2.Controls.Add(this.cmbSetting);
             this.groupBox2.Controls.Add(this.chkLightNoChg);
             this.groupBox2.Controls.Add(this.chkSaturationNoChg);
-            this.groupBox2.Controls.Add(this.chkHueNoChg);
+            this.groupBox2.Controls.Add(this.chkHueSame);
             this.groupBox2.Controls.Add(this.lblChgLight);
             this.groupBox2.Controls.Add(this.picChgLight);
             this.groupBox2.Controls.Add(this.lblChgSaturation);
@@ -322,17 +324,17 @@
             this.chkSaturationNoChg.UseVisualStyleBackColor = true;
             this.chkSaturationNoChg.CheckedChanged += new System.EventHandler(this.chkSaturationNoChg_CheckedChanged);
             // 
-            // chkHueNoChg
+            // chkHueSame
             // 
-            this.chkHueNoChg.AutoSize = true;
-            this.chkHueNoChg.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.chkHueNoChg.Location = new System.Drawing.Point(134, 32);
-            this.chkHueNoChg.Name = "chkHueNoChg";
-            this.chkHueNoChg.Size = new System.Drawing.Size(103, 19);
-            this.chkHueNoChg.TabIndex = 17;
-            this.chkHueNoChg.Text = "抽出条件と同じ";
-            this.chkHueNoChg.UseVisualStyleBackColor = true;
-            this.chkHueNoChg.CheckedChanged += new System.EventHandler(this.chkHueNoChg_CheckedChanged);
+            this.chkHueSame.AutoSize = true;
+            this.chkHueSame.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.chkHueSame.Location = new System.Drawing.Point(125, 36);
+            this.chkHueSame.Name = "chkHueSame";
+            this.chkHueSame.Size = new System.Drawing.Size(103, 19);
+            this.chkHueSame.TabIndex = 17;
+            this.chkHueSame.Text = "抽出条件と同じ";
+            this.chkHueSame.UseVisualStyleBackColor = true;
+            this.chkHueSame.CheckedChanged += new System.EventHandler(this.chkHueSame_CheckedChanged);
             // 
             // lblChgLight
             // 
@@ -486,6 +488,18 @@
             this.btnRedo.UseVisualStyleBackColor = true;
             this.btnRedo.Click += new System.EventHandler(this.btnRedo_Click);
             // 
+            // chkHueNoChg
+            // 
+            this.chkHueNoChg.AutoSize = true;
+            this.chkHueNoChg.Font = new System.Drawing.Font("Meiryo UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.chkHueNoChg.Location = new System.Drawing.Point(125, 16);
+            this.chkHueNoChg.Name = "chkHueNoChg";
+            this.chkHueNoChg.Size = new System.Drawing.Size(112, 19);
+            this.chkHueNoChg.TabIndex = 22;
+            this.chkHueNoChg.Text = "色相を変更しない";
+            this.chkHueNoChg.UseVisualStyleBackColor = true;
+            this.chkHueNoChg.CheckedChanged += new System.EventHandler(this.chkHueNoChg_CheckedChanged);
+            // 
             // ColorEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -552,7 +566,7 @@
         private System.Windows.Forms.TrackBar trkChgBLight;
         private System.Windows.Forms.CheckBox chkLightNoChg;
         private System.Windows.Forms.CheckBox chkSaturationNoChg;
-        private System.Windows.Forms.CheckBox chkHueNoChg;
+        private System.Windows.Forms.CheckBox chkHueSame;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnPreview;
         public System.Windows.Forms.Button btnUndo;
@@ -561,5 +575,6 @@
         private System.Windows.Forms.ComboBox cmbSetting;
         private System.Windows.Forms.Button btnSaveSetting;
         private System.Windows.Forms.Button btnDeleteSetting;
+        private System.Windows.Forms.CheckBox chkHueNoChg;
     }
 }

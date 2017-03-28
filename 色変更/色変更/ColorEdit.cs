@@ -112,7 +112,8 @@ namespace 色変更
             trkChgALight.Value = Config.After.LMin;
             trkChgBLight.Value = Config.After.LMax;
 
-            chkHueNoChg.Checked = false;
+            chkHueNoChg.Checked = !Config.After.ChengeH;
+            chkHueSame.Checked = false;
             chkSaturationNoChg.Checked = false;
             chkLightNoChg.Checked = false;
 
@@ -341,6 +342,11 @@ namespace 色変更
             ValueChenged();
         }
 
+        private void chkHueSame_CheckedChanged(object sender, EventArgs e)
+        {
+            ValueChenged();
+        }
+
         private void chkHueNoChg_CheckedChanged(object sender, EventArgs e)
         {
             ValueChenged();
@@ -408,6 +414,16 @@ namespace 色変更
 
             #region 変更色
             if (chkHueNoChg.Checked)
+            {
+                Config.After.H = Config.Before.H;
+                Config.After.ChengeH = false;
+            }
+            else
+            {
+                Config.After.ChengeH = true;
+            }
+
+            if (chkHueSame.Checked)
             {
                 Config.After.H = Config.Before.H;
             }
@@ -600,6 +616,7 @@ namespace 色変更
                 config.Before.SMax = 100;
                 config.Before.LMin = 0;
                 config.Before.LMax = 100;
+                config.After.ChengeH = false;
                 config.After.H = 0;
                 config.After.HWidth = 0;
                 config.After.SMin = 0;
@@ -614,6 +631,7 @@ namespace 色変更
                 config.Before.SMax = 100;
                 config.Before.LMin = 0;
                 config.Before.LMax = 100;
+                config.After.ChengeH = true;
                 config.After.H = 50;
                 config.After.HWidth = 0;
                 config.After.SMin = 25;
@@ -621,6 +639,36 @@ namespace 色変更
                 config.After.LMin = 0;
                 config.After.LMax = 100;
                 ConfigList.Add("セピア", config);
+
+                config.Before.H = 0;
+                config.Before.HWidth = 180;
+                config.Before.SMin = 0;
+                config.Before.SMax = 100;
+                config.Before.LMin = 0;
+                config.Before.LMax = 100;
+                config.After.ChengeH = false;
+                config.After.H = 0;
+                config.After.HWidth = 0;
+                config.After.SMin = 100;
+                config.After.SMax = 100;
+                config.After.LMin = 50;
+                config.After.LMax = 50;
+                ConfigList.Add("サーモグラフィ", config);
+
+                config.Before.H = 0;
+                config.Before.HWidth = 180;
+                config.Before.SMin = 0;
+                config.Before.SMax = 100;
+                config.Before.LMin = 0;
+                config.Before.LMax = 100;
+                config.After.ChengeH = false;
+                config.After.H = 0;
+                config.After.HWidth = 0;
+                config.After.SMin = 100;
+                config.After.SMax = 100;
+                config.After.LMin = 0;
+                config.After.LMax = 100;
+                ConfigList.Add("原色", config);
 
                 WriteSetting(fileName);
             }
@@ -647,6 +695,13 @@ namespace 色変更
             while(!sr.EndOfStream)
             {
                 string[] cols = sr.ReadLine().Split('\t');
+                if (cols.Length < 14)
+                {
+                    string[] tmp = new string[14];
+                    cols.CopyTo(tmp, 0);
+                    cols = tmp;
+                }
+
                 config.Before.H = int.Parse(cols[0]);
                 config.Before.HWidth = int.Parse(cols[1]);
                 config.Before.SMin = int.Parse(cols[2]);
@@ -659,7 +714,9 @@ namespace 色変更
                 config.After.SMax = int.Parse(cols[9]);
                 config.After.LMin = int.Parse(cols[10]);
                 config.After.LMax = int.Parse(cols[11]);
+                config.After.ChengeH = (cols[13] != "0");
 
+                // 追加
                 ConfigList.Add(cols[12], config);
             }
             sr.Close();
@@ -680,8 +737,7 @@ namespace 色変更
             StreamWriter sw = new StreamWriter(fileName);
             foreach (KeyValuePair<string, Color.Config> item in ConfigList.ToArray())
             {
-                sw.WriteLine(
-                    "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}"
+                sw.WriteLine(string.Join("\t"
                     , item.Value.Before.H.ToString("000")
                     , item.Value.Before.HWidth.ToString("000")
                     , item.Value.Before.SMin.ToString("000")
@@ -695,7 +751,8 @@ namespace 色変更
                     , item.Value.After.LMin.ToString("000")
                     , item.Value.After.LMax.ToString("000")
                     , item.Key
-                );
+                    , item.Value.After.ChengeH ? "1" : "0"
+                ));
             }
             sw.Close();
         }

@@ -15,6 +15,7 @@ public class Color
 
     public struct Param
     {
+        public bool ChengeH;
         public int H;
         public int HWidth;
         public int SMin;
@@ -191,7 +192,10 @@ public class Color
                 && hsl.S >= config.Before.SMin && hsl.S <= config.Before.SMax
                 && hsl.L >= config.Before.LMin && hsl.L <= config.Before.LMax)
                 {
-                    hsl.H = config.After.H;
+                    if (config.After.ChengeH)
+                    {
+                        hsl.H = config.After.H;
+                    }
                     hsl.S = (int)(hsl.S * sWidth) + config.After.SMin;
                     hsl.L = (int)(hsl.L * lWidth) + config.After.LMin;
                 }
