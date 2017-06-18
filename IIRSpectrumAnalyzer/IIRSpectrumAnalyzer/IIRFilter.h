@@ -9,7 +9,6 @@ private:
 #pragma pack(1)
 	struct BANK
 	{
-		double a0;
 		double a1;
 		double a2;
 		double b0;
@@ -18,8 +17,8 @@ private:
 
 		double aDelay1;
 		double aDelay2;
-		double bDelay1;
-		double bDelay2;
+		int bDelay1;
+		int bDelay2;
 	};
 #pragma
 
@@ -37,5 +36,5 @@ public:
 	void Lowpass(int bankNo, double freq, double q);
 	void Bandpass(int bankNo, double freq, double oct);
 	void Peaking(int bankNo, double freq, double oct, double gain);
-	double Exec(int bankNo, double input);
+	double Exec(int bankNo, int input);
 };

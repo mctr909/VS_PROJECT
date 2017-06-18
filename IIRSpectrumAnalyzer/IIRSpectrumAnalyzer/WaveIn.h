@@ -7,13 +7,12 @@ class WaveIn
 	// ÉÅÉìÉoíËêî
 	//*******************************************************************
 public:
-	static const UINT32 SAMPLE_RATE = 44100;
-	static const UINT32 SAMPLES = 768;
+	static const UINT32 SAMPLE_RATE	= 44100;
+	static const UINT32 SAMPLES		= 768;
+	static const UINT32 BUFFER_SIZE = SAMPLES * sizeof(INT16);
 
 private:
 	static const UINT32 BUFFERS = 4;
-	static const UINT32 BUFFER_SIZE = SAMPLES * sizeof(INT16);
-
 
 	//*******************************************************************
 	// ÉÅÉìÉoïœêî

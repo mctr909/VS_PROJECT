@@ -241,8 +241,8 @@ wmCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		freq = PITCH * pow(2.0, i / (12.0 * NOTE_DIV));
 		width = 2.0 - (2.5 * i / BANKS);
-		if (width < 0.8) {
-			width = 0.8;
+		if (width < 0.75) {
+			width = 0.75;
 		}
 		cIIR->Bandpass(i, freq, width / 12.0);
 	}
@@ -384,7 +384,8 @@ wmUser(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 //*******************************************************************
 //  ñ⁄ê∑Çï`âÊ
 //*******************************************************************
-void DrawGauge(HWND hWnd, HBITMAP hMemBitmap)
+void
+DrawGauge(HWND hWnd, HBITMAP hMemBitmap)
 {
 	RECT r;
 	HDC hDC, hWindowDC;
@@ -417,7 +418,12 @@ void DrawGauge(HWND hWnd, HBITMAP hMemBitmap)
 			c = PALETTERGB(64, 64, 64);
 			break;
 		default:
-			c = PALETTERGB(255 * octAlt, 255, 255 * octAlt);
+			if (octAlt) {
+				c = PALETTERGB(255, 255, 255);
+			}
+			else {
+				c = PALETTERGB(128, 255, 128);
+			}
 		}
 
 		r.left = i * DRAW_STEPX;
