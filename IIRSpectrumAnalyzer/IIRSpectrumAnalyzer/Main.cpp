@@ -94,7 +94,7 @@ MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if ((HWND)(lParam) == hTrkGamma) {
 			gGamma = 1.0 / (SendMessage(hTrkGamma, TBM_GETPOS, 0, 0) + 1.0);
 		}
-		return(DefWindowProc(hWnd, uMsg, wParam, lParam));
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 	case WM_QUERYNEWPALETTE: {	// フォーカスを得る直前に自分のパレットを実体化
 		HDC hDC = GetDC(hWnd);
@@ -128,7 +128,7 @@ MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 LRESULT
-wmCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+wmCreate(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 {
 	DWORD			pallet[PALLET_COLORS];
 	LPLOGPALETTE	lpPal;
@@ -241,8 +241,8 @@ wmCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		freq = PITCH * pow(2.0, i / (12.0 * NOTE_DIV));
 		width = 10.0 - (16.0 * i / BANKS);
-		if (width < 2.0) {
-			width = 2.0;
+		if (width < 1.75) {
+			width = 1.75;
 		}
 		cIIR->Bandpass(i, freq, width / (12.0 * NOTE_DIV));
 	}
@@ -255,7 +255,7 @@ wmCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 LRESULT
-wmDestroy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+wmDestroy(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 {
 	// プロセスの優先順位を NORMAL に戻す
 	// （さもなくばウィンドウが閉じられるまでに時間がかかることがある）
@@ -276,7 +276,7 @@ wmDestroy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 LRESULT
-wmPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+wmPaint(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 {
 	PAINTSTRUCT ps;
 	HDC			hMemDC;
@@ -296,7 +296,6 @@ wmPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	//       1. ちらつきを抑える
 	//       2. 大抵のビデオカードで、StretchDIBitsよりもStretchBltの方が高速
 	//     であるため。
-
 	hMemDC = CreateCompatibleDC(ps.hdc);
 	SelectObject(hMemDC, hMemBitmap);
 
@@ -351,14 +350,14 @@ wmPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 LRESULT
-wmUser(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+wmUser(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 {
 	if ((NULL == cWaveIn->m_pBuffer) || (FALSE == cWaveIn->IsWaveOpen)) {
 		InvalidateRect(hWnd, NULL, TRUE);
 		return (LRESULT)0;
 	}
 
-	//
+	// バッファに値をセット
 	cWaveIn->SetBuffer(lParam);
 
 	// データバッファブロックを再利用する
@@ -402,7 +401,7 @@ DrawGauge(HWND hWnd, HBITMAP hMemBitmap)
 
 	// 音階ゲージを描画
 	HBRUSH hbr;
-	int i;
+	UINT32 i;
 
 	FillRect(hDC, &r, (HBRUSH)GetStockObject(BLACK_BRUSH));
 	for (i = 0; i < BANKS; ++i) {
@@ -443,57 +442,43 @@ DrawGauge(HWND hWnd, HBITMAP hMemBitmap)
 void
 PlotSpectrum(HWND hWnd)
 {
-	int b, d;
-	double mxLevel;
-	static INT16 buff[WaveIn::SAMPLES];
+	static UINT32 b, d;
+	static double maxLevel;
 
-	// スクロールバッファを 1 pixel スクロールダウン
-	MoveMemory(
-		lpBits + DRAW_WIDTH * DRAW_HEIGHT,
-		lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
-		DRAW_WIDTH * (DRAW_HEIGHT - 1)
-	);
-	MoveMemory(
-		lpBits + DRAW_WIDTH * DRAW_HEIGHT,
-		lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
-		DRAW_WIDTH * (DRAW_HEIGHT - 1)
-	);
-	MoveMemory(
-		lpBits + DRAW_WIDTH * DRAW_HEIGHT,
-		lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
-		DRAW_WIDTH * (DRAW_HEIGHT - 1)
-	);
+	// スクロールバッファを 8 pixel スクロールダウン
+	for (b = 0; b < 8; ++b) {
+		MoveMemory(
+			lpBits + DRAW_WIDTH * DRAW_HEIGHT,
+			lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
+			DRAW_WIDTH * (DRAW_HEIGHT - 1)
+		);
+	}
 
 	// スペクトル描画
 	ZeroMemory(lpBits, DRAW_WIDTH * DRAW_HEIGHT);
 
-	// モノラル化 = L + R
-	for (b = 0, d = 0; b < WaveIn::SAMPLES; ++b, d += 2) {
-		buff[b] = (cWaveIn->m_pBuffer[d] + cWaveIn->m_pBuffer[d + 1]) / 2;
-	}
-
-	mxLevel = 0.0;
+	maxLevel = 0.0;
 
 	for (b = 0; b < BANKS; ++b) {
-		// 入力音声をフィルタにかけて振幅を算出
+		// 入力波形をフィルタにかけて振幅を算出
 		{
-			register int t;
-			register double wave;
-			register double amp = 0.0;
+			register UINT32 t;
+			register double filteredWave;
+			register double amplitude = 0.0;
 
 			for (t = 0; t < WaveIn::SAMPLES; ++t) {
-				cIIR->Exec(b, buff[t], &wave);
-				amp += wave * wave;
+				cIIR->Exec(b, cWaveIn->m_pBuffer[t], &filteredWave);
+				amplitude += filteredWave * filteredWave;
 			}
 
-			if (mxLevel < amp) {
-				mxLevel = amp;
+			if (maxLevel < amplitude) {
+				maxLevel = amplitude;
 			}
 
-			amp /= gAvgLevel;
-			amp = (1.0 + gGamma) * amp / (amp + gGamma);
+			amplitude /= gAvgLevel;
+			amplitude = (1.0 + gGamma) * amplitude / (amplitude + gGamma);
 
-			d = (int)(DRAW_HEIGHT * amp);
+			d = (UINT32)(DRAW_HEIGHT * amplitude);
 			if (DRAW_HEIGHT <= d) {
 				d = DRAW_HEIGHT - 1;
 			}
@@ -501,32 +486,32 @@ PlotSpectrum(HWND hWnd)
 
 		// DIBバッファ上に棒グラフを描画
 		{
-			// DWORD値を使って、一度に４ピクセルずつ描画する
-			register LPDWORD pM4 = (LPDWORD)lpBits + b;
-			register int j;
+			// UINT32値を使って、一度に４ピクセルずつ描画する
+			register UINT32 *pix4 = (UINT32*)lpBits + b;
+			register UINT32 j;
 			for (j = 0; j < d; ++j) {
-				register DWORD ltmp = 8 + j * 55 / DRAW_HEIGHT;
-				ltmp |= (ltmp << 8) | (ltmp << 16) | (ltmp << 24);
-				*pM4 = ltmp;
-				pM4 += BANKS;
+				register UINT32 tmp = 8 + j * 55 / DRAW_HEIGHT;
+				tmp |= (tmp << 8) | (tmp << 16) | (tmp << 24);
+				*pix4 = tmp;
+				pix4 += BANKS;
 			}
 		}
 
 		// スクロールバッファにも描画
 		{
-			register DWORD ltmp = d * PALLET_COLORS / DRAW_HEIGHT;
-
-			ltmp |= (ltmp << 8) | (ltmp << 16) | (ltmp << 24);
-			*((DWORD *)(lpBits + DRAW_WIDTH * (DRAW_HEIGHT * 2 - 1)) + b) = ltmp;
+			register UINT32 tmp = d * PALLET_COLORS / DRAW_HEIGHT;
+			tmp |= (tmp << 8) | (tmp << 16) | (tmp << 24);
+			*((UINT32 *)(lpBits + DRAW_WIDTH * (DRAW_HEIGHT * 2 - 1)) + b) = tmp;
 		}
 	}
 
-	if (gAvgLevel < mxLevel) {
-		gAvgLevel = mxLevel;
+	if (gAvgLevel < maxLevel) {
+		gAvgLevel = maxLevel;
 	}
 	else {
 		gAvgLevel *= 1.0 - 2.0 / (WaveIn::SAMPLE_RATE / WaveIn::SAMPLES);
 	}
+
 	if (gAvgLevel < 32768.0) {
 		gAvgLevel = 32768.0;
 	}

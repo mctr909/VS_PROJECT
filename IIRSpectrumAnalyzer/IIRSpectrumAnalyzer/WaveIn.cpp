@@ -3,16 +3,14 @@
 
 WaveIn::WaveIn(HWND hWnd)
 {
-	for (int i = 0; i < BUFFERS; i++) {
+	for (UINT32 i = 0; i < BUFFERS; ++i) {
 		m_whdr[i] = NULL;
 	}
 
 	// 開始
 	if (!IsWaveOpen) {
 		IsWaveOpen = OpenDevice(hWnd);
-		if (!IsWaveOpen) {
-			return;
-		}
+		if (!IsWaveOpen) return;
 		StartRecording();
 	}
 }
@@ -24,42 +22,9 @@ WaveIn::~WaveIn()
 }
 
 //*******************************************************************
-// データバッファブロックを再利用する
-//*******************************************************************
-MMRESULT
-WaveIn::Reuse(LPARAM lParam)
-{
-	MMRESULT rc = waveInPrepareHeader(m_hWaveIn, (LPWAVEHDR)lParam, sizeof(WAVEHDR));
-	if (MMSYSERR_NOERROR == rc) {
-		rc = waveInAddBuffer(m_hWaveIn, (LPWAVEHDR)lParam, sizeof(WAVEHDR));
-	}
-
-	if (MMSYSERR_NOERROR != rc) {
-		CloseDevice();
-	}
-
-	return rc;
-}
-
-void
-WaveIn::SetBuffer(LPARAM lParam)
-{
-	for (int i = 0; i<BUFFERS; ++i) {
-		if (((LPWAVEHDR)lParam)->lpData == m_whdr[i]->lpData) {
-			CopyMemory(
-				m_pBuffer,
-				m_whdr[i & (BUFFERS - 1)]->lpData,
-				BUFFER_SIZE
-			);
-			break;
-		}
-	}
-}
-
-//*******************************************************************
 // 録音デバイスを開く - 成功したらTRUEを返す
 //*******************************************************************
-BOOL
+bool
 WaveIn::OpenDevice(HWND hWnd)
 {
 	WAVEFORMATEX wfe;
@@ -88,17 +53,16 @@ WaveIn::OpenDevice(HWND hWnd)
 void
 WaveIn::CloseDevice()
 {
-	int i;
-
 	// 録音を停止する
 	waveInStop(m_hWaveIn);
 	waveInReset(m_hWaveIn);
 
 	// ヘッダを非準備状態にする
-	for (i = 0; i<BUFFERS; i++) {
+	for (UINT32 i = 0; i<BUFFERS; ++i) {
 		waveInUnprepareHeader(m_hWaveIn, m_whdr[i], sizeof(WAVEHDR));
 	}
 
+	// 録音デバイスを閉じる
 	waveInClose(m_hWaveIn);
 
 	//*******************************************************************
@@ -108,7 +72,7 @@ WaveIn::CloseDevice()
 		GlobalFree(m_hgRecBuffer);
 	}
 
-	for (i = 0; i < BUFFERS; i++) {
+	for (UINT32 i = 0; i < BUFFERS; i++) {
 		m_whdr[i] = NULL;
 	}
 
@@ -121,10 +85,6 @@ WaveIn::CloseDevice()
 void
 WaveIn::StartRecording()
 {
-	MMRESULT rc;
-	int		 i;
-	LPSTR	 h;
-
 	//*******************************************************************
 	// 録音バッファを確保する
 	//*******************************************************************
@@ -134,33 +94,87 @@ WaveIn::StartRecording()
 		return;
 	}
 
-	h = (LPSTR)m_hgRecBuffer;
-	for (i = 0; i < BUFFERS; ++i) {
-		m_whdr[i] = (LPWAVEHDR)h;
-		h += sizeof(WAVEHDR);
-		m_whdr[i]->lpData = h;
-		m_whdr[i]->dwBufferLength = BUFFER_SIZE;
-		h += m_whdr[i]->dwBufferLength;
-	}
-
-	// バッファブロックを準備して、入力キューに追加する
-	for (i = 0; i < BUFFERS; ++i) {
-		rc = waveInPrepareHeader(m_hWaveIn, m_whdr[i], sizeof(WAVEHDR));
-
-		// 入力キューにバッファを追加する
-		if (MMSYSERR_NOERROR == rc) {
-			rc = waveInAddBuffer(m_hWaveIn, m_whdr[i], sizeof(WAVEHDR));
+	//
+	{
+		LPSTR h = (LPSTR)m_hgRecBuffer;
+		for (UINT32 i = 0; i < BUFFERS; ++i) {
+			m_whdr[i] = (LPWAVEHDR)h;
+			h += sizeof(WAVEHDR);
+			m_whdr[i]->lpData = h;
+			m_whdr[i]->dwBufferLength = BUFFER_SIZE;
+			h += m_whdr[i]->dwBufferLength;
 		}
 	}
 
-	// 録音を開始する
+	//
+	{
+		MMRESULT rc;
+
+		// バッファブロックを準備して、入力キューに追加する
+		for (UINT32 i = 0; i < BUFFERS; ++i) {
+			rc = waveInPrepareHeader(m_hWaveIn, m_whdr[i], sizeof(WAVEHDR));
+
+			// 入力キューにバッファを追加する
+			if (MMSYSERR_NOERROR == rc) {
+				rc = waveInAddBuffer(m_hWaveIn, m_whdr[i], sizeof(WAVEHDR));
+			}
+		}
+
+		// 録音を開始する
+		if (MMSYSERR_NOERROR == rc) {
+			rc = waveInStart(m_hWaveIn);
+		}
+
+		if (MMSYSERR_NOERROR != rc) {
+			CloseDevice();	 // 割り当てられたメモリを解放する
+			return;
+		}
+	}
+}
+
+//*******************************************************************
+// データバッファブロックを再利用する
+//*******************************************************************
+MMRESULT
+WaveIn::Reuse(LPARAM lParam)
+{
+	MMRESULT rc = waveInPrepareHeader(m_hWaveIn, (LPWAVEHDR)lParam, sizeof(WAVEHDR));
 	if (MMSYSERR_NOERROR == rc) {
-		rc = waveInStart(m_hWaveIn);
+		rc = waveInAddBuffer(m_hWaveIn, (LPWAVEHDR)lParam, sizeof(WAVEHDR));
 	}
 
 	if (MMSYSERR_NOERROR != rc) {
-		CloseDevice();	 // 割り当てられたメモリを解放する
-		return;
+		CloseDevice();
+	}
+
+	return rc;
+}
+
+//*******************************************************************
+// LPWAVEHDRのlpDataの値をバッファにセット
+//*******************************************************************
+void
+WaveIn::SetBuffer(LPARAM lParam)
+{
+	UINT32 i, j, k;
+
+	for (i = 0; i < BUFFERS; ++i) {
+		if (((LPWAVEHDR)lParam)->lpData == m_whdr[i]->lpData) {
+			if (TO_MONO) {
+				// モノラル化[(L + R) / 2]してバッファにセット
+				BUFFER_TYPE* buff = (BUFFER_TYPE*)m_whdr[i & (BUFFERS - 1)]->lpData;
+				for (j = 0, k = 0; j < SAMPLES; ++j, k += 2) {
+					m_pBuffer[j] = (buff[k] + buff[k + 1]) >> 1;
+				}
+			}
+			else {
+				memcpy_s(
+					m_pBuffer, BUFFER_SIZE,
+					m_whdr[i & (BUFFERS - 1)]->lpData, BUFFER_SIZE
+				);
+			}
+			break;
+		}
 	}
 }
 

@@ -6,7 +6,6 @@
 class IIRFilter
 {
 private:
-#pragma pack(1)
 	struct BANK
 	{
 		double a1;
@@ -20,21 +19,20 @@ private:
 		INT16 bDelay1;
 		INT16 bDelay2;
 	};
-#pragma
 
 public:
-	int MaxBanks = 0;
+	UINT32 MaxBankIndex = 0;
 
 private:
 	BANK* m_banks;
 	double m_freqToOmega = 0.0;
 
 public:
-	IIRFilter(int sampleRate, int banks);
+	IIRFilter(UINT32 sampleRate, UINT32 banks);
 	~IIRFilter();
 
-	void Lowpass(int bankNo, double freq, double q);
-	void Bandpass(int bankNo, double freq, double oct);
-	void Peaking(int bankNo, double freq, double oct, double gain);
-	void Exec(int& bankNo, INT16& input, double* output);
+	void Lowpass(UINT32 bankNo, double freq, double q);
+	void Bandpass(UINT32 bankNo, double freq, double oct);
+	void Peaking(UINT32 bankNo, double freq, double oct, double gain);
+	void Exec(UINT32& bankNo, INT16& input, double* output);
 };

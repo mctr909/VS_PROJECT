@@ -1,41 +1,29 @@
 #pragma once
 #include "IIRFilter.h"
 
-IIRFilter::IIRFilter(int sampleRate, int banks)
+IIRFilter::IIRFilter(UINT32 sampleRate, UINT32 banks)
 {
 	m_freqToOmega = 8.0 * atan(1.0) / sampleRate;
-	m_banks = (BANK*)GlobalAlloc(GPTR, sizeof(BANK) * banks);
-	MaxBanks = banks - 1;
-
-	for (int i = 0; i < banks; ++i)
-	{
-		m_banks[i].a1 = 0.0;
-		m_banks[i].a2 = 0.0;
-		m_banks[i].b0 = 0.0;
-		m_banks[i].b1 = 0.0;
-		m_banks[i].b2 = 0.0;
-		m_banks[i].aDelay1 = 0.0;
-		m_banks[i].aDelay2 = 0.0;
-		m_banks[i].bDelay1 = 0;
-		m_banks[i].bDelay2 = 0;
-	}
+	m_banks = (BANK*)malloc(sizeof(BANK) * banks);
+	memset(m_banks, 0, sizeof(BANK) * banks);
+	MaxBankIndex = banks - 1;
 }
 
 IIRFilter::~IIRFilter()
 {
-	GlobalFree(m_banks);
+	free(m_banks);
 }
 
 void
-IIRFilter::Lowpass(int bankNo, double freq, double q)
+IIRFilter::Lowpass(UINT32 bankNo, double freq, double q)
 {
-	if (MaxBanks < bankNo) return;
+	if (MaxBankIndex < bankNo) return;
 
-	BANK* bank = m_banks + bankNo;
 	double omega = freq * m_freqToOmega;
 	double alpha = sin(omega) / (2.0 * q);
-
 	double a0 = 1.0 + alpha;
+
+	BANK* bank = m_banks + bankNo;
 	bank->a1 = -2.0 * cos(omega) / a0;
 	bank->a2 = (1.0 - alpha) / a0;
 	bank->b0 = (1.0 - cos(omega)) / (2.0 * a0);
@@ -44,16 +32,16 @@ IIRFilter::Lowpass(int bankNo, double freq, double q)
 }
 
 void
-IIRFilter::Bandpass(int bankNo, double freq, double oct)
+IIRFilter::Bandpass(UINT32 bankNo, double freq, double oct)
 {
-	if (MaxBanks < bankNo) return;
+	if (MaxBankIndex < bankNo) return;
 
-	BANK* bank = m_banks + bankNo;
 	double omega = freq * m_freqToOmega;
 	double x = log(2.0) / 2.0 * oct * omega / sin(omega);
 	double alpha = sin(omega) * (exp(x) - exp(-x)) / 2.0;
-
 	double a0 = 1.0 + alpha;
+
+	BANK* bank = m_banks + bankNo;
 	bank->a1 = -2.0 * cos(omega) / a0;
 	bank->a2 = (1.0 - alpha) / a0;
 	bank->b0 = alpha / a0;
@@ -62,17 +50,17 @@ IIRFilter::Bandpass(int bankNo, double freq, double oct)
 }
 
 void
-IIRFilter::Peaking(int bankNo, double freq, double oct, double gain)
+IIRFilter::Peaking(UINT32 bankNo, double freq, double oct, double gain)
 {
-	if (MaxBanks < bankNo) return;
+	if (MaxBankIndex < bankNo) return;
 
-	BANK* bank = m_banks + bankNo;
 	double omega = freq * m_freqToOmega;
 	double x = log(2.0) / 2.0 * oct * omega / sin(omega);
 	double alpha = sin(omega) * (exp(x) - exp(-x)) / 2.0;
 	double g = pow(10.0, (gain / 40.0));
-
 	double a0 = 1.0 + alpha / g;
+
+	BANK* bank = m_banks + bankNo;
 	bank->a1 = -2.0 * cos(omega) / a0;
 	bank->a2 = (1.0 - alpha / g) / a0;
 	bank->b0 = (1.0 + alpha * g) / a0;
@@ -81,7 +69,7 @@ IIRFilter::Peaking(int bankNo, double freq, double oct, double gain)
 }
 
 void
-IIRFilter::Exec(int& bankNo, INT16& input, double* output)
+IIRFilter::Exec(UINT32& bankNo, INT16& input, double* output)
 {
 	BANK* bank = m_banks + bankNo;
 

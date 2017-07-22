@@ -7,10 +7,13 @@ class WaveIn
 	// ÉÅÉìÉoíËêî
 	//*******************************************************************
 public:
-	static const UINT32 SAMPLE_RATE	= 44100;
-	static const UINT32 SAMPLES		= 800;
-	static const UINT16 CHANNELS    = 2;
-	static const UINT32 BUFFER_SIZE = SAMPLES * CHANNELS * sizeof(INT16);
+	typedef INT16 BUFFER_TYPE;
+	static const UINT32 SAMPLE_RATE		= 44100;
+	static const UINT32 SAMPLES			= 800;
+	static const UINT16 CHANNELS		= 2;
+	static const bool   TO_MONO			= true;
+	static const UINT32 BUFFER_LENGTH	= (TO_MONO ? 1 : CHANNELS) * SAMPLES;
+	static const UINT32 BUFFER_SIZE		= CHANNELS * sizeof(BUFFER_TYPE) * SAMPLES;
 
 private:
 	static const UINT32 BUFFERS = 4;
@@ -20,7 +23,7 @@ private:
 	//*******************************************************************
 public:
 	bool		IsWaveOpen = false;
-	INT16		m_pBuffer[SAMPLES * CHANNELS];
+	BUFFER_TYPE	m_pBuffer[BUFFER_LENGTH];
 
 private:
 	HWAVEIN		m_hWaveIn		= NULL;
@@ -39,7 +42,7 @@ public:
 	void SetBuffer(LPARAM);
 
 private:
-	BOOL OpenDevice(HWND);
+	bool OpenDevice(HWND);
 	void CloseDevice();
 	void StartRecording();
 	static void CALLBACK WaveInProc(HWAVEIN, UINT, DWORD, DWORD, DWORD);
