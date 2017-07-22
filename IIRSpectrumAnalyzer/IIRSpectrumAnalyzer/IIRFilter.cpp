@@ -80,14 +80,12 @@ IIRFilter::Peaking(int bankNo, double freq, double oct, double gain)
 	bank->b2 = (1.0 - alpha * g) / a0;
 }
 
-double
-IIRFilter::Exec(int bankNo, int input)
+void
+IIRFilter::Exec(int& bankNo, INT16& input, double* output)
 {
-	if (MaxBanks < bankNo) return 0.0;
-
 	BANK* bank = m_banks + bankNo;
 
-	double output
+	*output
 		= bank->b0 * input
 		+ bank->b1 * bank->bDelay1
 		+ bank->b2 * bank->bDelay2
@@ -96,9 +94,7 @@ IIRFilter::Exec(int bankNo, int input)
 	;
 
 	bank->aDelay2 = bank->aDelay1;
-	bank->aDelay1 = output;
+	bank->aDelay1 = *output;
 	bank->bDelay2 = bank->bDelay1;
 	bank->bDelay1 = input;
-
-	return output;
 }

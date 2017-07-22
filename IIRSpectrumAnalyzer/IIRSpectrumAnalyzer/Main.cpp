@@ -240,11 +240,11 @@ wmCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	for (i = 0; i < BANKS; ++i)
 	{
 		freq = PITCH * pow(2.0, i / (12.0 * NOTE_DIV));
-		width = 2.0 - (2.5 * i / BANKS);
-		if (width < 0.75) {
-			width = 0.75;
+		width = 10.0 - (16.0 * i / BANKS);
+		if (width < 2.0) {
+			width = 2.0;
 		}
-		cIIR->Bandpass(i, freq, width / 12.0);
+		cIIR->Bandpass(i, freq, width / (12.0 * NOTE_DIV));
 	}
 
 	// プロセスの優先順位を HIGH にする
@@ -445,8 +445,19 @@ PlotSpectrum(HWND hWnd)
 {
 	int b, d;
 	double mxLevel;
+	static INT16 buff[WaveIn::SAMPLES];
 
 	// スクロールバッファを 1 pixel スクロールダウン
+	MoveMemory(
+		lpBits + DRAW_WIDTH * DRAW_HEIGHT,
+		lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
+		DRAW_WIDTH * (DRAW_HEIGHT - 1)
+	);
+	MoveMemory(
+		lpBits + DRAW_WIDTH * DRAW_HEIGHT,
+		lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
+		DRAW_WIDTH * (DRAW_HEIGHT - 1)
+	);
 	MoveMemory(
 		lpBits + DRAW_WIDTH * DRAW_HEIGHT,
 		lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
@@ -455,6 +466,11 @@ PlotSpectrum(HWND hWnd)
 
 	// スペクトル描画
 	ZeroMemory(lpBits, DRAW_WIDTH * DRAW_HEIGHT);
+
+	// モノラル化 = L + R
+	for (b = 0, d = 0; b < WaveIn::SAMPLES; ++b, d += 2) {
+		buff[b] = (cWaveIn->m_pBuffer[d] + cWaveIn->m_pBuffer[d + 1]) / 2;
+	}
 
 	mxLevel = 0.0;
 
@@ -466,7 +482,7 @@ PlotSpectrum(HWND hWnd)
 			register double amp = 0.0;
 
 			for (t = 0; t < WaveIn::SAMPLES; ++t) {
-				wave = cIIR->Exec(b, cWaveIn->m_pBuffer[t]);
+				cIIR->Exec(b, buff[t], &wave);
 				amp += wave * wave;
 			}
 

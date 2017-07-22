@@ -33,8 +33,8 @@ const UINT32 MENU_HEIGHT		= 32;
 
 const UINT32 DRAW_STEPX			= sizeof(DWORD);
 const UINT32 DRAW_WIDTH			= (BANKS * DRAW_STEPX);
-const UINT32 DRAW_HEIGHT		= 24;
-const UINT32 GAUGE_HEIGHT		= 4;
+const UINT32 DRAW_HEIGHT		= 96;
+const UINT32 GAUGE_HEIGHT		= 24;
 const UINT32 PALLET_COLORS		= 64;
 
 //*******************************************************************

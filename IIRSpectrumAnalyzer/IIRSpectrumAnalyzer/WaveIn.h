@@ -8,8 +8,9 @@ class WaveIn
 	//*******************************************************************
 public:
 	static const UINT32 SAMPLE_RATE	= 44100;
-	static const UINT32 SAMPLES		= 768;
-	static const UINT32 BUFFER_SIZE = SAMPLES * sizeof(INT16);
+	static const UINT32 SAMPLES		= 800;
+	static const UINT16 CHANNELS    = 2;
+	static const UINT32 BUFFER_SIZE = SAMPLES * CHANNELS * sizeof(INT16);
 
 private:
 	static const UINT32 BUFFERS = 4;
@@ -19,7 +20,7 @@ private:
 	//*******************************************************************
 public:
 	bool		IsWaveOpen = false;
-	INT16		m_pBuffer[SAMPLES];
+	INT16		m_pBuffer[SAMPLES * CHANNELS];
 
 private:
 	HWAVEIN		m_hWaveIn		= NULL;

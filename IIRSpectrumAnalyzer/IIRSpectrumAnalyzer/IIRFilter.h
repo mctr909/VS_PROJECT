@@ -17,8 +17,8 @@ private:
 
 		double aDelay1;
 		double aDelay2;
-		int bDelay1;
-		int bDelay2;
+		INT16 bDelay1;
+		INT16 bDelay2;
 	};
 #pragma
 
@@ -36,5 +36,5 @@ public:
 	void Lowpass(int bankNo, double freq, double q);
 	void Bandpass(int bankNo, double freq, double oct);
 	void Peaking(int bankNo, double freq, double oct, double gain);
-	double Exec(int bankNo, int input);
+	void Exec(int& bankNo, INT16& input, double* output);
 };

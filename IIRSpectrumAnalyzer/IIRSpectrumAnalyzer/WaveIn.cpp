@@ -64,7 +64,7 @@ WaveIn::OpenDevice(HWND hWnd)
 {
 	WAVEFORMATEX wfe;
 	wfe.wFormatTag = WAVE_FORMAT_PCM;			// PCM without any compression
-	wfe.nChannels = 1;							// 1channel (Monaural)
+	wfe.nChannels = CHANNELS;
 	wfe.nSamplesPerSec = SAMPLE_RATE;			// (Hz)
 	wfe.wBitsPerSample = sizeof(INT16) * 8;		// (bits/channel)
 	wfe.nBlockAlign = (WORD)(wfe.nChannels * wfe.wBitsPerSample / 8);
