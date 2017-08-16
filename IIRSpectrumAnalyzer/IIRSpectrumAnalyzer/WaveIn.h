@@ -9,7 +9,7 @@ class WaveIn
 public:
 	typedef INT16 BUFFER_TYPE;
 	static const UINT32 SAMPLE_RATE		= 44100;
-	static const UINT32 SAMPLES			= 800;
+	static const UINT32 SAMPLES			= 882;
 	static const UINT16 CHANNELS		= 2;
 	static const bool   TO_MONO			= true;
 	static const UINT32 BUFFER_LENGTH	= (TO_MONO ? 1 : CHANNELS) * SAMPLES;

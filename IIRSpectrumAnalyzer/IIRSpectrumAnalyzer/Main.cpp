@@ -215,11 +215,11 @@ wmCreate(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 	for (i = 0; i < BANKS; ++i)
 	{
 		freq = PITCH * pow(2.0, i / (12.0 * NOTE_DIV));
-		width = 10.0 - (16.0 * i / BANKS);
-		if (width < 1.75) {
-			width = 1.75;
+		width = 4.0 - (7.0 * i / BANKS);
+		if (width < 1.0) {
+			width = 1.0;
 		}
-		cIIR->Bandpass(i, freq, width / (12.0 * NOTE_DIV));
+		cIIR->Bandpass(i, freq, width / 12.0);
 	}
 
 	// ƒvƒƒZƒX‚Ì—Dæ‡ˆÊ‚ğ HIGH ‚É‚·‚é
@@ -448,9 +448,16 @@ PlotSpectrum(HWND hWnd)
 			}
 
 			amplitude = static_cast<INT32>(32768 * amplitude / gAvgLevel);
-			if (amplitude < 1.0) amplitude = 1.0;
+			if (amplitude < 1.0) {
+				amplitude = 1.0;
+			}
 
-			d = static_cast<UINT32>(DRAW_HEIGHT * log10(amplitude) / log10(32768.0));
+			amplitude = 1.25 * (log10(amplitude) / log10(32768.0) - 0.25);
+			if (amplitude < 0.0) {
+				amplitude = 0.0;
+			}
+
+			d = static_cast<UINT32>(DRAW_HEIGHT * amplitude);
 			if (DRAW_HEIGHT <= d) {
 				d = DRAW_HEIGHT - 1;
 			}
