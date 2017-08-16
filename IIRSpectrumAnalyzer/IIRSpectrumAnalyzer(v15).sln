@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IIRSpectrumAnalyzer", "IIRSpectrumAnalyzer\IIRSpectrumAnalyzer.vcxproj", "{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IIRSpectrumAnalyzer", "IIRSpectrumAnalyzer\IIRSpectrumAnalyzer(v15).vcxproj", "{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
