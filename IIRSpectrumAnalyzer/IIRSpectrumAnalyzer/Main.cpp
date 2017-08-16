@@ -215,7 +215,7 @@ wmCreate(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 	for (i = 0; i < BANKS; ++i)
 	{
 		freq = PITCH * pow(2.0, i / (12.0 * NOTE_DIV));
-		width = 4.0 - (7.0 * i / BANKS);
+		width = 3.5 - (6.0 * i / BANKS);
 		if (width < 1.0) {
 			width = 1.0;
 		}
