@@ -90,12 +90,6 @@ MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		return wmPaint(hWnd, uMsg, wParam, lParam);
 
-	case WM_HSCROLL:
-		if ((HWND)(lParam) == hTrkGamma) {
-			gGamma = 1.0 / (SendMessage(hTrkGamma, TBM_GETPOS, 0, 0) + 1.0);
-		}
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-
 	case WM_QUERYNEWPALETTE: {	// フォーカスを得る直前に自分のパレットを実体化
 		HDC hDC = GetDC(hWnd);
 		SelectPalette(hDC, hPalette, FALSE);
@@ -139,25 +133,6 @@ wmCreate(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 	double			width;
 	double			freq;
 
-	// トラックバーコントロール
-	hTrkGamma = CreateWindowEx(
-		0,								// ExStyle
-		TRACKBAR_CLASS,					// ClassName
-		L"",							// Caption
-		WS_CHILD | WS_VISIBLE | TBS_AUTOTICKS,
-		0, 0,							// Left, Top
-		TRK_GAMMA_WIDTH, MENU_HEIGHT,	// Width, Height
-		hWnd,
-		(HMENU)ID_TRK_GAMMA,
-		(HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE),
-		NULL
-	);
-	SendMessage(hTrkGamma, TBM_SETRANGE, TRUE, MAKELONG(0, 100));	// トラックバーの範囲
-	SendMessage(hTrkGamma, TBM_SETPAGESIZE, 0, 10);					// マウスクリック時の移動量
-	SendMessage(hTrkGamma, TBM_SETLINESIZE, 0, 1);					// 矢印キーを押した時の移動量
-	SendMessage(hTrkGamma, TBM_SETPOS, TRUE, 20);					// ポジション
-	SendMessage(hTrkGamma, TBM_SETTICFREQ, 10, 0);					// 目盛りのサイズ
-	
 	// カラーパレットを作成する。
 	for (i = 0, j = 0, k = 0; i < PALLET_COLORS; ++i, j += 1280 / PALLET_COLORS, k = j % 256) {
 		if (j < 256) {
@@ -289,7 +264,6 @@ wmPaint(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 	RealizePalette(ps.hdc);
 
 	GetClientRect(hWnd, &r);
-	r.top = MENU_HEIGHT;
 
 	// DIBバッファの内容を描画
 	//  ※ メモリ上に描画してスクリーンに転写する二度手間をかけているのは、
@@ -442,11 +416,11 @@ DrawGauge(HWND hWnd, HBITMAP hMemBitmap)
 void
 PlotSpectrum(HWND hWnd)
 {
-	static UINT32 b, d;
-	static double maxLevel;
+	UINT32 b, d;
+	double maxLevel = 0.0;
 
-	// スクロールバッファを 8 pixel スクロールダウン
-	for (b = 0; b < 8; ++b) {
+	// スクロールバッファを 4pixel スクロールダウン
+	for (b = 0; b < 4; ++b) {
 		MoveMemory(
 			lpBits + DRAW_WIDTH * DRAW_HEIGHT,
 			lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
@@ -456,8 +430,6 @@ PlotSpectrum(HWND hWnd)
 
 	// スペクトル描画
 	ZeroMemory(lpBits, DRAW_WIDTH * DRAW_HEIGHT);
-
-	maxLevel = 0.0;
 
 	for (b = 0; b < BANKS; ++b) {
 		// 入力波形をフィルタにかけて振幅を算出
@@ -475,10 +447,10 @@ PlotSpectrum(HWND hWnd)
 				maxLevel = amplitude;
 			}
 
-			amplitude /= gAvgLevel;
-			amplitude = (1.0 + gGamma) * amplitude / (amplitude + gGamma);
+			amplitude = static_cast<INT32>(32768 * amplitude / gAvgLevel);
+			if (amplitude < 1.0) amplitude = 1.0;
 
-			d = (UINT32)(DRAW_HEIGHT * amplitude);
+			d = static_cast<UINT32>(DRAW_HEIGHT * log10(amplitude) / log10(32768.0));
 			if (DRAW_HEIGHT <= d) {
 				d = DRAW_HEIGHT - 1;
 			}
