@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IIRSpectrumAnalyzer", "IIRSpectrumAnalyzer\IIRSpectrumAnalyzer(v15).vcxproj", "{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IIRSpectrumAnalyzer(v15)", "IIRSpectrumAnalyzer(v15)\IIRSpectrumAnalyzer(v15).vcxproj", "{A0A29AFD-B06E-4E2C-888A-147D8CC294E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}.Debug|x64.ActiveCfg = Debug|x64
-		{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}.Debug|x64.Build.0 = Debug|x64
-		{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}.Debug|x86.ActiveCfg = Debug|Win32
-		{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}.Debug|x86.Build.0 = Debug|Win32
-		{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}.Release|x64.ActiveCfg = Release|x64
-		{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}.Release|x64.Build.0 = Release|x64
-		{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}.Release|x86.ActiveCfg = Release|Win32
-		{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}.Release|x86.Build.0 = Release|Win32
+		{A0A29AFD-B06E-4E2C-888A-147D8CC294E5}.Debug|x64.ActiveCfg = Debug|x64
+		{A0A29AFD-B06E-4E2C-888A-147D8CC294E5}.Debug|x64.Build.0 = Debug|x64
+		{A0A29AFD-B06E-4E2C-888A-147D8CC294E5}.Debug|x86.ActiveCfg = Debug|Win32
+		{A0A29AFD-B06E-4E2C-888A-147D8CC294E5}.Debug|x86.Build.0 = Debug|Win32
+		{A0A29AFD-B06E-4E2C-888A-147D8CC294E5}.Release|x64.ActiveCfg = Release|x64
+		{A0A29AFD-B06E-4E2C-888A-147D8CC294E5}.Release|x64.Build.0 = Release|x64
+		{A0A29AFD-B06E-4E2C-888A-147D8CC294E5}.Release|x86.ActiveCfg = Release|Win32
+		{A0A29AFD-B06E-4E2C-888A-147D8CC294E5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
