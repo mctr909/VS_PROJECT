@@ -215,7 +215,7 @@ wmCreate(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 	for (i = 0; i < BANKS; ++i)
 	{
 		freq = PITCH * pow(2.0, i / (12.0 * NOTE_DIV));
-		width = 2.5 - (3.0 * i / BANKS);
+		width = 3.0 - (4.0 * i / BANKS);
 		if (width < 1.0) {
 			width = 1.0;
 		}
@@ -460,7 +460,7 @@ PlotSpectrum(HWND hWnd)
 				amplitude = 1.0;
 			}
 
-			amplitude = 1.2 * (log10(amplitude) / log10(16384.0) - 0.2);
+			amplitude = 1.33 * (log10(amplitude) / log10(16384.0) - 0.33);
 			if (amplitude < 0.0) {
 				amplitude = 0.0;
 			}
@@ -496,7 +496,7 @@ PlotSpectrum(HWND hWnd)
 		gAvgLevel = maxLevel;
 	}
 	else {
-		gAvgLevel *= 1.0 - 2.0 / (WaveIn::SAMPLE_RATE / WaveIn::SAMPLES);
+		gAvgLevel *= 1.0 - 4.0 / (WaveIn::SAMPLE_RATE / WaveIn::SAMPLES);
 	}
 
 	if (gAvgLevel < 32768.0) {
