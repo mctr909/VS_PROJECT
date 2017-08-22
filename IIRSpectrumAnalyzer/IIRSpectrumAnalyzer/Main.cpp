@@ -455,7 +455,7 @@ PlotSpectrum(HWND hWnd)
 				maxLevel = amplitude;
 			}
 
-			amplitude = static_cast<INT32>(16384 * amplitude / gAvgLevel);
+			amplitude *= 16384.0 / gAvgLevel;
 			if (amplitude < 1.0) {
 				amplitude = 1.0;
 			}
@@ -496,7 +496,7 @@ PlotSpectrum(HWND hWnd)
 		gAvgLevel = maxLevel;
 	}
 	else {
-		gAvgLevel *= 1.0 - 4.0 / (WaveIn::SAMPLE_RATE / WaveIn::SAMPLES);
+		gAvgLevel *= 1.0 - 3.0 / (WaveIn::SAMPLE_RATE / WaveIn::SAMPLES);
 	}
 
 	if (gAvgLevel < 32768.0) {
