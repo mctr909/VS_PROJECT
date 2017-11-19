@@ -215,9 +215,9 @@ wmCreate(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 	for (i = 0; i < BANKS; ++i)
 	{
 		freq = PITCH * pow(2.0, i / (12.0 * NOTE_DIV));
-		width = 3.5 - (6.0 * i / BANKS);
-		if (width < 1.0) {
-			width = 1.0;
+		width = 4.0 - (8.0 * i / BANKS);
+		if (width < 0.75) {
+			width = 0.75;
 		}
 		cIIR->Bandpass(i, freq, width / 12.0);
 	}
@@ -416,11 +416,11 @@ DrawGauge(HWND hWnd, HBITMAP hMemBitmap)
 void
 PlotSpectrum(HWND hWnd)
 {
-	UINT32 b, d;
 	double maxLevel = 0.0;
+	UINT32 level = 0;
 
 	// スクロールバッファを 4pixel スクロールダウン
-	for (b = 0; b < 4; ++b) {
+	for (UINT32 i = 0; i < 4; ++i) {
 		MoveMemory(
 			lpBits + DRAW_WIDTH * DRAW_HEIGHT,
 			lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
@@ -431,7 +431,7 @@ PlotSpectrum(HWND hWnd)
 	// スペクトル描画
 	ZeroMemory(lpBits, DRAW_WIDTH * DRAW_HEIGHT);
 
-	for (b = 0; b < BANKS; ++b) {
+	for (UINT32 index = 0; index < BANKS; ++index) {
 		// 入力波形をフィルタにかけて振幅を算出
 		{
 			register UINT32 t;
@@ -439,7 +439,7 @@ PlotSpectrum(HWND hWnd)
 			register double amplitude = 0.0;
 
 			for (t = 0; t < WaveIn::SAMPLES; ++t) {
-				cIIR->Exec(b, cWaveIn->m_pBuffer[t], &filteredWave);
+				cIIR->Exec(index, cWaveIn->m_pBuffer[t], &filteredWave);
 				amplitude += filteredWave * filteredWave;
 			}
 
@@ -447,28 +447,28 @@ PlotSpectrum(HWND hWnd)
 				maxLevel = amplitude;
 			}
 
-			amplitude = static_cast<INT32>(32768 * amplitude / gAvgLevel);
+			amplitude *= 32768.0 / gAvgLevel;
 			if (amplitude < 1.0) {
 				amplitude = 1.0;
 			}
 
-			amplitude = 1.25 * (log10(amplitude) / log10(32768.0) - 0.25);
+			amplitude = 1.45 * DRAW_HEIGHT * (log10(amplitude) / log10(32768.0) - 0.375);
 			if (amplitude < 0.0) {
 				amplitude = 0.0;
 			}
-
-			d = static_cast<UINT32>(DRAW_HEIGHT * amplitude);
-			if (DRAW_HEIGHT <= d) {
-				d = DRAW_HEIGHT - 1;
+			if (DRAW_HEIGHT <= amplitude) {
+				amplitude = DRAW_HEIGHT - 1;
 			}
+
+			level = static_cast<UINT32>(amplitude);
 		}
 
 		// DIBバッファ上に棒グラフを描画
 		{
 			// UINT32値を使って、一度に４ピクセルずつ描画する
-			register UINT32 *pix4 = (UINT32*)lpBits + b;
+			register UINT32 *pix4 = (UINT32*)lpBits + index;
 			register UINT32 j;
-			for (j = 0; j < d; ++j) {
+			for (j = 0; j < level; ++j) {
 				register UINT32 tmp = 8 + j * 55 / DRAW_HEIGHT;
 				tmp |= (tmp << 8) | (tmp << 16) | (tmp << 24);
 				*pix4 = tmp;
@@ -478,9 +478,9 @@ PlotSpectrum(HWND hWnd)
 
 		// スクロールバッファにも描画
 		{
-			register UINT32 tmp = d * PALLET_COLORS / DRAW_HEIGHT;
+			register UINT32 tmp = level * PALLET_COLORS / DRAW_HEIGHT;
 			tmp |= (tmp << 8) | (tmp << 16) | (tmp << 24);
-			*((UINT32 *)(lpBits + DRAW_WIDTH * (DRAW_HEIGHT * 2 - 1)) + b) = tmp;
+			*((UINT32 *)(lpBits + DRAW_WIDTH * (DRAW_HEIGHT * 2 - 1)) + index) = tmp;
 		}
 	}
 
@@ -488,7 +488,7 @@ PlotSpectrum(HWND hWnd)
 		gAvgLevel = maxLevel;
 	}
 	else {
-		gAvgLevel *= 1.0 - 2.0 / (WaveIn::SAMPLE_RATE / WaveIn::SAMPLES);
+		gAvgLevel *= 1.0 - 4.0 / (WaveIn::SAMPLE_RATE / WaveIn::SAMPLES);
 	}
 
 	if (gAvgLevel < 32768.0) {

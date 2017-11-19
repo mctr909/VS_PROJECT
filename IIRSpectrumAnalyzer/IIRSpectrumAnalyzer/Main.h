@@ -17,18 +17,18 @@
 const LPWSTR CLASS_NAME			= L"IIR Spectrum";	// ウィンドウクラス名
 const LPWSTR WINDOW_TITLE		= L"IIR Spectrum";	// タイトル
 
-const UINT32 NOTES				= 120;
-const UINT32 NOTE_DIV			= 3;
-const UINT32 START_NOTE			= 7;
+const UINT32 NOTES				= 118;
+const UINT32 NOTE_DIV			= 5;
+const UINT32 START_NOTE			= 8;
 const UINT32 BANKS				= NOTES * NOTE_DIV;
 const DOUBLE PITCH				= 13.75 * pow(2.0, (START_NOTE - 0.25) / 12.0);
 
-const UINT32 WINDOW_WIDTH		= 434;
-const UINT32 WINDOW_HEIGHT		= 480;
+const UINT32 WINDOW_WIDTH		= 474;
+const UINT32 WINDOW_HEIGHT		= 525;
 
 const UINT32 DRAW_STEPX			= sizeof(DWORD);
 const UINT32 DRAW_WIDTH			= (BANKS * DRAW_STEPX);
-const UINT32 DRAW_HEIGHT		= 192;
+const UINT32 DRAW_HEIGHT		= 256;
 const UINT32 GAUGE_HEIGHT		= 16;
 const UINT32 PALLET_COLORS		= 64;
 
