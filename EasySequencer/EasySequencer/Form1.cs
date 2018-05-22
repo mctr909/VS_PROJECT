@@ -25,7 +25,7 @@ namespace EasySequencer
 			Graphics g = Graphics.FromImage(mBmp);
 			g.DrawImage(pictureBox1.Image, 0, 0);
 
-			mNoteOut = new MIDI.MessageSender(new MIDI.InstTable("C:\\Users\\owner\\Desktop\\gm2.dls"));
+			mNoteOut = new MIDI.MessageSender(new MIDI.InstTable("C:\\Users\\user\\Desktop\\gm.dls"));
 			mPlayer = new MIDI.Player(mNoteOut);
 
 			timer1.Interval = 10;

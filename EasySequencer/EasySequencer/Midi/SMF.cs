@@ -224,7 +224,17 @@ namespace MIDI
 
 			switch (type) {
 			// 2バイトメッセージ
-			case EVENT_TYPE.NOTE_ON:
+			case EVENT_TYPE.NOTE_ON: {
+					var v1 = (byte)ms.ReadByte();
+					var v2 = (byte)ms.ReadByte();
+					if (0 == v2) {
+						return new Message(EVENT_TYPE.NOTE_OFF, ch, v1, v2);
+					}
+					else {
+						return new Message(EVENT_TYPE.NOTE_ON, ch, v1, v2);
+					}
+				}
+
 			case EVENT_TYPE.NOTE_OFF:
 			case EVENT_TYPE.POLY_KEY:
 			case EVENT_TYPE.CTRL_CHG:
@@ -300,7 +310,9 @@ namespace MIDI
 
 		public int Ticks
 		{
-			get { return mHead.Ticks; }
+			get {
+				return mHead.Ticks;
+			}
 		}
 
 		public Event[] EventList
@@ -315,10 +327,7 @@ namespace MIDI
 
 				Event[] evList = new Event[hash.Count];
 				hash.CopyTo(evList);
-				Array.Sort(evList, (a, b) => (int)(
-					(256 * a.Time + (int)a.Message.Type) - (256 * b.Time + (int)b.Message.Type)
-				));
-
+				Array.Sort(evList, (a, b) => (((int)a.Time << 8) | (byte)a.Message.Type) - (((int)b.Time << 8) | (byte)b.Message.Type));
 				return evList;
 			}
 		}

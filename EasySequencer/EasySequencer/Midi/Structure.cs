@@ -16,6 +16,13 @@
 		}
 	}
 
+	public struct InstInfo
+	{
+		public Envelope EnvAmp;
+		public Envelope EnvFilter;
+		public WaveInfo[] WaveInfo;
+	}
+
 	unsafe public struct WaveInfo
 	{
 		public short[] Buff;
@@ -63,7 +70,7 @@
 					value = 0.001;
 				}
 				ATime = value;
-				ADelta = 4.0 / value;
+				ADelta = 16.0 / value;
 			}
 		}
 
@@ -73,7 +80,7 @@
 				if (value < 0.001) {
 					value = 0.001;
 				}
-				DDelta = 4.0 / value;
+				DDelta = 16.0 / value;
 			}
 		}
 
@@ -83,7 +90,7 @@
 				if (value < 0.001) {
 					value = 0.001;
 				}
-				RDelta = 4.0 / value;
+				RDelta = 16.0 / value;
 			}
 		}
 	}

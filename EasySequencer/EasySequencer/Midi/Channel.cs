@@ -134,7 +134,7 @@
 			mDelayTapL = new double[sampleRate];
 			mDelayTapR = new double[sampleRate];
 
-			mChoLfoK = 0.5 * 6.283185307 * DeltaTime;
+			mChoLfoK = 0.25 * 6.283185307 * DeltaTime;
 			mChoLfo1Re = 1.0;
 			mChoLfo1Im = 0.0;
 			mChoLfo2Re = System.Math.Cos(3 * 2 * System.Math.PI / 16.0);
@@ -151,10 +151,11 @@
 			InstID.BankMSB = 0;
 			InstID.BankLSB = 0;
 			InstID.IsDrum = (9 == No);
-
-			WaveList = mInstTable.InstList[InstID];
+			WaveList = mInstTable.InstList[InstID].WaveInfo;
 
 			Const.ChgInst(this);
+
+			PrgmChg(InstID.ProgramNo);
 
 			mVolB = 100;
 			mExpB = 100;
@@ -214,9 +215,9 @@
 
 			// Chorus
 			{
-				var index1 = mWriteIndex - 400 * (0.5 - 0.45 * mChoLfo1Re);
-				var index2 = mWriteIndex - 400 * (0.5 - 0.45 * mChoLfo2Re);
-				var index3 = mWriteIndex - 400 * (0.5 - 0.45 * mChoLfo3Re);
+				var index1 = mWriteIndex - 600 * (0.5 - 0.49 * mChoLfo1Re);
+				var index2 = mWriteIndex - 600 * (0.5 - 0.49 * mChoLfo2Re);
+				var index3 = mWriteIndex - 600 * (0.5 - 0.49 * mChoLfo3Re);
 
 				var indexCur1 = (int)index1;
 				var indexCur2 = (int)index2;
@@ -256,8 +257,8 @@
 
 				waveL += mChoD * (chorusL1 + chorusL2);
 				waveR += mChoD * (chorusR1 + chorusR2);
-				waveL *= (1.0 - 0.2 * mChoD);
-				waveR *= (1.0 - 0.2 * mChoD);
+				waveL *= (1.0 - 0.3 * mChoD);
+				waveR *= (1.0 - 0.3 * mChoD);
 
 				mChoLfo1Re -= mChoLfoK * mChoLfo1Im;
 				mChoLfo1Im += mChoLfoK * mChoLfo1Re;
@@ -276,24 +277,30 @@
 		public void PrgmChg(byte value)
 		{
 			InstID.ProgramNo = value;
+			InstInfo instInfo;
+
 			if (mInstTable.InstList.ContainsKey(InstID)) {
-				WaveList = mInstTable.InstList[InstID];
+				instInfo = mInstTable.InstList[InstID];
 				Const.ChgInst(this);
 			}
 			else {
 				if (InstID.IsDrum) {
 					if (mInstTable.InstList.ContainsKey(new InstID(InstID.ProgramNo, 0, 0, true))) {
-						WaveList = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0, true)];
+						instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0, true)];
 					}
 					else {
-						WaveList = mInstTable.InstList[new InstID(0, 0, 0, true)];
+						instInfo = mInstTable.InstList[new InstID(0, 0, 0, true)];
 					}
 				}
 				else {
-					WaveList = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0)];
+					instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0)];
 					Const.ChgInst(this);
 				}
 			}
+
+			WaveList = instInfo.WaveInfo;
+			EnvAmp = instInfo.EnvAmp;
+			EnvCutoff = instInfo.EnvFilter;
 		}
 
 		public void CtrlChg(byte type, byte value)
@@ -326,7 +333,7 @@
 				break;
 			case CTRL_TYPE.CHORUS:
 				mChoB = value;
-				mChoD = 0.75 * Const.FeedBack[value];
+				mChoD = Const.FeedBack[value];
 				break;
 			case CTRL_TYPE.DELAY:
 				mDelB = value;

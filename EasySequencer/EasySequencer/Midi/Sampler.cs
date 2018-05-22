@@ -56,17 +56,12 @@
 			mWaveInfo = channel.WaveList[noteNo];
 			mVelocity = Const.Amp[velocity];
 
-			if (mChannel.InstID.IsDrum) {
-				mDelta = mWaveInfo.Delta;
+			var note = noteNo - mWaveInfo.BaseNote;
+			if (note < 0) {
+				mDelta = mWaveInfo.Delta / Const.SemiTone[-note];
 			}
 			else {
-				var note = noteNo - mWaveInfo.BaseNote;
-				if (note < 0) {
-					mDelta = mWaveInfo.Delta / Const.SemiTone[-note];
-				}
-				else {
-					mDelta = mWaveInfo.Delta * Const.SemiTone[note];
-				}
+				mDelta = mWaveInfo.Delta * Const.SemiTone[note];
 			}
 
 			mIsActive = true;
