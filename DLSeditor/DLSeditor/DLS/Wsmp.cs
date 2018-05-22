@@ -3,7 +3,45 @@ using System.IO;
 
 namespace DLS
 {
-	unsafe public class WSMP : LIST<LOOP>
+	unsafe public struct SLOOP
+	{
+		public UInt32 Size;
+		public UInt32 Type;
+		public UInt32 Begin;
+		public UInt32 Length;
+
+		public SLOOP(byte* buff)
+		{
+			Size = *(UInt32*)buff;
+			buff += 4;
+			Type = *(UInt32*)buff;
+			buff += 4;
+			Begin = *(UInt32*)buff;
+			buff += 4;
+			Length = *(UInt32*)buff;
+		}
+
+		public byte[] Bytes
+		{
+			get {
+				var buff = new byte[16];
+				byte* pBuff;
+				fixed (byte* p = &buff[0]) pBuff = p;
+
+				*(UInt32*)pBuff = Size;
+				pBuff += 4;
+				*(UInt32*)pBuff = Type;
+				pBuff += 4;
+				*(UInt32*)pBuff = Begin;
+				pBuff += 4;
+				*(UInt32*)pBuff = Length;
+
+				return buff;
+			}
+		}
+	}
+
+	unsafe public class CWSMP : LIST<SLOOP>
 	{
 		private UInt32 mChunkSize;
 		public UInt16 UnityNote;
@@ -12,7 +50,7 @@ namespace DLS
 		private UInt32 mOptions;
 		private UInt32 mLoops;
 
-		public WSMP()
+		public CWSMP()
 		{
 			mChunkSize = 20;
 			UnityNote = 64;
@@ -22,7 +60,7 @@ namespace DLS
 			mLoops = 0;
 		}
 
-		public WSMP(byte* buff)
+		public CWSMP(byte* buff)
 		{
 			mChunkSize   = *(UInt32*)buff; buff += 4;
 			UnityNote    = *(UInt16*)buff; buff += 2;
@@ -32,8 +70,8 @@ namespace DLS
 			mLoops       = *(UInt32*)buff; buff += 4;
 			for (var i = 0; i < mLoops; ++i)
 			{
-				Add(new LOOP(buff));
-				buff += (UInt32)sizeof(LOOP);
+				Add(new SLOOP(buff));
+				buff += (UInt32)sizeof(SLOOP);
 			}
 		}
 
@@ -66,38 +104,5 @@ namespace DLS
 			}
 		}
 		#endregion
-	}
-
-	unsafe public struct LOOP
-	{
-		public UInt32 Size;
-		public UInt32 Type;
-		public UInt32 Begin;
-		public UInt32 Length;
-
-		public LOOP(byte* buff)
-		{
-			Size   = *(UInt32*)buff;	buff += 4;
-			Type   = *(UInt32*)buff;	buff += 4;
-			Begin  = *(UInt32*)buff;	buff += 4;
-			Length = *(UInt32*)buff;
-		}
-
-		public byte[] Bytes
-		{
-			get
-			{
-				var buff = new byte[16];
-				byte* pBuff;
-				fixed (byte* p = &buff[0]) pBuff = p;
-
-				*(UInt32*)pBuff = Size;		pBuff += 4;
-				*(UInt32*)pBuff = Type;		pBuff += 4;
-				*(UInt32*)pBuff = Begin;	pBuff += 4;
-				*(UInt32*)pBuff = Length;
-
-				return buff;
-			}
-		}
 	}
 }

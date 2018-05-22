@@ -12,8 +12,8 @@ namespace DLSeditor
 {
 	public partial class WaveListForm : Form
 	{
-		public DLS.LINS mInstPool;
-		public DLS.WVPL mWave;
+		public DLS.CLINS mInstPool;
+		public DLS.CWVPL mWave;
 
 		public WaveListForm()
 		{

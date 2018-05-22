@@ -49,11 +49,11 @@
   <ItemGroup>
     <Compile Include="DLS\File.cs" />
     <Compile Include="DLS\CONST.cs" />
-    <Compile Include="DLS\Articulation.cs" />
-    <Compile Include="DLS\COMMON.cs" />
-    <Compile Include="DLS\Infomation.cs" />
-    <Compile Include="DLS\Region.cs" />
-    <Compile Include="DLS\Sampler.cs" />
+    <Compile Include="DLS\Lart.cs" />
+    <Compile Include="DLS\List.cs" />
+    <Compile Include="DLS\Info.cs" />
+    <Compile Include="DLS\Lrgn.cs" />
+    <Compile Include="DLS\Wsmp.cs" />
     <Compile Include="DLS\WaveData.cs" />
     <Compile Include="fft.cs" />
     <Compile Include="Form\InstInfoForm.cs">
@@ -74,7 +74,7 @@
     <Compile Include="Form\InstAddForm.Designer.cs">
       <DependentUpon>InstAddForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DLS\Instruments.cs" />
+    <Compile Include="DLS\Lins.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Form\WaveListForm.cs">

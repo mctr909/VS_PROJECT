@@ -7,8 +7,8 @@ namespace DLSeditor
 {
 	public partial class InstInfoForm : Form
 	{
-		public DLS.INS_ mInst;
-		public DLS.WVPL mWave;
+		public DLS.CINS_ mInst;
+		public DLS.CWVPL mWave;
 
 		public InstInfoForm()
 		{
@@ -141,7 +141,7 @@ namespace DLSeditor
 		private void DispInfo()
 		{
 			label1.Text = "";
-			if (null == mInst) return;
+			//if (null == mInst) return;
 			Text = string.Format("音色情報[{0}]", mInst.Info.Name.Trim());
 
 			#region Connection
@@ -161,7 +161,8 @@ namespace DLSeditor
 
 		private void DispRegion()
 		{
-			if (null == mInst || null == mInst.RegionPool || null == mInst.RegionPool.List) return;
+			//if (null == mInst || null == mInst.RegionPool || null == mInst.RegionPool.List) return;
+			if (null == mInst.RegionPool || null == mInst.RegionPool.List) return;
 
 			mRegion = Properties.Resources.region;
 			var graph = Graphics.FromImage(mRegion);

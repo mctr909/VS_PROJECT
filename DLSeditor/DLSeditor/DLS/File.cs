@@ -13,10 +13,10 @@ namespace DLS
 		private byte[] mVersion;
 		private UInt32 mMSYN;
 
-		public PTBL WaveOffsetPool;
-		public LINS InstPool;
-		public WVPL WavePool;
-		public INFO Info;
+		public CPTBL WaveOffsetPool;
+		public CLINS InstPool;
+		public CWVPL WavePool;
+		public CINFO Info;
 
 		public File()
 		{
@@ -29,9 +29,9 @@ namespace DLS
 			mMSYN		= 1;
 
 			WaveOffsetPool = null;
-			InstPool = new LINS();
+			InstPool = new CLINS();
 			WavePool = null;
-			Info = new INFO();
+			Info = new CINFO();
 		}
 
 		public File(string filePath)
@@ -56,7 +56,7 @@ namespace DLS
 			ReadChunk(ptr, termAddr);
 		}
 
-		public File(string filePath, LINS instPool, WVPL wavePool, INFO info)
+		public File(string filePath, CLINS instPool, CWVPL wavePool, CINFO info)
 		{
 			InstPool = instPool;
 			WavePool = wavePool;
@@ -71,7 +71,7 @@ namespace DLS
 			{
 				var ins = InstPool.Bytes;
 				var wav = WavePool.Bytes;
-				var off = new PTBL(WavePool).Bytes;
+				var off = new CPTBL(WavePool).Bytes;
 				var inf = Info.Bytes;
 
 				var ls = WavePool.UseWaveList(InstPool);
@@ -136,7 +136,7 @@ namespace DLS
 						mMSYN = *(UInt32*)buff;
 						break;
 					case CHUNK_TYPE.PTBL:
-						WaveOffsetPool = new PTBL(buff);
+						WaveOffsetPool = new CPTBL(buff);
 						break;
 					case CHUNK_TYPE.LIST:
 						ReadLIST(buff, chunkSize);
@@ -157,13 +157,13 @@ namespace DLS
 			switch (listType)
 			{
 				case LIST_TYPE.LINS:
-					InstPool = new LINS(buff, termAddr);
+					InstPool = new CLINS(buff, termAddr);
 					break;
 				case LIST_TYPE.WVPL:
-					WavePool = new WVPL(buff, termAddr);
+					WavePool = new CWVPL(buff, termAddr);
 					break;
 				case LIST_TYPE.INFO:
-					Info = new INFO(buff, termAddr);
+					Info = new CINFO(buff, termAddr);
 					break;
 				default:
 					throw new Exception();

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace DLS
 {
-	unsafe public class INFO
+	unsafe public class CINFO
 	{
 		public string ArchivalLocation;
 		public string Artists;
@@ -27,9 +27,9 @@ namespace DLS
 
 		private Encoding mEnc = Encoding.GetEncoding("shift-jis");
 
-		public INFO() { }
+		public CINFO() { }
 
-		public INFO(byte* buff, UInt32 termAddr)
+		public CINFO(byte* buff, UInt32 termAddr)
 		{
 			ReadText(buff, termAddr);
 		}

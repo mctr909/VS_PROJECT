@@ -5,8 +5,8 @@ namespace DLSeditor
 {
     public partial class InstAddForm : Form
     {
-        public DLS.LINS mInstPool;
-        public DLS.INS_ mSelectedInst;
+        public DLS.CLINS mInstPool;
+        public DLS.CINS_ mSelectedInst;
 
         public InstAddForm()
         {
@@ -153,16 +153,15 @@ namespace DLSeditor
                 lstBankLSB.Items.Add(i.ToString("000"));
             }
 
-            if (null != mSelectedInst)
-            {
-                rbDrum.Checked = mSelectedInst.InstHeader.IsDrum;
-                rbNote.Checked = !rbDrum.Checked;
-                rbDrum.Enabled = false;
-                rbNote.Enabled = false;
-                txtInstName.Text = mSelectedInst.Info.Name;
-                Text = "音色コピー";
-            }
-        }
+			if (null != mSelectedInst) {
+				rbDrum.Checked = mSelectedInst.InstHeader.IsDrum;
+				rbNote.Checked = !rbDrum.Checked;
+				rbDrum.Enabled = false;
+				rbNote.Enabled = false;
+				txtInstName.Text = mSelectedInst.Info.Name;
+				Text = "音色コピー";
+			}
+		}
 
         private void lstPrgNo_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -181,18 +180,16 @@ namespace DLSeditor
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            DLS.INS_ inst;
+            DLS.CINS_ inst;
 
-            if (null == mSelectedInst)
-            {
-                inst = new DLS.INS_();
-            }
-            else
-            {
-                inst = mSelectedInst;
-            }
+			if (null == mSelectedInst) {
+				inst = new DLS.CINS_();
+			}
+			else {
+				inst = mSelectedInst;
+			}
 
-			inst.InstHeader = new DLS.INSH();
+			inst.InstHeader = new DLS.SINSH();
 			inst.InstHeader.IsDrum = rbDrum.Checked;
 			inst.InstHeader.ProgramNo = (byte)lstPrgNo.SelectedIndex;
 			inst.InstHeader.BankMSB = (byte)lstBankMSB.SelectedIndex;
@@ -201,7 +198,7 @@ namespace DLSeditor
 
             if (null == mInstPool)
             {
-                mInstPool = new DLS.LINS();
+                mInstPool = new DLS.CLINS();
             }
 
             mInstPool.Add(inst);

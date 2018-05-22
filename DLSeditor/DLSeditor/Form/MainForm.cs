@@ -13,10 +13,10 @@ namespace DLSeditor
 {
 	public partial class MainForm : Form
 	{
-		private DLS.INS_ mClipboardInst;
-		private DLS.LINS mInstPool;
-		private DLS.WVPL mWavePool;
-		private DLS.INFO mInfo;
+		private DLS.CINS_ mClipboardInst;
+		private DLS.CLINS mInstPool;
+		private DLS.CWVPL mWavePool;
+		private DLS.CINFO mInfo;
 
 		public MainForm()
 		{
@@ -60,6 +60,8 @@ namespace DLSeditor
 			saveFileDialog1.FileName = "";
 			saveFileDialog1.Filter = "DLSファイル(*.dls)|*.dls";
 			saveFileDialog1.ShowDialog();
+
+			var f = new DLS.File(saveFileDialog1.FileName, mInstPool, mWavePool, mInfo);
 		}
 		#endregion
 
@@ -162,8 +164,8 @@ namespace DLSeditor
 			var width = tabControl.Width - offsetX;
 			var height = tabControl.Height - offsetY;
 
-			pnlInstAttribute.Width = width;
-			pnlInstAttribute.Height = height;
+			grdArt.Width = width;
+			grdArt.Height = height;
 		}
 		#endregion
 
@@ -197,43 +199,25 @@ namespace DLSeditor
 			var idx = lstInst.SelectedIndex;
 			if (idx < 0) return;
 
-			//InstInfoForm fm = new InstInfoForm();
-			//fm.mInst = mInstPool[idx];
-			//fm.mWave = mWavePool;
-			//fm.ShowDialog();
-
 			tbpInstAttribute.Text = string.Format("音色設定[{0}]", mInstPool[idx].Info.Name);
 			tabControl.SelectedIndex = 1;
 
+			DataTable tb = new DataTable();
+			tb.Columns.Add("Destination", typeof(DLS.CONN_DST_TYPE));
+			tb.Columns.Add("Source", typeof(DLS.CONN_SRC_TYPE));
+			tb.Columns.Add("Control", typeof(DLS.CONN_SRC_TYPE));
+			tb.Columns.Add("Value", typeof(double));
 			if (null != mInstPool[idx].ArtPool) {
 				foreach (var art in mInstPool[idx].ArtPool.Art.List) {
-					switch (art.Source) {
-					case DLS.CONN_SRC_TYPE.KEY_NUMBER:
-						switch (art.Destination) {
-						case DLS.CONN_DST_TYPE.EG1_ATTACK_TIME:
-							numAmpAttack.Value = (decimal)art.Value;
-							break;
-						case DLS.CONN_DST_TYPE.EG1_DECAY_TIME:
-							numAmpDecay.Value = (decimal)art.Value;
-							break;
-						case DLS.CONN_DST_TYPE.EG1_RELEASE_TIME:
-							numAmpRelease.Value = (decimal)art.Value;
-							break;
-						case DLS.CONN_DST_TYPE.EG1_SUSTAIN_LEVEL:
-							if (0 == art.Value) {
-								numAmpSustain.Value = 100;
-							}
-							else {
-								numAmpSustain.Value = (decimal)art.Value;
-							}
-							break;
-						}
-						break;
-					default:
-						break;
-					}
+					var row = tb.NewRow();
+					row["Destination"] = art.Destination;
+					row["Source"] = art.Source;
+					row["Control"] = art.Control;
+					row["Value"] = art.Value;
+					tb.Rows.Add(row);
 				}
 			}
+			grdArt.DataSource = tb;
 		}
 
 		private void AddInst()
@@ -274,7 +258,7 @@ namespace DLSeditor
 
 		private void PasteInst()
 		{
-			if (null == mClipboardInst) return;
+			//if (null == mClipboardInst) return;
 
 			InstAddForm fm = new InstAddForm();
 			fm.mSelectedInst = mClipboardInst;
