@@ -123,26 +123,27 @@ namespace DLS
 				var chunkType = *(CHUNK_TYPE*)buff; buff += 4;
 				var chunkSize = *(UInt32*)buff; buff += 4;
 
-				switch (chunkType)
-				{
-					case CHUNK_TYPE.COLH:
-						mInstCount = *(UInt32*)buff;
-						break;
-					case CHUNK_TYPE.VERS:
-						mVersion = new byte[chunkSize];
-						Marshal.Copy((IntPtr)buff, mVersion, 0, mVersion.Length);
-						break;
-					case CHUNK_TYPE.MSYN:
-						mMSYN = *(UInt32*)buff;
-						break;
-					case CHUNK_TYPE.PTBL:
-						WaveOffsetPool = new CPTBL(buff);
-						break;
-					case CHUNK_TYPE.LIST:
-						ReadLIST(buff, chunkSize);
-						break;
-					default:
-						throw new Exception();
+				switch (chunkType) {
+				case CHUNK_TYPE.COLH:
+					mInstCount = *(UInt32*)buff;
+					break;
+				case CHUNK_TYPE.VERS:
+					mVersion = new byte[chunkSize];
+					Marshal.Copy((IntPtr)buff, mVersion, 0, mVersion.Length);
+					break;
+				case CHUNK_TYPE.MSYN:
+					mMSYN = *(UInt32*)buff;
+					break;
+				case CHUNK_TYPE.PTBL:
+					WaveOffsetPool = new CPTBL(buff);
+					break;
+				case CHUNK_TYPE.LIST:
+					ReadLIST(buff, chunkSize);
+					break;
+				case CHUNK_TYPE.DLID:
+					break;
+				default:
+					throw new Exception();
 				}
 
 				buff += chunkSize;
