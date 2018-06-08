@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
@@ -13,15 +8,15 @@ namespace DLSeditor
 {
 	public partial class MainForm : Form
 	{
-		private DLS.CINS_ mClipboardInst;
-		private DLS.CLINS mInstPool;
-		private DLS.CWVPL mWavePool;
-		private DLS.CINFO mInfo;
+		private WavePlayback mWaveOut;
+		private DLS.File mDLS;
 
 		public MainForm()
 		{
 			InitializeComponent();
 			SetTabSize();
+			mWaveOut = new WavePlayback();
+			mDLS = new DLS.File();
 		}
 
 		private void Form1_SizeChanged(object sender, EventArgs e)
@@ -43,16 +38,13 @@ namespace DLSeditor
 			var filePath = openFileDialog1.FileName;
 			if (!File.Exists(filePath)) return;
 
-			var dls = new DLS.File(filePath);
-			mInstPool = dls.InstPool;
-			mWavePool = dls.WavePool;
-			mInfo = dls.Info;
+			mDLS = new DLS.File(filePath);
 			DispInstList();
+			tabControl.SelectedIndex = 0;
 		}
 
 		private void 上書き保存ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			var f = new DLS.File("C:\\Users\\owner\\Desktop\\test.dls", mInstPool, mWavePool, mInfo);
 		}
 
 		private void 名前を付けて保存ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -60,8 +52,6 @@ namespace DLSeditor
 			saveFileDialog1.FileName = "";
 			saveFileDialog1.Filter = "DLSファイル(*.dls)|*.dls";
 			saveFileDialog1.ShowDialog();
-
-			var f = new DLS.File(saveFileDialog1.FileName, mInstPool, mWavePool, mInfo);
 		}
 		#endregion
 
@@ -144,6 +134,7 @@ namespace DLSeditor
 
 			SetInstListSize();
 			SetInstAttributeSize();
+			SetInstRegionSize();
 		}
 
 		private void SetInstListSize()
@@ -167,6 +158,17 @@ namespace DLSeditor
 			grdArt.Width = width;
 			grdArt.Height = height;
 		}
+
+		private void SetInstRegionSize()
+		{
+			var offsetX = 16;
+			var offsetY = 60;
+			var width = tabControl.Width - offsetX;
+			var height = tabControl.Height - offsetY;
+
+			pnlRegion.Width = width;
+			pnlRegion.Height = height;
+		}
 		#endregion
 
 		#region 音色一覧
@@ -178,14 +180,11 @@ namespace DLSeditor
 		private void DispInstList()
 		{
 			lstInst.Items.Clear();
-
-			if (null == mInstPool) return;
-
-			foreach (var inst in mInstPool.List)
-			{
+			lstInst.Font = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular);
+			foreach (var inst in mDLS.InstList.Values) {
 				lstInst.Items.Add(string.Format(
-					"{0} PRG:{1} MSB:{2} LSB:{3} {4}",
-					inst.InstHeader.IsDrum ? "DRUM" : "NOTE",
+					"{0} {1} {2} {3} {4}",
+					(inst.InstHeader.Flags & 0x8000) == 0x8000 ? "Drum" : "Note",
 					inst.InstHeader.ProgramNo.ToString("000"),
 					inst.InstHeader.BankMSB.ToString("000"),
 					inst.InstHeader.BankLSB.ToString("000"),
@@ -194,88 +193,120 @@ namespace DLSeditor
 			}
 		}
 
+		private void AddInst()
+		{
+			InstAddForm fm = new InstAddForm(mDLS);
+			fm.ShowDialog();
+			DispInstList();
+		}
+
+		private void DeleteInst()
+		{
+			DispInstList();
+		}
+
+		private void CopyInst()
+		{
+		}
+
+		private void PasteInst()
+		{
+			DispInstList();
+		}
+		#endregion
+
 		private void DispInstInfo()
 		{
-			var idx = lstInst.SelectedIndex;
-			if (idx < 0) return;
+			var inst = mDLS.InstList[lstInst.SelectedIndex];
 
-			tbpInstAttribute.Text = string.Format("音色設定[{0}]", mInstPool[idx].Info.Name);
-			tabControl.SelectedIndex = 1;
+			tbpInstAttribute.Text = string.Format("音色設定[{0}]", inst.Info.Name);
 
 			DataTable tb = new DataTable();
 			tb.Columns.Add("Destination", typeof(DLS.CONN_DST_TYPE));
 			tb.Columns.Add("Source", typeof(DLS.CONN_SRC_TYPE));
 			tb.Columns.Add("Control", typeof(DLS.CONN_SRC_TYPE));
 			tb.Columns.Add("Value", typeof(double));
-			if (null != mInstPool[idx].ArtPool) {
-				foreach (var art in mInstPool[idx].ArtPool.Art.List) {
-					var row = tb.NewRow();
-					row["Destination"] = art.Destination;
-					row["Source"] = art.Source;
-					row["Control"] = art.Control;
-					row["Value"] = art.Value;
-					tb.Rows.Add(row);
+
+			if (null != inst.Articulations) {
+				foreach (var art in inst.Articulations.Values) {
+					foreach (var conn in art.Connections) {
+						var row = tb.NewRow();
+						row["Destination"] = conn.Destination;
+						row["Source"] = conn.Source;
+						row["Control"] = conn.Control;
+						row["Value"] = conn.Value.ToString("0.000");
+						tb.Rows.Add(row);
+					}
 				}
 			}
+
 			grdArt.DataSource = tb;
+			grdArt.Columns["Destination"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+			grdArt.Columns["Source"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+			grdArt.Columns["Control"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+			grdArt.Columns["Value"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
+			DispRegionInfo();
 		}
 
-		private void AddInst()
+		private void DispRegionInfo()
 		{
-			InstAddForm fm = new InstAddForm();
-			fm.mInstPool = mInstPool;
-			fm.ShowDialog();
-			mInstPool = fm.mInstPool;
+			var inst = mDLS.InstList[lstInst.SelectedIndex];
 
-			DispInstList();
-		}
+			tbpLayerAttribute.Text = string.Format("音色設定[{0}]", inst.Info.Name);
 
-		private void DeleteInst()
-		{
-			var idx = lstInst.SelectedIndex;
-			if (idx < 0) return;
+			var bmp = new Bitmap(pictRange.Width, pictRange.Height);
+			var g = Graphics.FromImage(bmp);
+			var redLine = new Pen(Color.FromArgb(255, 255, 0, 0), 2.0f);
+			var greenFill = new Pen(Color.FromArgb(24, 0, 255, 0), 1.0f).Brush;
 
-			mInstPool.Del(idx);
-			DispInstList();
-
-			if (lstInst.Items.Count <= idx)
-			{
-				lstInst.SelectedIndex = lstInst.Items.Count - 1;
+			foreach (var region in inst.Regions.Values) {
+				var key = region.RegionHeader.RangeKey;
+				var vel = region.RegionHeader.RangeVelocity;
+				g.DrawRectangle(
+					redLine,
+					key.Low * 6,
+					vel.Low * 6,
+					(key.High - key.Low + 1) * 6,
+					(vel.High - vel.Low + 1) * 6
+				);
+				g.FillRectangle(
+					greenFill,
+					key.Low * 6,
+					vel.Low * 6,
+					(key.High - key.Low + 1) * 6,
+					(vel.High - vel.Low + 1) * 6
+				);
 			}
-			else
-			{
-				lstInst.SelectedIndex = idx;
-			}
+
+			pictRange.Image = bmp;
 		}
-
-		private void CopyInst()
-		{
-			var idx = lstInst.SelectedIndex;
-			if (idx < 0) return;
-
-			mClipboardInst = mInstPool[idx];
-		}
-
-		private void PasteInst()
-		{
-			//if (null == mClipboardInst) return;
-
-			InstAddForm fm = new InstAddForm();
-			fm.mSelectedInst = mClipboardInst;
-			fm.mInstPool = mInstPool;
-			fm.ShowDialog();
-			mInstPool = fm.mInstPool;
-
-			DispInstList();
-		}
-		#endregion
 
 		private void DispPcmList()
 		{
-			WaveListForm fm = new WaveListForm();
-			fm.mInstPool = mInstPool;
-			fm.mWave = mWavePool;
+			WaveListForm fm = new WaveListForm(mWaveOut, mDLS);
 			fm.ShowDialog();
+		}
+
+		private void pictRange_DoubleClick(object sender, EventArgs e)
+		{
+			var cp = pictRange.PointToClient(Cursor.Position);
+			cp.X = (int)(cp.X / 6 + 0.5);
+			cp.Y = (int)((pictRange.Height - cp.Y) / 6 + 0.5);
+
+			DLS.RGN rgn;
+			var inst = mDLS.InstList[lstInst.SelectedIndex];
+			foreach (var region in inst.Regions.Values) {
+				var key = region.RegionHeader.RangeKey;
+				var vel = region.RegionHeader.RangeVelocity;
+				if (key.Low <= cp.X && cp.X <= key.High
+				&& vel.Low <= cp.Y && cp.Y <= vel.High) {
+					rgn = region;
+					break;
+				}
+			}
+
+			tslPos.Text = string.Format("X:{0} Y:{1}", cp.X, cp.Y);
 		}
 	}
 }

@@ -1,238 +1,125 @@
 ﻿using System;
-using System.IO;
 
 namespace DLS
 {
-	unsafe public struct SINSH
+	unsafe public struct INSH
 	{
-		private UInt32 mRegions;
-		private UInt32 mBank;
-		private UInt32 mInstrument;
+		public UInt32 Regions;
+		public Byte BankMSB;
+		public Byte BankLSB;
+		public UInt16 Flags;
+		public UInt32 ProgramNo;
 
-		public SINSH(byte* buff)
+		public INSH(byte* ptr)
 		{
-			mRegions = *(UInt32*)buff;
-			buff += 4;
-			mBank = *(UInt32*)buff;
-			buff += 4;
-			mInstrument = *(UInt32*)buff;
+			Regions = *(UInt32*)ptr;
+			ptr += 4;
+			BankMSB = *ptr;
+			ptr += 1;
+			BankLSB = *ptr;
+			ptr += 1;
+			Flags = *(UInt16*)ptr;
+			ptr += 2;
+			ProgramNo = *(UInt32*)ptr;
 		}
-
-		#region プロパティ
-		public bool IsDrum
-		{
-			get {
-				return 0 < (mBank & 0x80000000);
-			}
-			set {
-				mBank |= value ? 0x80000000 : 0;
-			}
-		}
-
-		public byte ProgramNo
-		{
-			get {
-				return (byte)mInstrument;
-			}
-			set {
-				mInstrument = value;
-			}
-		}
-
-		public byte BankMSB
-		{
-			get {
-				return (byte)((mBank & 0x00007F00) >> 8);
-			}
-			set {
-				mBank |= (UInt32)(value & 0x7F) << 8;
-			}
-		}
-
-		public byte BankLSB
-		{
-			get {
-				return (byte)(mBank & 0x0000007F);
-			}
-			set {
-				mBank |= (UInt32)(value & 0x7F);
-			}
-		}
-
-		public byte[] Bytes
-		{
-			get {
-				var buff = new byte[12];
-				byte* pBuff;
-				fixed (byte* p = &buff[0]) pBuff = p;
-
-				*(UInt32*)pBuff = mRegions;
-				pBuff += 4;
-				*(UInt32*)pBuff = mBank;
-				pBuff += 4;
-				*(UInt32*)pBuff = mInstrument;
-
-				return buff;
-			}
-		}
-		#endregion
 	}
 
-	unsafe public class CINS_
+	unsafe public class INS
 	{
-		public SINSH InstHeader;
-		public CLRGN RegionPool;
-		public CLART ArtPool;
-		public CINFO Info;
+		public INSH InstHeader;
+		public LRGN Regions;
+		public LART Articulations;
+		public INFO Info;
 
-		public CINS_()
+		public INS()
 		{
-			InstHeader = new SINSH();
-			RegionPool = new CLRGN();
-			ArtPool = new CLART();
-			Info = new CINFO();
+			Regions = new LRGN();
+			Articulations = new LART();
+			Info = new INFO();
 		}
 
-		public CINS_(byte* buff, UInt32 termAddr)
+		public INS(byte* ptr, UInt32 endAddr)
 		{
-			InstHeader = new SINSH();
-			RegionPool = new CLRGN();
-			ArtPool = new CLART();
-			Info = new CINFO();
-
-			while ((UInt32)buff < termAddr) {
-				var chunkType = *(CHUNK_TYPE*)buff;
-				buff += 4;
-				var chunkSize = *(UInt32*)buff;
-				buff += 4;
+			while ((UInt32)ptr < endAddr) {
+				var chunkType = *(ChunkID*)ptr;
+				ptr += 4;
+				var chunkSize = *(UInt32*)ptr;
+				ptr += 4;
 
 				switch (chunkType) {
-				case CHUNK_TYPE.INSH:
-					InstHeader = new SINSH(buff);
+				case ChunkID.INSH:
+					InstHeader = new INSH(ptr);
 					break;
-				case CHUNK_TYPE.LIST:
-					ReadLIST(buff, chunkSize);
+				case ChunkID.LIST:
+					ReadList(ptr, chunkSize);
 					break;
 				default:
 					throw new Exception();
 				}
 
-				buff += chunkSize;
+				ptr += chunkSize;
 			}
 		}
 
-		private void ReadLIST(byte* buff, UInt32 chunkSize)
+		private void ReadList(byte* ptr, UInt32 size)
 		{
-			var listType = *(LIST_TYPE*)buff;
-			buff += 4;
-			var termAddr = (UInt32)buff + chunkSize - 4;
+			var listType = *(ListID*)ptr;
+			var endAddr = (UInt32)ptr + size;
+			ptr += 4;
 
 			switch (listType) {
-			case LIST_TYPE.LRGN:
-				RegionPool = new CLRGN(buff, termAddr);
+			case ListID.LRGN:
+				Regions = new LRGN(ptr, endAddr);
 				break;
-			case LIST_TYPE.LART:
-				ArtPool = new CLART(buff, termAddr);
+			case ListID.LART:
+			case ListID.LAR2:
+				Articulations = new LART(ptr, endAddr);
 				break;
-			case LIST_TYPE.INFO:
-				Info = new CINFO(buff, termAddr);
+			case ListID.INFO:
+				Info = new INFO(ptr, endAddr);
 				break;
 			default:
 				throw new Exception();
 			}
 		}
-
-		public byte[] Bytes
-		{
-			get {
-				using (var ms = new MemoryStream())
-				using (var bw = new BinaryWriter(ms)) {
-					var hd = InstHeader.Bytes;
-					var rgn = RegionPool.Bytes;
-					var art = ArtPool.Bytes;
-					var info = Info.Bytes;
-
-					bw.Write((UInt32)CHUNK_TYPE.INSH);
-					bw.Write((UInt32)hd.Length);
-					bw.Write(hd);
-
-					bw.Write((UInt32)CHUNK_TYPE.LIST);
-					bw.Write((UInt32)rgn.Length + 4);
-					bw.Write((UInt32)LIST_TYPE.LRGN);
-					bw.Write(rgn);
-
-					if (0 < art.Length && 0 < ArtPool.Art.List.Count) {
-						bw.Write((UInt32)CHUNK_TYPE.LIST);
-						bw.Write((UInt32)art.Length + 4);
-						bw.Write((UInt32)LIST_TYPE.LART);
-						bw.Write(art);
-					}
-
-					bw.Write((UInt32)CHUNK_TYPE.LIST);
-					bw.Write((UInt32)info.Length + 4);
-					bw.Write((UInt32)LIST_TYPE.INFO);
-					bw.Write(info);
-
-					return ms.ToArray();
-				}
-			}
-		}
 	}
 
-	unsafe public class CLINS : LIST<CINS_>
+	unsafe public class LINS : List<INS>
 	{
-		public CLINS() { }
+		public LINS() {}
 
-		public CLINS(byte* buff, UInt32 termAddr)
+		public LINS(byte* ptr, UInt32 endAddr)
 		{
-			while ((UInt32)buff < termAddr) {
-				var chunkType = *(CHUNK_TYPE*)buff;
-				buff += 4;
-				var chunkSize = *(UInt32*)buff;
-				buff += 4;
+			while ((UInt32)ptr < endAddr) {
+				var chunkType = *(ChunkID*)ptr;
+				ptr += 4;
+				var chunkSize = *(UInt32*)ptr;
+				ptr += 4;
 
 				switch (chunkType) {
-				case CHUNK_TYPE.LIST:
-					ReadLIST(buff, chunkSize);
+				case ChunkID.LIST:
+					ReadList(ptr, chunkSize);
 					break;
 				default:
 					throw new Exception();
 				}
 
-				buff += chunkSize;
+				ptr += chunkSize;
 			}
 		}
 
-		private void ReadLIST(byte* buff, UInt32 chunkSize)
+		private void ReadList(byte* ptr, UInt32 size)
 		{
-			var listType = *(LIST_TYPE*)buff;
-			buff += 4;
-			var termAddr = (UInt32)buff + chunkSize - 4;
+			var listType = *(ListID*)ptr;
+			var endAddr = (UInt32)ptr + size;
+			ptr += 4;
 
 			switch (listType) {
-			case LIST_TYPE.INS_:
-				Add(new CINS_(buff, termAddr));
+			case ListID.INS_:
+				Add(new INS(ptr, endAddr));
 				break;
 			default:
 				throw new Exception();
-			}
-
-		}
-
-		public byte[] Bytes
-		{
-			get {
-				using (var ms = new MemoryStream())
-				using (var bw = new BinaryWriter(ms)) {
-					foreach (var ins in List) {
-						var insb = ins.Bytes;
-						bw.Write((UInt32)CHUNK_TYPE.LIST);
-						bw.Write((UInt32)insb.Length + 4);
-						bw.Write((UInt32)LIST_TYPE.INS_);
-						bw.Write(insb);
-					}
-					return ms.ToArray();
-				}
 			}
 		}
 	}

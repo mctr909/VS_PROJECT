@@ -1,257 +1,217 @@
 ﻿using System;
-using System.IO;
 
 namespace DLS
 {
-	unsafe public struct SRGNH
+	unsafe public struct Range
 	{
-		public UInt16 KeyRangeLow;
-		public UInt16 KeyRangeHigh;
-		public UInt16 VelocityRangeLow;
-		public UInt16 VelocityRangeHigh;
+		public UInt16 Low;
+		public UInt16 High;
+	}
+
+	unsafe public struct RGNH
+	{
+		public Range RangeKey;
+		public Range RangeVelocity;
 		public UInt16 Options;
 		public UInt16 KeyGroup;
 		public UInt16 Layer;
 
-		public SRGNH(byte* buff, UInt32 size)
+		public RGNH(byte* pre, UInt32 size)
 		{
-			KeyRangeLow = *(UInt16*)buff;
-			buff += 2;
-			KeyRangeHigh = *(UInt16*)buff;
-			buff += 2;
-			VelocityRangeLow = *(UInt16*)buff;
-			buff += 2;
-			VelocityRangeHigh = *(UInt16*)buff;
-			buff += 2;
-			Options = *(UInt16*)buff;
-			buff += 2;
-			KeyGroup = *(UInt16*)buff;
-			buff += 2;
+			RangeKey.Low = *(UInt16*)pre;
+			pre += 2;
+			RangeKey.High = *(UInt16*)pre;
+			pre += 2;
+
+			RangeVelocity.Low = *(UInt16*)pre;
+			pre += 2;
+			RangeVelocity.High = *(UInt16*)pre;
+			pre += 2;
+
+			Options = *(UInt16*)pre;
+			pre += 2;
+			KeyGroup = *(UInt16*)pre;
+			pre += 2;
 
 			if (14 <= size) {
-				Layer = *(UInt16*)buff;
+				Layer = *(UInt16*)pre;
 			}
 			else {
 				Layer = 0;
 			}
 		}
+	}
 
-		public byte[] Bytes
+	unsafe public struct Loop
+	{
+		public UInt32 Size;
+		public UInt32 Type;
+		public UInt32 Start;
+		public UInt32 Length;
+
+		public Loop(byte* ptr)
+		{
+			Size = *(UInt32*)ptr;
+			ptr += 4;
+			Type = *(UInt32*)ptr;
+			ptr += 4;
+			Start = *(UInt32*)ptr;
+			ptr += 4;
+			Length = *(UInt32*)ptr;
+		}
+	}
+
+	unsafe public struct WSMP
+	{
+		public UInt32 Size;
+		public UInt16 UnityNoote;
+		public Int16 FineTune;
+		private Int32 GainInt;
+		public UInt32 Options;
+		public UInt32 LoopCount;
+		public Loop[] Loops;
+
+		public WSMP(byte* ptr)
+		{
+			Size = *(UInt32*)ptr;
+			ptr += 4;
+			UnityNoote = *(UInt16*)ptr;
+			ptr += 2;
+			FineTune = *(Int16*)ptr;
+			ptr += 2;
+			GainInt = *(Int32*)ptr;
+			ptr += 4;
+			Options = *(UInt32*)ptr;
+			ptr += 4;
+			LoopCount = *(UInt32*)ptr;
+			ptr += 4;
+
+			Loops = new Loop[LoopCount];
+			for (var i = 0; i < LoopCount; ++i) {
+				Loops[i] = new Loop(ptr);
+				ptr += sizeof(Loop);
+			}
+		}
+
+		public double Gain
 		{
 			get {
-				var buff = new byte[12];
-				byte* pBuff;
-				fixed (byte* p = &buff[0]) pBuff = p;
-
-				*(UInt16*)pBuff = KeyRangeLow;
-				pBuff += 2;
-				*(UInt16*)pBuff = KeyRangeHigh;
-				pBuff += 2;
-				*(UInt16*)pBuff = VelocityRangeLow;
-				pBuff += 2;
-				*(UInt16*)pBuff = VelocityRangeHigh;
-				pBuff += 2;
-				*(UInt16*)pBuff = Options;
-				pBuff += 2;
-				*(UInt16*)pBuff = KeyGroup;
-
-				return buff;
+				return Math.Pow(10.0, GainInt / (200 * 65536.0));
+			}
+			set {
+				GainInt = (Int32)(Math.Log10(value) * 200 * 65536);
 			}
 		}
 	}
 
-	unsafe public struct SWLNK
+	unsafe public struct WLNK
 	{
 		public UInt16 Options;
 		public UInt16 PhaseGroup;
 		public UInt32 Channel;
 		public UInt32 WaveIndex;
 
-		public SWLNK(byte* buff)
+		public WLNK(byte* ptr)
 		{
-			Options = *(UInt16*)buff;
-			buff += 2;
-			PhaseGroup = *(UInt16*)buff;
-			buff += 2;
-			Channel = *(UInt32*)buff;
-			buff += 4;
-			WaveIndex = *(UInt32*)buff;
-		}
-
-		public byte[] Bytes
-		{
-			get {
-				var buff = new byte[12];
-				byte* pBuff;
-				fixed (byte* p = &buff[0]) pBuff = p;
-
-				*(UInt16*)pBuff = Options;
-				pBuff += 2;
-				*(UInt16*)pBuff = PhaseGroup;
-				pBuff += 2;
-				*(UInt32*)pBuff = Channel;
-				pBuff += 4;
-				*(UInt32*)pBuff = WaveIndex;
-
-				return buff;
-			}
+			Options = *(UInt16*)ptr;
+			ptr += 2;
+			PhaseGroup = *(UInt16*)ptr;
+			ptr += 2;
+			Channel = *(UInt32*)ptr;
+			ptr += 4;
+			WaveIndex = *(UInt32*)ptr;
 		}
 	}
 
-	unsafe public class CRGN_
+	unsafe public class RGN
 	{
-		public SRGNH RegionHeader;
-		public SWLNK WaveLink;
-		public CWSMP Sampler;
-		public CLART ArtPool;
+		public RGNH RegionHeader;
+		public WSMP Sampler;
+		public WLNK WaveLink;
+		public LART Articulations;
 
-		public CRGN_()
+		public RGN(byte* ptr, UInt32 endAddr)
 		{
-			RegionHeader = new SRGNH();
-			WaveLink = new SWLNK();
-			Sampler = new CWSMP();
-			ArtPool = new CLART();
-		}
-
-		public CRGN_(byte* buff, UInt32 termAddr)
-		{
-			RegionHeader = new SRGNH();
-			WaveLink = new SWLNK();
-			Sampler = new CWSMP();
-			ArtPool = new CLART();
-
-			while ((UInt32)buff < termAddr) {
-				var chunkType = *(CHUNK_TYPE*)buff;
-				buff += 4;
-				var chunkSize = *(UInt32*)buff;
-				buff += 4;
+			while ((UInt32)ptr < endAddr) {
+				var chunkType = *(ChunkID*)ptr;
+				ptr += 4;
+				var chunkSize = *(UInt32*)ptr;
+				ptr += 4;
 
 				switch (chunkType) {
-				case CHUNK_TYPE.RGNH:
-					RegionHeader = new SRGNH(buff, chunkSize);
+				case ChunkID.RGNH:
+					RegionHeader = new RGNH(ptr, chunkSize);
 					break;
-				case CHUNK_TYPE.WSMP:
-					Sampler = new CWSMP(buff);
+				case ChunkID.WSMP:
+					Sampler = new WSMP(ptr);
 					break;
-				case CHUNK_TYPE.WLNK:
-					WaveLink = new SWLNK(buff);
+				case ChunkID.WLNK:
+					WaveLink = new WLNK(ptr);
 					break;
-				case CHUNK_TYPE.LIST:
-					ReadLIST(buff, chunkSize);
+				case ChunkID.LIST:
+					ReadList(ptr, chunkSize);
 					break;
 				default:
 					throw new Exception();
 				}
 
-				buff += chunkSize;
+				ptr += chunkSize;
 			}
 		}
 
-		private void ReadLIST(byte* buff, UInt32 chunkSize)
+		private void ReadList(byte* ptr, UInt32 size)
 		{
-			var listType = *(LIST_TYPE*)buff;
-			buff += 4;
-			var termAddr = (UInt32)buff + chunkSize - 4;
+			var listType = *(ListID*)ptr;
+			var endAddr = (UInt32)ptr + size;
+			ptr += 4;
 
 			switch (listType) {
-			case LIST_TYPE.LART:
-			case LIST_TYPE.LAR2:
-				ArtPool = new CLART(buff, termAddr);
+			case ListID.LART:
+			case ListID.LAR2:
+				Articulations = new LART(ptr, endAddr);
 				break;
 			default:
 				throw new Exception();
 			}
 		}
-
-		public byte[] Bytes
-		{
-			get {
-				using (var ms = new MemoryStream())
-				using (var bw = new BinaryWriter(ms)) {
-					var hd = RegionHeader.Bytes;
-					var smp = Sampler.Bytes;
-					var lnk = WaveLink.Bytes;
-					var art = ArtPool.Bytes;
-
-					bw.Write((UInt32)CHUNK_TYPE.RGNH);
-					bw.Write((UInt32)hd.Length);
-					bw.Write(hd);
-
-					bw.Write((UInt32)CHUNK_TYPE.WSMP);
-					bw.Write((UInt32)smp.Length);
-					bw.Write(smp);
-
-					bw.Write((UInt32)CHUNK_TYPE.WLNK);
-					bw.Write((UInt32)lnk.Length);
-					bw.Write(lnk);
-
-					if (0 < art.Length && 0 < ArtPool.Art.List.Count) {
-						bw.Write((UInt32)CHUNK_TYPE.LIST);
-						bw.Write((UInt32)art.Length + 4);
-						bw.Write((UInt32)LIST_TYPE.LART);
-						bw.Write(art);
-					}
-
-					return ms.ToArray();
-				}
-			}
-		}
 	}
 
-	unsafe public class CLRGN : LIST<CRGN_>
+	unsafe public class LRGN : List<RGN>
 	{
-		public CLRGN() { }
+		public LRGN() {}
 
-		public CLRGN(byte* buff, UInt32 termAddr)
+		public LRGN(byte* ptr, UInt32 endAddr)
 		{
-			while ((UInt32)buff < termAddr) {
-				var chunkType = *(CHUNK_TYPE*)buff;
-				buff += 4;
-				var chunkSize = *(UInt32*)buff;
-				buff += 4;
+			while ((UInt32)ptr < endAddr) {
+				var chunkType = *(ChunkID*)ptr;
+				ptr += 4;
+				var chunkSize = *(UInt32*)ptr;
+				ptr += 4;
 
 				switch (chunkType) {
-				case CHUNK_TYPE.LIST:
-					ReadLIST(buff, chunkSize);
+				case ChunkID.LIST:
+					ReadList(ptr, chunkSize);
 					break;
 				default:
 					throw new Exception();
 				}
 
-				buff += chunkSize;
+				ptr += chunkSize;
 			}
 		}
 
-		private void ReadLIST(byte* buff, UInt32 chunkSize)
+		private void ReadList(byte* ptr, UInt32 size)
 		{
-			var listType = *(LIST_TYPE*)buff;
-			buff += 4;
-			var termAddr = (UInt32)buff + chunkSize - 4;
+			var listType = *(ListID*)ptr;
+			var endAddr = (UInt32)ptr + size;
+			ptr += 4;
 
 			switch (listType) {
-			case LIST_TYPE.RGN_:
-			case LIST_TYPE.RGN2:
-				Add(new CRGN_(buff, termAddr));
+			case ListID.RGN_:
+				Add(new RGN(ptr, endAddr));
 				break;
 			default:
 				throw new Exception();
-			}
-		}
-
-		public byte[] Bytes
-		{
-			get {
-				using (var ms = new MemoryStream())
-				using (var bw = new BinaryWriter(ms)) {
-					foreach (var rgn in List) {
-						var rgnb = rgn.Bytes;
-						bw.Write((UInt32)CHUNK_TYPE.LIST);
-						bw.Write((UInt32)rgnb.Length + 4);
-						bw.Write((UInt32)LIST_TYPE.RGN_);
-						bw.Write(rgnb);
-					}
-					return ms.ToArray();
-				}
 			}
 		}
 	}

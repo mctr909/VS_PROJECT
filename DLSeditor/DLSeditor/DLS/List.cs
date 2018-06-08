@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace DLS
 {
-	public class LIST<T>
+	public class List<T>
 	{
 		private Dictionary<int, T> mList;
 
-		protected LIST()
+		protected List()
 		{
 			mList = new Dictionary<int, T>();
 		}
@@ -19,13 +19,13 @@ namespace DLS
 
 		public void Del(int index)
 		{
-			if (!mList.ContainsKey(index)) return;
+			if (!mList.ContainsKey(index))
+				return;
 
 			mList.Remove(index);
 
 			var temp = new Dictionary<int, T>();
-			foreach (var o in mList.Values)
-			{
+			foreach (var o in mList.Values) {
 				temp.Add(temp.Count, o);
 			}
 
@@ -34,21 +34,32 @@ namespace DLS
 
 		public T this[int index]
 		{
-			get
-			{
-				if (!mList.ContainsKey(index)) throw new Exception();
+			get {
+				if (!mList.ContainsKey(index)) {
+					throw new Exception();
+				}
 				return mList[index];
 			}
-			set
-			{
-				if (!mList.ContainsKey(index)) throw new Exception();
+			set {
+				if (!mList.ContainsKey(index)) {
+					throw new Exception();
+				}
 				mList[index] = value;
 			}
 		}
 
-		public Dictionary<int, T>.ValueCollection List
+		public Dictionary<int, T>.ValueCollection Values
 		{
-			get { return mList.Values; }
+			get {
+				return mList.Values;
+			}
+		}
+
+		public int Count
+		{
+			get {
+				return mList.Count;
+			}
 		}
 	}
 }

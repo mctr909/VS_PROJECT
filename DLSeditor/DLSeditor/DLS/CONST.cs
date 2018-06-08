@@ -2,7 +2,7 @@
 
 namespace DLS
 {
-	public enum CHUNK_TYPE : UInt32
+	public enum ChunkID : UInt32
 	{
 		COLH = 0x686C6F63,
 		VERS = 0x73726576,
@@ -20,7 +20,7 @@ namespace DLS
 		DATA = 0x61746164
 	}
 
-	public enum LIST_TYPE : UInt32
+	public enum ListID : UInt32
 	{
 		LINS = 0x736E696C,
 		WVPL = 0x6C707677,
@@ -34,7 +34,7 @@ namespace DLS
 		RGN2 = 0x326E6772
 	}
 
-	public enum INFO_TYPE : UInt32
+	public enum InfoID: UInt32
 	{
 		IARL = 0x4C524149, // ArchivalLocation
 		IART = 0x54524149, // Artists
@@ -55,7 +55,7 @@ namespace DLS
 		ITCH = 0x48435449  // Technician
 	}
 
-	public enum CONN_SRC_TYPE
+	public enum CONN_SRC_TYPE : UInt16
 	{
 		// MODULATOR SOURCES
 		NONE = 0x0000,
@@ -83,7 +83,7 @@ namespace DLS
 		RPN2 = 0x0102
 	}
 
-	public enum CONN_DST_TYPE
+	public enum CONN_DST_TYPE : UInt16
 	{
 		// GENERIC DESTINATIONS
 		NONE = 0x0000,
@@ -133,7 +133,7 @@ namespace DLS
 		FILTER_Q = 0x0501
 	}
 
-	public enum CONN_TRN_TYPE
+	public enum CONN_TRN_TYPE : UInt16
 	{
 		NONE = 0x0000,
 		CONCAVE = 0x0001,

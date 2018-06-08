@@ -36,6 +36,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,21 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DLS\File.cs" />
+    <Compile Include="DLS\DLS.cs" />
     <Compile Include="DLS\CONST.cs" />
+    <Compile Include="DLS\info.cs" />
     <Compile Include="DLS\Lart.cs" />
+    <Compile Include="DLS\Lins.cs" />
     <Compile Include="DLS\List.cs" />
-    <Compile Include="DLS\Info.cs" />
     <Compile Include="DLS\Lrgn.cs" />
-    <Compile Include="DLS\Wsmp.cs" />
-    <Compile Include="DLS\WaveData.cs" />
+    <Compile Include="DLS\wvpl.cs" />
     <Compile Include="fft.cs" />
-    <Compile Include="Form\InstInfoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form\InstInfoForm.Designer.cs">
-      <DependentUpon>InstInfoForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,7 +69,7 @@
     <Compile Include="Form\InstAddForm.Designer.cs">
       <DependentUpon>InstAddForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DLS\Lins.cs" />
+    <Compile Include="Spectrum.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Form\WaveListForm.cs">
@@ -83,14 +78,22 @@
     <Compile Include="Form\WaveListForm.Designer.cs">
       <DependentUpon>WaveListForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Form\InstInfoForm.resx">
-      <DependentUpon>InstInfoForm.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="Form\WaveInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\WaveInfoForm.Designer.cs">
+      <DependentUpon>WaveInfoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WaveOutLib.cs" />
+    <Compile Include="WavePlayback.cs" />
     <EmbeddedResource Include="Form\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\InstAddForm.resx">
       <DependentUpon>InstAddForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\WaveInfoForm.resx">
+      <DependentUpon>WaveInfoForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
