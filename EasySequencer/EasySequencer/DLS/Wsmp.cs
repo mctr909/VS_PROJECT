@@ -35,7 +35,7 @@ namespace DLS
 			}
 		}
 
-		public double Attenuation
+		public double Gain
 		{
 			get { return Math.Pow(10.0, mAttenuation / (200 * 65536.0)); }
 			set { mAttenuation = (Int32)(Math.Log10(value) * 200 * 65536); }

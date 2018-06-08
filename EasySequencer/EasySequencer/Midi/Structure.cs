@@ -30,6 +30,7 @@
 		public uint LoopEnd;
 		public byte BaseNote;
 		public double Delta;
+		public double Gain;
 	}
 
 	public struct Envelope

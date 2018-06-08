@@ -54,7 +54,7 @@
 			mChannel = channel;
 			mNoteNo = noteNo;
 			mWaveInfo = channel.WaveList[noteNo];
-			mVelocity = Const.Amp[velocity];
+			mVelocity = mWaveInfo.Gain * Const.Amp[velocity];
 
 			var note = noteNo - mWaveInfo.BaseNote;
 			if (note < 0) {
@@ -156,7 +156,7 @@
 				mCurAmp = 1.0;
 			}
 			else {
-				mCurAmp -= mCurAmp * 8.0 * mChannel.DeltaTime;
+				mCurAmp -= mCurAmp * 4.0 * mChannel.DeltaTime;
 				if (mCurAmp < 0.001) {
 					mIsActive = false;
 				}

@@ -76,6 +76,7 @@ namespace MIDI
 								* dls.WavePool[waveIdx].Format.SamplesPerSec
 								/ 44100.0
 							;
+							instInfo.WaveInfo[i].Gain = region.Sampler.Gain;
 
 							instInfo.WaveInfo[i].Buff = waveList[waveIdx];
 							if (0 < region.Sampler.List.Count) {
