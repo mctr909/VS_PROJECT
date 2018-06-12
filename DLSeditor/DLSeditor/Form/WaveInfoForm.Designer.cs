@@ -28,9 +28,9 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-			System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-			System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			this.btnPlay = new System.Windows.Forms.Button();
 			this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			this.picSpectrum = new System.Windows.Forms.PictureBox();
@@ -46,7 +46,7 @@
 			// 
 			// btnPlay
 			// 
-			this.btnPlay.Location = new System.Drawing.Point(12, 12);
+			this.btnPlay.Location = new System.Drawing.Point(210, 12);
 			this.btnPlay.Name = "btnPlay";
 			this.btnPlay.Size = new System.Drawing.Size(75, 23);
 			this.btnPlay.TabIndex = 0;
@@ -56,24 +56,24 @@
 			// 
 			// chart1
 			// 
-			chartArea6.Name = "ChartArea1";
-			this.chart1.ChartAreas.Add(chartArea6);
-			legend6.Name = "Legend1";
-			this.chart1.Legends.Add(legend6);
-			this.chart1.Location = new System.Drawing.Point(509, 12);
+			chartArea1.Name = "ChartArea1";
+			this.chart1.ChartAreas.Add(chartArea1);
+			legend1.Name = "Legend1";
+			this.chart1.Legends.Add(legend1);
+			this.chart1.Location = new System.Drawing.Point(12, 12);
 			this.chart1.Name = "chart1";
-			series6.ChartArea = "ChartArea1";
-			series6.Legend = "Legend1";
-			series6.Name = "Series1";
-			this.chart1.Series.Add(series6);
-			this.chart1.Size = new System.Drawing.Size(141, 72);
+			series1.ChartArea = "ChartArea1";
+			series1.Legend = "Legend1";
+			series1.Name = "Series1";
+			this.chart1.Series.Add(series1);
+			this.chart1.Size = new System.Drawing.Size(192, 128);
 			this.chart1.TabIndex = 1;
 			this.chart1.Text = "chart1";
 			// 
 			// picSpectrum
 			// 
 			this.picSpectrum.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.picSpectrum.Location = new System.Drawing.Point(12, 90);
+			this.picSpectrum.Location = new System.Drawing.Point(12, 146);
 			this.picSpectrum.Name = "picSpectrum";
 			this.picSpectrum.Size = new System.Drawing.Size(640, 232);
 			this.picSpectrum.TabIndex = 2;
@@ -81,7 +81,7 @@
 			// 
 			// hsbTime
 			// 
-			this.hsbTime.Location = new System.Drawing.Point(12, 587);
+			this.hsbTime.Location = new System.Drawing.Point(12, 515);
 			this.hsbTime.Name = "hsbTime";
 			this.hsbTime.Size = new System.Drawing.Size(641, 22);
 			this.hsbTime.TabIndex = 3;
@@ -89,9 +89,9 @@
 			// picWave
 			// 
 			this.picWave.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.picWave.Location = new System.Drawing.Point(12, 328);
+			this.picWave.Location = new System.Drawing.Point(12, 384);
 			this.picWave.Name = "picWave";
-			this.picWave.Size = new System.Drawing.Size(640, 256);
+			this.picWave.Size = new System.Drawing.Size(640, 128);
 			this.picWave.TabIndex = 4;
 			this.picWave.TabStop = false;
 			// 
@@ -101,23 +101,23 @@
 			// 
 			// numScale
 			// 
-			this.numScale.DecimalPlaces = 2;
-			this.numScale.Increment = new decimal(new int[] {
-            25,
+			this.numScale.Font = new System.Drawing.Font("MS UI Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.numScale.Location = new System.Drawing.Point(210, 41);
+			this.numScale.Maximum = new decimal(new int[] {
+            128,
             0,
             0,
-            131072});
-			this.numScale.Location = new System.Drawing.Point(13, 64);
+            0});
 			this.numScale.Minimum = new decimal(new int[] {
-            25,
+            1,
             0,
             0,
-            131072});
+            0});
 			this.numScale.Name = "numScale";
-			this.numScale.Size = new System.Drawing.Size(120, 19);
+			this.numScale.Size = new System.Drawing.Size(75, 22);
 			this.numScale.TabIndex = 5;
 			this.numScale.Value = new decimal(new int[] {
-            1,
+            64,
             0,
             0,
             0});
@@ -127,7 +127,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(662, 621);
+			this.ClientSize = new System.Drawing.Size(662, 541);
 			this.Controls.Add(this.numScale);
 			this.Controls.Add(this.picWave);
 			this.Controls.Add(this.hsbTime);

@@ -62,7 +62,7 @@ public class Spectrum
 			Bandpass(b, baseFreq * Math.Pow(2.0, (double)b / octDiv), w / octDiv, 1.0 / w);
 		}
 		mScale = 32768.0;
-		mAttenuation = 3.0;
+		mAttenuation = 1.0;
 	}
 
 	public void Filtering(UInt32 bankNo, double input)
