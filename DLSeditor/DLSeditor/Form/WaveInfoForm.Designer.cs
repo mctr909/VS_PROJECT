@@ -28,9 +28,9 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Legend legend8 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+			System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			this.btnPlay = new System.Windows.Forms.Button();
 			this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			this.picSpectrum = new System.Windows.Forms.PictureBox();
@@ -38,6 +38,7 @@
 			this.picWave = new System.Windows.Forms.PictureBox();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.numScale = new System.Windows.Forms.NumericUpDown();
+			this.timer2 = new System.Windows.Forms.Timer(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picSpectrum)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picWave)).BeginInit();
@@ -46,7 +47,7 @@
 			// 
 			// btnPlay
 			// 
-			this.btnPlay.Location = new System.Drawing.Point(210, 12);
+			this.btnPlay.Location = new System.Drawing.Point(12, 12);
 			this.btnPlay.Name = "btnPlay";
 			this.btnPlay.Size = new System.Drawing.Size(75, 23);
 			this.btnPlay.TabIndex = 0;
@@ -56,42 +57,42 @@
 			// 
 			// chart1
 			// 
-			chartArea1.Name = "ChartArea1";
-			this.chart1.ChartAreas.Add(chartArea1);
-			legend1.Name = "Legend1";
-			this.chart1.Legends.Add(legend1);
-			this.chart1.Location = new System.Drawing.Point(12, 12);
+			chartArea8.Name = "ChartArea1";
+			this.chart1.ChartAreas.Add(chartArea8);
+			legend8.Name = "Legend1";
+			this.chart1.Legends.Add(legend8);
+			this.chart1.Location = new System.Drawing.Point(93, 12);
 			this.chart1.Name = "chart1";
-			series1.ChartArea = "ChartArea1";
-			series1.Legend = "Legend1";
-			series1.Name = "Series1";
-			this.chart1.Series.Add(series1);
-			this.chart1.Size = new System.Drawing.Size(192, 128);
+			series8.ChartArea = "ChartArea1";
+			series8.Legend = "Legend1";
+			series8.Name = "Series1";
+			this.chart1.Series.Add(series8);
+			this.chart1.Size = new System.Drawing.Size(128, 64);
 			this.chart1.TabIndex = 1;
 			this.chart1.Text = "chart1";
 			// 
 			// picSpectrum
 			// 
 			this.picSpectrum.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.picSpectrum.Location = new System.Drawing.Point(12, 146);
+			this.picSpectrum.Location = new System.Drawing.Point(12, 82);
 			this.picSpectrum.Name = "picSpectrum";
-			this.picSpectrum.Size = new System.Drawing.Size(640, 232);
+			this.picSpectrum.Size = new System.Drawing.Size(768, 224);
 			this.picSpectrum.TabIndex = 2;
 			this.picSpectrum.TabStop = false;
 			// 
 			// hsbTime
 			// 
-			this.hsbTime.Location = new System.Drawing.Point(12, 515);
+			this.hsbTime.Location = new System.Drawing.Point(12, 309);
 			this.hsbTime.Name = "hsbTime";
-			this.hsbTime.Size = new System.Drawing.Size(641, 22);
+			this.hsbTime.Size = new System.Drawing.Size(768, 22);
 			this.hsbTime.TabIndex = 3;
 			// 
 			// picWave
 			// 
 			this.picWave.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.picWave.Location = new System.Drawing.Point(12, 384);
+			this.picWave.Location = new System.Drawing.Point(12, 334);
 			this.picWave.Name = "picWave";
-			this.picWave.Size = new System.Drawing.Size(640, 128);
+			this.picWave.Size = new System.Drawing.Size(768, 256);
 			this.picWave.TabIndex = 4;
 			this.picWave.TabStop = false;
 			// 
@@ -102,9 +103,9 @@
 			// numScale
 			// 
 			this.numScale.Font = new System.Drawing.Font("MS UI Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.numScale.Location = new System.Drawing.Point(210, 41);
+			this.numScale.Location = new System.Drawing.Point(12, 41);
 			this.numScale.Maximum = new decimal(new int[] {
-            128,
+            48,
             0,
             0,
             0});
@@ -117,17 +118,21 @@
 			this.numScale.Size = new System.Drawing.Size(75, 22);
 			this.numScale.TabIndex = 5;
 			this.numScale.Value = new decimal(new int[] {
-            64,
+            16,
             0,
             0,
             0});
 			this.numScale.ValueChanged += new System.EventHandler(this.numScale_ValueChanged);
 			// 
+			// timer2
+			// 
+			this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+			// 
 			// WaveInfoForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(662, 541);
+			this.ClientSize = new System.Drawing.Size(796, 600);
 			this.Controls.Add(this.numScale);
 			this.Controls.Add(this.picWave);
 			this.Controls.Add(this.hsbTime);
@@ -155,5 +160,6 @@
 		private System.Windows.Forms.PictureBox picWave;
 		private System.Windows.Forms.Timer timer1;
 		private System.Windows.Forms.NumericUpDown numScale;
+		private System.Windows.Forms.Timer timer2;
 	}
 }

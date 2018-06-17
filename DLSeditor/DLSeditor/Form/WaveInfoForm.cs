@@ -21,14 +21,12 @@ namespace DLSeditor
 		private int mIndex;
 		private WavePlayback mWaveOut;
 
-		private Task mTaskWave;
-		private Task mTaskSpec;
-		private byte[][] mSpectrum;
-		private byte[][] mColors;
+		private byte[][] mSpectrogram;
+		private UInt32[] mColors;
 		private short[] mWave;
 		private double mScale;
-		private double mDelta;
 		private double mTimeDiv;
+		private double mDelta;
 
 		public WaveInfoForm(WavePlayback waveOut, DLS.File dls, int index)
 		{
@@ -53,7 +51,7 @@ namespace DLSeditor
 			chart1.ChartAreas[0].AxisY.MajorGrid.Interval = 0.125;
 			chart1.Legends.Clear();
 
-			mColors = new byte[256][];
+			mColors = new UInt32[256];
 			var dColor = 1280.0 / mColors.Length;
 			var vColor = 0.0;
 			for (int i = 0; i < mColors.Length; ++i) {
@@ -80,24 +78,23 @@ namespace DLSeditor
 					g = 255 - (int)(vColor - 1024);
 					r = 255;
 				}
-				mColors[i] = new byte[] { (byte)r, (byte)g, (byte)b };
+				mColors[i] = (UInt32)((r << 16) | (g << 8) | b);
 				vColor += dColor;
 			}
 
-			timer1.Interval = 30;
+			timer1.Interval = 20;
 			timer1.Enabled = true;
 			timer1.Start();
+
+			timer2.Interval = 20;
+			timer2.Enabled = true;
+			timer2.Start();
 		}
 
 		private void WaveInfoForm_Load(object sender, EventArgs e)
 		{
 			InitWave();
-			numScale.Value = 64;
-			hsbTime.Value = 0;
-			hsbTime.Maximum = (int)(mWave.Length * mTimeDiv * Math.Pow(2.0 , ((double)numScale.Value - 32.0) / 16.0));
-			mScale = 1.0;
-			mTaskWave = Task.Factory.StartNew(() => DrawWave());
-			mTaskSpec = Task.Factory.StartNew(() => DrawSpec());
+			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 16.0);
 		}
 
 		private void btnPlay_Click(object sender, EventArgs e)
@@ -121,12 +118,19 @@ namespace DLSeditor
 
 		private void numScale_ValueChanged(object sender, EventArgs e)
 		{
-			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 16.0);
-			hsbTime.Value = 0;
-			hsbTime.Maximum = (int)(mWave.Length * mTimeDiv * mScale);
+			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
 		}
 
 		private void timer1_Tick(object sender, EventArgs e)
+		{
+			hsbTime.Width = Width - hsbTime.Left - 24;
+			picWave.Width = Width - picWave.Left - 24;
+			picSpectrum.Width = Width - picSpectrum.Left - 24;
+			DrawWave();
+			DrawSpec();
+		}
+
+		private void timer2_Tick(object sender, EventArgs e)
 		{
 			Series t = new Series();
 			t.Label = "";
@@ -173,16 +177,20 @@ namespace DLSeditor
 				}
 				break;
 			}
+
+			hsbTime.Value = 0;
+			hsbTime.Maximum = samples;
+
 			br.Close();
 			br.Dispose();
 
 			mDelta = wave.Format.SampleRate / 44100.0;
 			mTimeDiv = 1.0 / mDelta / packSize;
-			mSpectrum = new byte[(int)(mWave.Length * mTimeDiv)][];
+			mSpectrogram = new byte[(int)(mWave.Length * mTimeDiv)][];
 
-			var sp = new Spectrum(44100, 27.5, 24, 232);
+			var sp = new Spectrum(44100, 27.5, 24, 224);
 			var time = 0.0;
-			for (var s = 0; s < mSpectrum.Length; ++s) {
+			for (var s = 0; s < mSpectrogram.Length; ++s) {
 				for (var i = 0; i < packSize && time < mWave.Length; ++i) {
 					var w = mWave[(int)time] / 32768.0;
 					for (uint b = 0; b < sp.Banks; ++b) {
@@ -193,34 +201,89 @@ namespace DLSeditor
 
 				sp.SetLevel();
 				var level = sp.Level;
-				mSpectrum[s] = new byte[sp.Banks];
+				var amp = mColors.Length - 1;
+				mSpectrogram[s] = new byte[sp.Banks];
 				for (var b = 0; b < sp.Banks; ++b) {
 					var lv = level[b] / sp.Max;
-					mSpectrum[s][b] = (byte)(1.0 < lv ? 255 : (255 * lv));
+					mSpectrogram[s][b] = (byte)(1.0 < lv ? amp : (amp * lv));
 				}
 			}
 		}
 
+		private void DrawWave()
+		{
+			var bmp = new Bitmap(picWave.Width, picWave.Height, PixelFormat.Format16bppRgb555);
+			var gM = Graphics.FromImage(bmp);
+
+			var amp = bmp.Height - 1;
+
+			var green = new Pen(Color.FromArgb(0, 168, 0), 1.0f);
+			var blue = new Pen(Color.FromArgb(0, 0, 255), 1.0f);
+
+			var wave = mDLS.WavePool[mIndex];
+			var loopBegin = -1;
+			var loopEnd = -1;
+			if (0 < wave.Samplers.LoopCount) {
+				loopBegin = (int)wave.Samplers.Loops[0].Start;
+				loopEnd = loopBegin + (int)wave.Samplers.Loops[0].Length - 1;
+			}
+
+			//
+			var begin = hsbTime.Value;
+			var end = hsbTime.Value + bmp.Width / mScale + 1;
+			for (int t1 = begin, t2 = begin + 1; t2 < end; ++t1, ++t2) {
+				if (t1 < 0) {
+					continue;
+				}
+				if (mWave.Length <= t2) {
+					break;
+				}
+
+				var y1 = (float)(amp * (0.5 - 0.5 * mWave[t1] / 32768.0));
+				var y2 = (float)(amp * (0.5 - 0.5 * mWave[t2] / 32768.0));
+				var x1 = (float)(mScale * (t1 - begin));
+				var x2 = (float)(mScale * (t2 - begin));
+
+				if (loopBegin <= t1 && t2 <= loopEnd) {
+					gM.DrawLine(blue, x1, y1, x2, y2);
+				}
+				else {
+					gM.DrawLine(green, x1, y1, x2, y2);
+				}
+			}
+
+			//
+			gM.DrawLine(Pens.Red, 0, picWave.Height / 2.0f - 1, picWave.Width - 1, picWave.Height / 2.0f - 1);
+
+			if (null != picWave.Image) {
+				picWave.Image.Dispose();
+				picWave.Image = null;
+			}
+			picWave.BackColor = Color.Black;
+			picWave.Image = bmp;
+			gM.Dispose();
+		}
+
 		unsafe private void DrawSpec()
 		{
-			var bmp = new Bitmap(picSpectrum.Width, picSpectrum.Height, PixelFormat.Format24bppRgb);
+			var bmp = new Bitmap(picSpectrum.Width, picSpectrum.Height, PixelFormat.Format32bppRgb);
 			BitmapData bmpData = bmp.LockBits(
 				new Rectangle(0, 0, bmp.Width, bmp.Height),
 				ImageLockMode.WriteOnly,
 				bmp.PixelFormat
 			);
+			var pix = (UInt32*)bmpData.Scan0.ToPointer();
 
 			int y, x;
-			var pix = (byte*)bmpData.Scan0.ToPointer();
+			double begin = hsbTime.Value * mTimeDiv;
+			double scale = mTimeDiv / mScale;
 			for (y = bmp.Height - 1; 0 <= y; --y) {
 				for (x = 0; x < bmp.Width; ++x) {
-					var sx = (int)((x + hsbTime.Value) / mScale);
-					if (sx < mSpectrum.Length) {
-						*pix = mColors[mSpectrum[sx][y]][2];
-						*(pix + 1) = mColors[mSpectrum[sx][y]][1];
-						*(pix + 2) = mColors[mSpectrum[sx][y]][0];
+					var sx = (int)(begin + scale * x);
+					if (sx < mSpectrogram.Length) {
+						*pix = mColors[mSpectrogram[sx][y]];
 					}
-					pix += 3;
+					++pix;
 				}
 			}
 			bmp.UnlockBits(bmpData);
@@ -231,58 +294,6 @@ namespace DLSeditor
 			}
 			picSpectrum.BackColor = Color.Black;
 			picSpectrum.Image = bmp;
-
-			Thread.Sleep(50);
-			DrawSpec();
-		}
-
-		private void DrawWave()
-		{
-			var bmpW = new Bitmap(picWave.Width, picWave.Height);
-			var gw = Graphics.FromImage(bmpW);
-
-			var scale = mScale * mTimeDiv;
-			var amp = bmpW.Height - 1;
-
-			var green = new Pen(Color.FromArgb(0, 168, 0), 1.0f);
-
-			for (int t1 = hsbTime.Value, t2 = t1 + 1; t2 < mWave.Length; ++t1, ++t2) {
-				var v1 = (0.5 - 0.5 * mWave[t1] / 32768.0);
-				var v2 = (0.5 - 0.5 * mWave[t2] / 32768.0);
-				if (v1 < 0.0) {
-					v1 = 0.0;
-				}
-				else if (1.0 < v1) {
-					v1 = 1.0;
-				}
-				if (v2 < 0.0) {
-					v2 = 0.0;
-				}
-				else if (1.0 < v2) {
-					v2 = 1.0;
-				}
-
-				var x1 = (float)(t1 * scale - hsbTime.Value);
-				var y1 = (float)(v1 * amp);
-				var x2 = (float)(t2 * scale - hsbTime.Value);
-				var y2 = (float)(v2 * amp);
-				if (bmpW.Width <= x2) {
-					break;
-				}
-				gw.DrawLine(green, x1, y1, x2, y2);
-			}
-
-			gw.DrawLine(Pens.Red, 0, picWave.Height / 2.0f - 1, picWave.Width - 1, picWave.Height / 2.0f - 1);
-			if (null != picWave.Image) {
-				picWave.Image.Dispose();
-				picWave.Image = null;
-			}
-			picWave.BackColor = Color.Black;
-			picWave.Image = bmpW;
-			gw.Dispose();
-
-			Thread.Sleep(30);
-			DrawWave();
 		}
 	}
 }
