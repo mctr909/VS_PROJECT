@@ -19,12 +19,12 @@ namespace DLSeditor
 			Stop();
 		}
 
-		public int Position
-		{
-			get {
-				return (int)mTime;
-			}
-		}
+		//public int Position
+		//{
+		//	get {
+		//		return (int)mTime;
+		//	}
+		//}
 
 		public void SetValue(DLS.WAVE wave)
 		{
@@ -46,7 +46,6 @@ namespace DLSeditor
 				}
 				break;
 			default:
-				//throw new Exception(string.Format("Unknown bitrate:{0}", wave.Format.BitsPerSample));
 				return;
 			}
 
