@@ -10,9 +10,14 @@
 		private bool mIsActive;
 		private bool mOnKey;
 
+		private Envelope mEnvAmp;
+		private Envelope mEnvCutoff;
+
 		private Filter mFilter;
 		private double mCurAmp;
 		private double mCurCutoff;
+		private double mCurResonance;
+
 		private double mCurTime;
 		private double mCurIndex;
 
@@ -36,9 +41,14 @@
 			mIsActive = false;
 			mOnKey = false;
 
+			mEnvAmp = new Envelope();
+			mEnvCutoff = new Envelope();
+
 			mFilter = new Filter(1.0, 0.0);
 			mCurAmp = 0.0;
 			mCurCutoff = 0.0;
+			mCurResonance = 0.0;
+
 			mCurTime = 0.0;
 			mCurIndex = 0.0;
 		}
@@ -60,8 +70,11 @@
 			mIsActive = true;
 			mOnKey = true;
 
-			mCurAmp = channel.EnvAmp.ALevel;
-			mCurCutoff = channel.EnvCutoff.ALevel * mChannel.Fc;
+			mEnvAmp = channel.EnvAmp;
+			mCurAmp = mEnvAmp.ALevel;
+
+			mEnvCutoff = channel.EnvCutoff;
+			mCurCutoff = mEnvCutoff.ALevel * mChannel.Fc;
 
 			var tempCutoff = mCurCutoff;
 			if (1.0 < tempCutoff) {
@@ -87,23 +100,23 @@
 
 		public void NoteOutput() {
 			if (mOnKey) {
-				if (mCurTime < mChannel.EnvAmp.ATime) {
-					mCurAmp += (mChannel.EnvAmp.DLevel - mCurAmp) * mChannel.EnvAmp.ADelta * mChannel.DeltaTime;
+				if (mCurTime < mEnvAmp.ATime) {
+					mCurAmp += (mEnvAmp.DLevel - mCurAmp) * mEnvAmp.ADelta * Const.DeltaTime;
 				}
 				else {
-					mCurAmp += (mChannel.EnvAmp.SLevel - mCurAmp) * mChannel.EnvAmp.DDelta * mChannel.DeltaTime;
+					mCurAmp += (mEnvAmp.SLevel - mCurAmp) * mEnvAmp.DDelta * Const.DeltaTime;
 				}
 
-				if (mCurTime < mChannel.EnvCutoff.ATime) {
-					mCurCutoff += (mChannel.EnvCutoff.DLevel * mChannel.Fc - mCurCutoff) * mChannel.EnvCutoff.ADelta * mChannel.DeltaTime;
+				if (mCurTime < mEnvCutoff.ATime) {
+					mCurCutoff += (mEnvCutoff.DLevel * mChannel.Fc - mCurCutoff) * mEnvCutoff.ADelta * Const.DeltaTime;
 				}
 				else {
-					mCurCutoff += (mChannel.EnvCutoff.SLevel * mChannel.Fc - mCurCutoff) * mChannel.EnvCutoff.DDelta * mChannel.DeltaTime;
+					mCurCutoff += (mEnvCutoff.SLevel * mChannel.Fc - mCurCutoff) * mEnvCutoff.DDelta * Const.DeltaTime;
 				}
 			}
 			else {
-				mCurAmp -= mCurAmp * mChannel.EnvAmp.RDelta * mChannel.Hld * mChannel.DeltaTime;
-				mCurCutoff += (mChannel.EnvCutoff.RLevel * mChannel.Fc - mCurCutoff) * mChannel.EnvCutoff.RDelta * mChannel.DeltaTime;
+				mCurAmp -= mCurAmp * mEnvAmp.RDelta * mChannel.Hld * Const.DeltaTime;
+				mCurCutoff += (mEnvCutoff.RLevel * mChannel.Fc - mCurCutoff) * mEnvCutoff.RDelta * Const.DeltaTime;
 				if (mCurAmp < 0.001) {
 					mIsActive = false;
 				}
@@ -128,7 +141,8 @@
 				tempCutoff = 1.0;
 			}
 
-			var tempResonance = mChannel.Fq;
+			mCurResonance += 10.0 * (mChannel.Fq - mCurResonance) * Const.DeltaTime;
+			var tempResonance = mCurResonance;
 			if (1.0 < tempResonance) {
 				tempResonance = 1.0;
 			}
@@ -138,7 +152,7 @@
 			mFilter.Step(temp, ref temp);
 
 			mChannel.Wave += temp;
-			mCurTime += mChannel.DeltaTime;
+			mCurTime += Const.DeltaTime;
 		}
 
 		public void DrumOutput() {
@@ -146,7 +160,7 @@
 				mCurAmp = 1.0;
 			}
 			else {
-				mCurAmp -= mCurAmp * 4.0 * mChannel.DeltaTime;
+				mCurAmp -= mCurAmp * 4.0 * Const.DeltaTime;
 				if (mCurAmp < 0.001) {
 					mIsActive = false;
 				}
@@ -166,7 +180,7 @@
 			}
 
 			mChannel.Wave += mVelocity * mCurAmp * (mWaveInfo.Buff[indexCur] * dt + mWaveInfo.Buff[indexPre] * (1.0 - dt)) / 32768.0;
-			mCurTime += mChannel.DeltaTime;
+			mCurTime += Const.DeltaTime;
 		}
 	}
 }

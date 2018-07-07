@@ -1,7 +1,6 @@
 ﻿namespace MIDI {
 	public class Channel {
 		public readonly int No;
-		public readonly double DeltaTime;
 
 		public InstID InstID;
 		public bool Enable;
@@ -45,27 +44,17 @@
 		private byte mFqB;
 		public double Fq { get { return mFqD; } }
 
-		private byte mRPN_MSB;
-		private byte mRPN_LSB;
+		private byte mPitchRange;
+		public byte PitchRange { get { return mPitchRange; } }
 
 		private short mPitchS;
-		private double mPitch;
-		public byte PitchRange;
-		public short Pitch {
-			get { return mPitchS; }
-			set {
-				mPitchS = value;
-				var temp = mPitchS * PitchRange;
-				if (temp < 0) {
-					temp = -temp;
-					mPitch = 1.0 / (Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128]);
-				}
-				else {
-					mPitch = Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128];
-				}
-			}
-		}
-		public double PitchD { get { return mPitch; } }
+		public short Pitch { get { return mPitchS; } }
+
+		private double mPitchD;
+		public double PitchD { get { return mPitchD; } }
+
+		private byte mRPN_MSB;
+		private byte mRPN_LSB;
 
 		public Envelope EnvAmp;
 		public Envelope EnvCutoff;
@@ -87,9 +76,8 @@
 		private double mChoLfo3Re;
 		private double mChoLfo3Im;
 
-		public Channel(int no, int sampleRate, InstTable instTable) {
+		public Channel(int no, InstTable instTable) {
 			No = no;
-			DeltaTime = 1.0 / sampleRate;
 
 			Enable = true;
 			InstID = new InstID();
@@ -97,10 +85,10 @@
 
 			mInstTable = instTable;
 
-			mDelayTapL = new double[sampleRate];
-			mDelayTapR = new double[sampleRate];
+			mDelayTapL = new double[Const.SampleRate];
+			mDelayTapR = new double[Const.SampleRate];
 
-			mChoLfoK = 0.25 * 6.283185307 * DeltaTime;
+			mChoLfoK = 0.25 * 6.283185307 * Const.DeltaTime;
 			mChoLfo1Re = 1.0;
 			mChoLfo1Im = 0.0;
 			mChoLfo2Re = System.Math.Cos(3 * 2 * System.Math.PI / 16.0);
@@ -120,7 +108,7 @@
 
 			Const.ChgInst(this);
 
-			PrgmChg(InstID.ProgramNo);
+			ProgramChange(InstID.ProgramNo);
 
 			mVolB = 100;
 			mExpB = 100;
@@ -141,16 +129,17 @@
 
 			mFcB = 64;
 			mFqB = 64;
-			mFcD = mFcB / 64.0;
-			mFqD = mFqB / 254.0;
+			mFcD = mFcB / 127.0;
+			mFqD = mFqB / 127.0;
 
 			mRPN_MSB = 255;
 			mRPN_LSB = 255;
 
-			Pitch = 0;
-			PitchRange = 2;
+			mPitchRange = 2;
+			mPitchS = 0;
+			mPitchD = 1.0;
 
-			mDelaySteps = (int)(0.125 / DeltaTime);
+			mDelaySteps = (int)(0.125 * Const.SampleRate);
 		}
 
 		public void Step(ref double left, ref double right) {
@@ -238,35 +227,7 @@
 			Wave = 0.0;
 		}
 
-		public void PrgmChg(byte value) {
-			InstID.ProgramNo = value;
-			InstInfo instInfo;
-
-			if (mInstTable.InstList.ContainsKey(InstID)) {
-				instInfo = mInstTable.InstList[InstID];
-				Const.ChgInst(this);
-			}
-			else {
-				if (InstID.IsDrum) {
-					if (mInstTable.InstList.ContainsKey(new InstID(InstID.ProgramNo, 0, 0, true))) {
-						instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0, true)];
-					}
-					else {
-						instInfo = mInstTable.InstList[new InstID(0, 0, 0, true)];
-					}
-				}
-				else {
-					instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0)];
-					Const.ChgInst(this);
-				}
-			}
-
-			WaveList = instInfo.WaveInfo;
-			EnvAmp = instInfo.EnvAmp;
-			EnvCutoff = instInfo.EnvFilter;
-		}
-
-		public void CtrlChg(byte type, byte value) {
+		public void ControlChange(byte type, byte value) {
 			switch ((CTRL_TYPE)type) {
 			case CTRL_TYPE.BANK_MSB:
 				InstID.BankMSB = value;
@@ -314,8 +275,10 @@
 
 			case CTRL_TYPE.DATA:
 				if (mRPN_MSB == 0 && mRPN_LSB == 0) {
-					PitchRange = value;
+					mPitchRange = value;
 				}
+				mRPN_MSB = 255;
+				mRPN_LSB = 255;
 				break;
 
 			case CTRL_TYPE.HOLD:
@@ -324,11 +287,11 @@
 
 			case CTRL_TYPE.CUTOFF:
 				mFcB = value;
-				mFcD = value / 64.0;
+				mFcD = value / 112.0;
 				break;
 			case CTRL_TYPE.RESONANCE:
 				mFqB = value;
-				mFqD = value / 254.0;
+				mFqD = value / 112.0;
 				break;
 
 			case CTRL_TYPE.RPN_LSB:
@@ -341,6 +304,46 @@
 			case CTRL_TYPE.ALL_RESET:
 				AllReset();
 				break;
+			}
+		}
+
+		public void ProgramChange(byte no) {
+			InstID.ProgramNo = no;
+			InstInfo instInfo;
+
+			if (mInstTable.InstList.ContainsKey(InstID)) {
+				instInfo = mInstTable.InstList[InstID];
+				Const.ChgInst(this);
+			}
+			else {
+				if (InstID.IsDrum) {
+					if (mInstTable.InstList.ContainsKey(new InstID(InstID.ProgramNo, 0, 0, true))) {
+						instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0, true)];
+					}
+					else {
+						instInfo = mInstTable.InstList[new InstID(0, 0, 0, true)];
+					}
+				}
+				else {
+					instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0)];
+					Const.ChgInst(this);
+				}
+			}
+
+			WaveList = instInfo.WaveInfo;
+			EnvAmp = instInfo.EnvAmp;
+			EnvCutoff = instInfo.EnvFilter;
+		}
+
+		public void PitchBend(byte lsb, byte msb) {
+			mPitchS = (short)((lsb | (msb << 7)) - 8192);
+			var temp = mPitchS * mPitchRange;
+			if (temp < 0) {
+				temp = -temp;
+				mPitchD = 1.0 / (Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128]);
+			}
+			else {
+				mPitchD = Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128];
 			}
 		}
 	}

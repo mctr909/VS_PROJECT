@@ -15,7 +15,7 @@
 			mSampler = new Sampler[SAMPLER_COUNT];
 
 			for (int i = 0; i < CHANNEL_COUNT; ++i) {
-				mChannel[i] = new Channel(i, SampleRate, instTable);
+				mChannel[i] = new Channel(i, instTable);
 			}
 
 			for (int i = 0; i < SAMPLER_COUNT; ++i) {
@@ -84,15 +84,15 @@
 				break;
 
 			case EVENT_TYPE.CTRL_CHG:
-				mChannel[msg.Channel].CtrlChg(msg.Byte1, msg.Byte2);
+				mChannel[msg.Channel].ControlChange(msg.Byte1, msg.Byte2);
 				break;
 
 			case EVENT_TYPE.PRGM_CHG:
-				mChannel[msg.Channel].PrgmChg(msg.Byte1);
+				mChannel[msg.Channel].ProgramChange(msg.Byte1);
 				break;
 
 			case EVENT_TYPE.PITCH:
-				mChannel[msg.Channel].Pitch = (short)((msg.Byte1 | (msg.Byte2 << 7)) - 8192);
+				mChannel[msg.Channel].PitchBend(msg.Byte1, msg.Byte2);
 				break;
 
 			default:
