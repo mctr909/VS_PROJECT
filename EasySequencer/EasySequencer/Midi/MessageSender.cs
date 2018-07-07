@@ -1,20 +1,16 @@
-﻿namespace MIDI
-{
-	public class MessageSender : WaveOutLib
-	{
+﻿namespace MIDI {
+	public class MessageSender : WaveOut {
 		private const int CHANNEL_COUNT = 16;
 		private const int SAMPLER_COUNT = 128;
 
 		private Channel[] mChannel;
 		private Sampler[] mSampler;
 
-		public Channel[] Channel
-		{
+		public Channel[] Channel {
 			get { return mChannel; }
 		}
 
-		public MessageSender(InstTable instTable)
-		{
+		public MessageSender(InstTable instTable) : base(Const.SampleRate, 2, 512, 16) {
 			mChannel = new Channel[CHANNEL_COUNT];
 			mSampler = new Sampler[SAMPLER_COUNT];
 
@@ -25,15 +21,17 @@
 			for (int i = 0; i < SAMPLER_COUNT; ++i) {
 				mSampler[i] = new Sampler();
 			}
+
+			Open();
+			Play();
 		}
 
-		protected override void SetData()
-		{
+		protected override void SetWave() {
 			int i, s, ch;
 			double sumL = 0.0;
 			double sumR = 0.0;
 
-			for (i = 0; i < BufferSize; i += 2) {
+			for (i = 0; i < WaveBuffer.Length; i += 2) {
 				for (s = 0; s < SAMPLER_COUNT; ++s) {
 					if (null == mSampler[s]) {
 						continue;
@@ -54,18 +52,26 @@
 					mChannel[ch].Step(ref sumL, ref sumR);
 				}
 
-				if (sumL < -1.0) sumL = -1.0;
-				else if (1.0 < sumL) sumL = 1.0;
-				if (sumR < -1.0) sumR = -1.0;
-				else if (1.0 < sumR) sumR = 1.0;
+				if (sumL < -1.0) {
+					sumL = -1.0;
+				}
+				else if (1.0 < sumL) {
+					sumL = 1.0;
+				}
+
+				if (sumR < -1.0) {
+					sumR = -1.0;
+				}
+				else if (1.0 < sumR) {
+					sumR = 1.0;
+				}
 
 				WaveBuffer[i] = (short)(32767 * sumL);
 				WaveBuffer[i + 1] = (short)(32767 * sumR);
 			}
 		}
 
-		public void Send(Message msg)
-		{
+		public void Send(Message msg) {
 			switch (msg.Type) {
 			case EVENT_TYPE.NOTE_OFF:
 				NoteOff(mChannel[msg.Channel], msg.Byte1);
@@ -94,8 +100,7 @@
 			}
 		}
 
-		private void NoteOff(Channel channel, byte note)
-		{
+		private void NoteOff(Channel channel, byte note) {
 			for (int i = 0; i < SAMPLER_COUNT; ++i) {
 				if (channel.No == mSampler[i].ChannelNo && note == mSampler[i].NoteNo) {
 					mSampler[i].NoteOff();
@@ -104,8 +109,7 @@
 			}
 		}
 
-		private void NoteOn(Channel channel, byte note, byte velocity)
-		{
+		private void NoteOn(Channel channel, byte note, byte velocity) {
 			if (0 == velocity) {
 				NoteOff(channel, note);
 				return;

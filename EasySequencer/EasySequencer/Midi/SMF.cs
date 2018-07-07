@@ -1,26 +1,21 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-namespace MIDI
-{
-	public class SMF
-	{
+namespace MIDI {
+	public class SMF {
 		#region 構造体
-		private struct Head
-		{
+		private struct Head {
 			public readonly FORMAT Format;
 			public UInt16 Tracks;
 			public readonly UInt16 Ticks;
 
-			public Head(FORMAT format, UInt16 tracks, UInt16 ticks)
-			{
+			public Head(FORMAT format, UInt16 tracks, UInt16 ticks) {
 				Format = format;
 				Tracks = tracks;
 				Ticks = ticks;
 			}
 
-			public Head(BinaryReader br)
-			{
+			public Head(BinaryReader br) {
 				ReadUInt32(br);
 				ReadUInt32(br);
 				Format = (FORMAT)ReadUInt16(br);
@@ -32,8 +27,7 @@ namespace MIDI
 				}
 			}
 
-			public void Write(MemoryStream ms)
-			{
+			public void Write(MemoryStream ms) {
 				WriteUInt32(ms, 0x4D546864);
 				WriteUInt32(ms, 6);
 				WriteUInt16(ms, (UInt16)Format);
@@ -42,19 +36,16 @@ namespace MIDI
 			}
 		}
 
-		private class Track
-		{
+		private class Track {
 			public readonly UInt16 No;
 			public HashSet<Event> Events;
 
-			public Track(int no)
-			{
+			public Track(int no) {
 				No = (UInt16)no;
 				Events = new HashSet<Event>();
 			}
 
-			public Track(BinaryReader br, int no)
-			{
+			public Track(BinaryReader br, int no) {
 				No = (UInt16)no;
 				Events = new HashSet<Event>();
 
@@ -71,8 +62,7 @@ namespace MIDI
 				}
 			}
 
-			public void Write(MemoryStream ms)
-			{
+			public void Write(MemoryStream ms) {
 				MemoryStream temp = new MemoryStream();
 				WriteUInt32(temp, 0);
 				WriteUInt32(temp, 0);
@@ -100,18 +90,15 @@ namespace MIDI
 		#endregion
 
 		#region privateメソッド
-		private static UInt16 ReadUInt16(BinaryReader br)
-		{
+		private static UInt16 ReadUInt16(BinaryReader br) {
 			return (UInt16)((br.ReadByte() << 8) | br.ReadByte());
 		}
 
-		private static UInt32 ReadUInt32(BinaryReader br)
-		{
+		private static UInt32 ReadUInt32(BinaryReader br) {
 			return (UInt32)((br.ReadByte() << 24) | (br.ReadByte() << 16) | (br.ReadByte() << 8) | br.ReadByte());
 		}
 
-		private static UInt32 ReadDelta(MemoryStream ms)
-		{
+		private static UInt32 ReadDelta(MemoryStream ms) {
 			UInt32 temp = (UInt32)ms.ReadByte();
 			UInt32 retVal = temp & 0x7F;
 
@@ -124,22 +111,19 @@ namespace MIDI
 			return retVal;
 		}
 
-		private static void WriteUInt16(MemoryStream ms, UInt16 value)
-		{
+		private static void WriteUInt16(MemoryStream ms, UInt16 value) {
 			ms.WriteByte((byte)(value >> 8));
 			ms.WriteByte((byte)(value & 0xFF));
 		}
 
-		private static void WriteUInt32(MemoryStream ms, UInt32 value)
-		{
+		private static void WriteUInt32(MemoryStream ms, UInt32 value) {
 			ms.WriteByte((byte)((value >> 24) & 0xFF));
 			ms.WriteByte((byte)((value >> 16) & 0xFF));
 			ms.WriteByte((byte)((value >> 8) & 0xFF));
 			ms.WriteByte((byte)(value & 0xFF));
 		}
 
-		private static void WriteDelta(MemoryStream ms, UInt32 value)
-		{
+		private static void WriteDelta(MemoryStream ms, UInt32 value) {
 			if (0 < (value >> 21)) {
 				ms.WriteByte((byte)(0x80 | ((value >> 21) & 0x7F)));
 				ms.WriteByte((byte)(0x80 | ((value >> 14) & 0x7F)));
@@ -165,37 +149,35 @@ namespace MIDI
 			return;
 		}
 
-		private static byte[] ToDelta(UInt32 value)
-		{
+		private static byte[] ToDelta(UInt32 value) {
 			if (0 < (value >> 21)) {
 				return new byte[] {
-				(byte)(0x80 | ((value >> 21) & 0x7F)),
-				(byte)(0x80 | ((value >> 14) & 0x7F)),
-				(byte)(0x80 | ((value >> 7) & 0x7F)),
-				(byte)(value & 0x7F)
-			};
+					(byte)(0x80 | ((value >> 21) & 0x7F)),
+					(byte)(0x80 | ((value >> 14) & 0x7F)),
+					(byte)(0x80 | ((value >> 7) & 0x7F)),
+					(byte)(value & 0x7F)
+				};
 			}
 
 			if (0 < (value >> 14)) {
 				return new byte[] {
-				(byte)(0x80 | ((value >> 14) & 0x7F)),
-				(byte)(0x80 | ((value >> 7) & 0x7F)),
-				(byte)(value & 0x7F)
-			};
+					(byte)(0x80 | ((value >> 14) & 0x7F)),
+					(byte)(0x80 | ((value >> 7) & 0x7F)),
+					(byte)(value & 0x7F)
+				};
 			}
 
 			if (0 < (value >> 7)) {
 				return new byte[] {
-				(byte)(0x80 | ((value >> 7) & 0x7F)),
-				(byte)(value & 0x7F)
-			};
+					(byte)(0x80 | ((value >> 7) & 0x7F)),
+					(byte)(value & 0x7F)
+				};
 			}
 
 			return new byte[] { (byte)value };
 		}
 
-		private static Message ReadMessage(MemoryStream ms, ref int currentStatus)
-		{
+		private static Message ReadMessage(MemoryStream ms, ref int currentStatus) {
 			EVENT_TYPE type;
 			byte ch;
 
@@ -266,8 +248,7 @@ namespace MIDI
 			}
 		}
 
-		private static void WriteMessage(MemoryStream ms, Message msg)
-		{
+		private static void WriteMessage(MemoryStream ms, Message msg) {
 			switch (msg.Type) {
 			// 2バイトメッセージ
 			case EVENT_TYPE.NOTE_ON:
@@ -308,15 +289,13 @@ namespace MIDI
 		}
 		#endregion
 
-		public int Ticks
-		{
+		public int Ticks {
 			get {
 				return mHead.Ticks;
 			}
 		}
 
-		public Event[] EventList
-		{
+		public Event[] EventList {
 			get {
 				HashSet<Event> hash = new HashSet<Event>();
 				foreach (var tr in mTracks) {
@@ -332,14 +311,12 @@ namespace MIDI
 			}
 		}
 
-		public SMF(FORMAT format = FORMAT.FORMAT1, ushort ticks = 960)
-		{
+		public SMF(FORMAT format = FORMAT.FORMAT1, ushort ticks = 960) {
 			mHead = new Head(format, 0, ticks);
 			mTracks = new Dictionary<int, Track>();
 		}
 
-		public SMF(string filePath)
-		{
+		public SMF(string filePath) {
 			FileStream fs = new FileStream(filePath, FileMode.Open);
 			BinaryReader br = new BinaryReader(fs);
 

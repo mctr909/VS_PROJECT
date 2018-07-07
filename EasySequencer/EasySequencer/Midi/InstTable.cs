@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace MIDI
-{
-	unsafe public class InstTable
-	{
+namespace MIDI {
+	unsafe public class InstTable {
 		public Dictionary<InstID, InstInfo> InstList;
 
-		public InstTable(string filePath)
-		{
+		public InstTable(string filePath) {
 			var dls = new DLS.File(filePath);
 			InstList = new Dictionary<InstID, InstInfo>();
 
@@ -46,7 +43,8 @@ namespace MIDI
 
 				if (null != inst.ArtPool) {
 					foreach (var art in inst.ArtPool.Art.List) {
-						if (DLS.CONN_SRC_TYPE.NONE != art.Source) continue;
+						if (DLS.CONN_SRC_TYPE.NONE != art.Source)
+							continue;
 						switch (art.Destination) {
 						case DLS.CONN_DST_TYPE.EG1_ATTACK_TIME:
 							instInfo.EnvAmp.ALevel = 0.0;
@@ -74,7 +72,7 @@ namespace MIDI
 							instInfo.WaveInfo[i].Delta
 								= Math.Pow(2.0, region.Sampler.FineTune / 1200.0)
 								* dls.WavePool[waveIdx].Format.SamplesPerSec
-								/ 44100.0
+								/ Const.SampleRate
 							;
 							instInfo.WaveInfo[i].Gain = region.Sampler.Gain;
 

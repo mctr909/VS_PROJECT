@@ -1,7 +1,5 @@
-﻿namespace MIDI
-{
-	unsafe public class Sampler
-	{
+﻿namespace MIDI {
+	unsafe public class Sampler {
 		private Channel mChannel;
 		private byte mNoteNo;
 		private double mDelta;
@@ -18,23 +16,19 @@
 		private double mCurTime;
 		private double mCurIndex;
 
-		public int ChannelNo
-		{
+		public int ChannelNo {
 			get { return (null == mChannel) ? 0 : mChannel.No; }
 		}
 
-		public byte NoteNo
-		{
+		public byte NoteNo {
 			get { return mNoteNo; }
 		}
 
-		public bool IsActive
-		{
+		public bool IsActive {
 			get { return mIsActive; }
 		}
 
-		public Sampler()
-		{
+		public Sampler() {
 			mChannel = null;
 			mNoteNo = 0;
 			mVelocity = 0.0;
@@ -49,8 +43,7 @@
 			mCurIndex = 0.0;
 		}
 
-		public void NoteOn(Channel channel, byte noteNo, byte velocity)
-		{
+		public void NoteOn(Channel channel, byte noteNo, byte velocity) {
 			mChannel = channel;
 			mNoteNo = noteNo;
 			mWaveInfo = channel.WaveList[noteNo];
@@ -88,13 +81,11 @@
 			mCurIndex = 0.0;
 		}
 
-		public void NoteOff()
-		{
+		public void NoteOff() {
 			mOnKey = false;
 		}
 
-		public void NoteOutput()
-		{
+		public void NoteOutput() {
 			if (mOnKey) {
 				if (mCurTime < mChannel.EnvAmp.ATime) {
 					mCurAmp += (mChannel.EnvAmp.DLevel - mCurAmp) * mChannel.EnvAmp.ADelta * mChannel.DeltaTime;
@@ -150,8 +141,7 @@
 			mCurTime += mChannel.DeltaTime;
 		}
 
-		public void DrumOutput()
-		{
+		public void DrumOutput() {
 			if (mOnKey) {
 				mCurAmp = 1.0;
 			}

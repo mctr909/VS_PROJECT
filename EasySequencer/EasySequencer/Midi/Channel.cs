@@ -1,7 +1,5 @@
-﻿namespace MIDI
-{
-	public class Channel
-	{
+﻿namespace MIDI {
+	public class Channel {
 		public readonly int No;
 		public readonly double DeltaTime;
 
@@ -13,66 +11,39 @@
 
 		private double mVolD;
 		private byte mVolB;
-		public byte Vol
-		{
-			get { return mVolB; }
-		}
+		public byte Vol { get { return mVolB; } }
 
 		private double mExpD;
 		private byte mExpB;
-		public byte Exp
-		{
-			get { return mExpB; }
-		}
+		public byte Exp { get { return mExpB; } }
 
 		private double mPanL;
 		private double mPanR;
 		private byte mPanB;
-		public byte Pan
-		{
-			get { return mPanB; }
-		}
+		public byte Pan { get { return mPanB; } }
 
 		private double mRevD;
 		private byte mRevB;
-		public byte Rev
-		{
-			get { return mRevB; }
-		}
+		public byte Rev { get { return mRevB; } }
 
 		private double mDelD;
 		private byte mDelB;
-		public byte Del
-		{
-			get { return mDelB; }
-		}
+		public byte Del { get { return mDelB; } }
 
 		private double mChoD;
 		private byte mChoB;
-		public byte Cho
-		{
-			get { return mChoB; }
-		}
+		public byte Cho { get { return mChoB; } }
 
 		private double mHldD;
-		public double Hld
-		{
-			get { return mHldD; }
-		}
+		public double Hld { get { return mHldD; } }
 
 		private double mFcD;
 		private byte mFcB;
-		public double Fc
-		{
-			get { return mFcD; }
-		}
+		public double Fc { get { return mFcD; } }
 
 		private double mFqD;
 		private byte mFqB;
-		public double Fq
-		{
-			get { return mFqD; }
-		}
+		public double Fq { get { return mFqD; } }
 
 		private byte mRPN_MSB;
 		private byte mRPN_LSB;
@@ -80,8 +51,7 @@
 		private short mPitchS;
 		private double mPitch;
 		public byte PitchRange;
-		public short Pitch
-		{
+		public short Pitch {
 			get { return mPitchS; }
 			set {
 				mPitchS = value;
@@ -95,10 +65,7 @@
 				}
 			}
 		}
-		public double PitchD
-		{
-			get { return mPitch; }
-		}
+		public double PitchD { get { return mPitch; } }
 
 		public Envelope EnvAmp;
 		public Envelope EnvCutoff;
@@ -120,8 +87,7 @@
 		private double mChoLfo3Re;
 		private double mChoLfo3Im;
 
-		public Channel(int no, int sampleRate, InstTable instTable)
-		{
+		public Channel(int no, int sampleRate, InstTable instTable) {
 			No = no;
 			DeltaTime = 1.0 / sampleRate;
 
@@ -145,8 +111,7 @@
 			AllReset();
 		}
 
-		public void AllReset()
-		{
+		public void AllReset() {
 			InstID.ProgramNo = 0;
 			InstID.BankMSB = 0;
 			InstID.BankLSB = 0;
@@ -188,8 +153,7 @@
 			mDelaySteps = (int)(0.125 / DeltaTime);
 		}
 
-		public void Step(ref double left, ref double right)
-		{
+		public void Step(ref double left, ref double right) {
 			var waveC = Wave * mVolD * mExpD;
 			var waveL = waveC * mPanL;
 			var waveR = waveC * mPanR;
@@ -274,8 +238,7 @@
 			Wave = 0.0;
 		}
 
-		public void PrgmChg(byte value)
-		{
+		public void PrgmChg(byte value) {
 			InstID.ProgramNo = value;
 			InstInfo instInfo;
 
@@ -303,8 +266,7 @@
 			EnvCutoff = instInfo.EnvFilter;
 		}
 
-		public void CtrlChg(byte type, byte value)
-		{
+		public void CtrlChg(byte type, byte value) {
 			switch ((CTRL_TYPE)type) {
 			case CTRL_TYPE.BANK_MSB:
 				InstID.BankMSB = value;

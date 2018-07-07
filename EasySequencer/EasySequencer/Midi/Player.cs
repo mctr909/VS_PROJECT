@@ -1,10 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace MIDI
-{
-	public class Player
-	{
+namespace MIDI {
+	public class Player {
 		private MessageSender mSender;
 		private Task mTask;
 		private Event[] mEventList;
@@ -19,13 +17,11 @@ namespace MIDI
 		public int Transpose;
 
 		#region プロパティ
-		public Channel[] Channel
-		{
+		public Channel[] Channel {
 			get { return mSender.Channel; }
 		}
 
-		public int SeekTime
-		{
+		public int SeekTime {
 			set {
 				Stop();
 				if (value < 0) {
@@ -41,23 +37,19 @@ namespace MIDI
 			}
 		}
 
-		public int MaxTime
-		{
+		public int MaxTime {
 			get { return mMaxTime; }
 		}
 
-		public int CurrentTime
-		{
+		public int CurrentTime {
 			get { return (int)mCurrentTime; }
 		}
 
-		public bool IsPlay
-		{
+		public bool IsPlay {
 			get { return mIsPlay; }
 		}
 
-		public string TimeText
-		{
+		public string TimeText {
 			get {
 				int ib = (int)(mCurrentTime / 960);
 				int measure = ib / 4;
@@ -72,14 +64,12 @@ namespace MIDI
 			}
 		}
 
-		public string TempoText
-		{
+		public string TempoText {
 			get { return mBPM.ToString("000.00"); }
 		}
 		#endregion
 
-		public Player(MessageSender hMessage)
-		{
+		public Player(MessageSender hMessage) {
 			mSender = hMessage;
 			mEventList = null;
 			mTask = null;
@@ -88,8 +78,7 @@ namespace MIDI
 			SoloChannel = -1;
 		}
 
-		public void SetEventList(Event[] eventList, int ticks)
-		{
+		public void SetEventList(Event[] eventList, int ticks) {
 			mEventList = eventList;
 			mTicks = ticks;
 			mMaxTime = 0;
@@ -107,14 +96,12 @@ namespace MIDI
 			mCurrentTime = 0.0;
 		}
 
-		public void Play()
-		{
+		public void Play() {
 			mIsPlay = true;
 			mTask = Task.Factory.StartNew(() => Loop());
 		}
 
-		public void Stop()
-		{
+		public void Stop() {
 			if (null == mTask) {
 				return;
 			}
@@ -137,8 +124,7 @@ namespace MIDI
 			}
 		}
 
-		private void Loop()
-		{
+		private void Loop() {
 			long current_mSec = 0;
 			long previous_mSec = 0;
 
@@ -197,13 +183,11 @@ namespace MIDI
 			mIsPlay = false;
 		}
 
-		public void Send(Message msg)
-		{
+		public void Send(Message msg) {
 			mSender.Send(msg);
 		}
 
-		public Channel Recv(byte channel)
-		{
+		public Channel Recv(byte channel) {
 			return mSender.Channel[channel];
 		}
 	}

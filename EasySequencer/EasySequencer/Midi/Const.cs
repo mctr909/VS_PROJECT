@@ -550,5 +550,7 @@
 				break;
 			}
 		}
+
+		public static readonly int SampleRate = 44100;
 	}
 }
