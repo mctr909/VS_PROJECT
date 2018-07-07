@@ -41,8 +41,6 @@
 			this.削除DToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.コピーCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.貼り付けPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.表示VToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.pCM一覧表示PToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.tabControl = new System.Windows.Forms.TabControl();
@@ -53,6 +51,12 @@
 			this.tsbDeleteInst = new System.Windows.Forms.ToolStripButton();
 			this.tsbCopyInst = new System.Windows.Forms.ToolStripButton();
 			this.tsbPasteInst = new System.Windows.Forms.ToolStripButton();
+			this.tbpPcmList = new System.Windows.Forms.TabPage();
+			this.lstWave = new System.Windows.Forms.ListBox();
+			this.toolStrip3 = new System.Windows.Forms.ToolStrip();
+			this.tsbAddWave = new System.Windows.Forms.ToolStripButton();
+			this.tsbDeleteWave = new System.Windows.Forms.ToolStripButton();
+			this.tsbOutputWave = new System.Windows.Forms.ToolStripButton();
 			this.tbpInstAttribute = new System.Windows.Forms.TabPage();
 			this.grdArt = new System.Windows.Forms.DataGridView();
 			this.tbpLayerAttribute = new System.Windows.Forms.TabPage();
@@ -60,10 +64,13 @@
 			this.tslPos = new System.Windows.Forms.ToolStripLabel();
 			this.pnlRegion = new System.Windows.Forms.Panel();
 			this.pictRange = new System.Windows.Forms.PictureBox();
+			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
 			this.menuStrip1.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tbpInstList.SuspendLayout();
 			this.toolStrip2.SuspendLayout();
+			this.tbpPcmList.SuspendLayout();
+			this.toolStrip3.SuspendLayout();
 			this.tbpInstAttribute.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.grdArt)).BeginInit();
 			this.tbpLayerAttribute.SuspendLayout();
@@ -76,8 +83,7 @@
 			// 
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ファイルFToolStripMenuItem,
-            this.編集EToolStripMenuItem,
-            this.表示VToolStripMenuItem});
+            this.編集EToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(832, 24);
@@ -94,47 +100,47 @@
             this.上書き保存ToolStripMenuItem,
             this.名前を付けて保存ToolStripMenuItem});
 			this.ファイルFToolStripMenuItem.Name = "ファイルFToolStripMenuItem";
-			this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(67, 20);
+			this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
 			this.ファイルFToolStripMenuItem.Text = "ファイル(F)";
 			// 
 			// 新規作成NToolStripMenuItem
 			// 
 			this.新規作成NToolStripMenuItem.Name = "新規作成NToolStripMenuItem";
 			this.新規作成NToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-			this.新規作成NToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.新規作成NToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.新規作成NToolStripMenuItem.Text = "新規作成(N)";
 			this.新規作成NToolStripMenuItem.Click += new System.EventHandler(this.新規作成NToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(181, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(192, 6);
 			// 
 			// 開くOToolStripMenuItem
 			// 
 			this.開くOToolStripMenuItem.Name = "開くOToolStripMenuItem";
 			this.開くOToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.開くOToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.開くOToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.開くOToolStripMenuItem.Text = "開く(O)";
 			this.開くOToolStripMenuItem.Click += new System.EventHandler(this.開くOToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(181, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(192, 6);
 			// 
 			// 上書き保存ToolStripMenuItem
 			// 
 			this.上書き保存ToolStripMenuItem.Name = "上書き保存ToolStripMenuItem";
 			this.上書き保存ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.上書き保存ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.上書き保存ToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.上書き保存ToolStripMenuItem.Text = "上書き保存(S)";
 			this.上書き保存ToolStripMenuItem.Click += new System.EventHandler(this.上書き保存ToolStripMenuItem_Click);
 			// 
 			// 名前を付けて保存ToolStripMenuItem
 			// 
 			this.名前を付けて保存ToolStripMenuItem.Name = "名前を付けて保存ToolStripMenuItem";
-			this.名前を付けて保存ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.名前を付けて保存ToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.名前を付けて保存ToolStripMenuItem.Text = "名前を付けて保存(A)";
 			this.名前を付けて保存ToolStripMenuItem.Click += new System.EventHandler(this.名前を付けて保存ToolStripMenuItem_Click);
 			// 
@@ -146,14 +152,14 @@
             this.コピーCToolStripMenuItem,
             this.貼り付けPToolStripMenuItem});
 			this.編集EToolStripMenuItem.Name = "編集EToolStripMenuItem";
-			this.編集EToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+			this.編集EToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
 			this.編集EToolStripMenuItem.Text = "編集(E)";
 			// 
 			// 追加AToolStripMenuItem
 			// 
 			this.追加AToolStripMenuItem.Name = "追加AToolStripMenuItem";
 			this.追加AToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Space)));
-			this.追加AToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+			this.追加AToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
 			this.追加AToolStripMenuItem.Text = "追加(A)";
 			this.追加AToolStripMenuItem.Click += new System.EventHandler(this.追加AToolStripMenuItem_Click);
 			// 
@@ -161,7 +167,7 @@
 			// 
 			this.削除DToolStripMenuItem.Name = "削除DToolStripMenuItem";
 			this.削除DToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.削除DToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+			this.削除DToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
 			this.削除DToolStripMenuItem.Text = "削除(D)";
 			this.削除DToolStripMenuItem.Click += new System.EventHandler(this.削除DToolStripMenuItem_Click);
 			// 
@@ -169,7 +175,7 @@
 			// 
 			this.コピーCToolStripMenuItem.Name = "コピーCToolStripMenuItem";
 			this.コピーCToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.コピーCToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+			this.コピーCToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
 			this.コピーCToolStripMenuItem.Text = "コピー(C)";
 			this.コピーCToolStripMenuItem.Click += new System.EventHandler(this.コピーCToolStripMenuItem_Click);
 			// 
@@ -177,25 +183,9 @@
 			// 
 			this.貼り付けPToolStripMenuItem.Name = "貼り付けPToolStripMenuItem";
 			this.貼り付けPToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-			this.貼り付けPToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+			this.貼り付けPToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
 			this.貼り付けPToolStripMenuItem.Text = "貼り付け(P)";
 			this.貼り付けPToolStripMenuItem.Click += new System.EventHandler(this.貼り付けPToolStripMenuItem_Click);
-			// 
-			// 表示VToolStripMenuItem
-			// 
-			this.表示VToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pCM一覧表示PToolStripMenuItem});
-			this.表示VToolStripMenuItem.Name = "表示VToolStripMenuItem";
-			this.表示VToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-			this.表示VToolStripMenuItem.Text = "表示(V)";
-			// 
-			// pCM一覧表示PToolStripMenuItem
-			// 
-			this.pCM一覧表示PToolStripMenuItem.Name = "pCM一覧表示PToolStripMenuItem";
-			this.pCM一覧表示PToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-			this.pCM一覧表示PToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-			this.pCM一覧表示PToolStripMenuItem.Text = "PCM一覧表示(P)";
-			this.pCM一覧表示PToolStripMenuItem.Click += new System.EventHandler(this.pCM一覧表示PToolStripMenuItem_Click);
 			// 
 			// openFileDialog1
 			// 
@@ -204,6 +194,7 @@
 			// tabControl
 			// 
 			this.tabControl.Controls.Add(this.tbpInstList);
+			this.tabControl.Controls.Add(this.tbpPcmList);
 			this.tabControl.Controls.Add(this.tbpInstAttribute);
 			this.tabControl.Controls.Add(this.tbpLayerAttribute);
 			this.tabControl.Location = new System.Drawing.Point(12, 27);
@@ -292,6 +283,73 @@
 			this.tsbPasteInst.ToolTipText = "音色貼り付け";
 			this.tsbPasteInst.Click += new System.EventHandler(this.tsbPasteInst_Click);
 			// 
+			// tbpPcmList
+			// 
+			this.tbpPcmList.Controls.Add(this.lstWave);
+			this.tbpPcmList.Controls.Add(this.toolStrip3);
+			this.tbpPcmList.Location = new System.Drawing.Point(4, 22);
+			this.tbpPcmList.Name = "tbpPcmList";
+			this.tbpPcmList.Size = new System.Drawing.Size(749, 341);
+			this.tbpPcmList.TabIndex = 3;
+			this.tbpPcmList.Text = "波形一覧";
+			this.tbpPcmList.UseVisualStyleBackColor = true;
+			// 
+			// lstWave
+			// 
+			this.lstWave.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.lstWave.FormattingEnabled = true;
+			this.lstWave.ItemHeight = 12;
+			this.lstWave.Location = new System.Drawing.Point(3, 31);
+			this.lstWave.Name = "lstWave";
+			this.lstWave.ScrollAlwaysVisible = true;
+			this.lstWave.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.lstWave.Size = new System.Drawing.Size(268, 232);
+			this.lstWave.TabIndex = 1;
+			this.lstWave.DoubleClick += new System.EventHandler(this.lstWave_DoubleClick);
+			// 
+			// toolStrip3
+			// 
+			this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsbAddWave,
+            this.tsbDeleteWave,
+            this.tsbOutputWave});
+			this.toolStrip3.Location = new System.Drawing.Point(0, 0);
+			this.toolStrip3.Margin = new System.Windows.Forms.Padding(3);
+			this.toolStrip3.Name = "toolStrip3";
+			this.toolStrip3.Size = new System.Drawing.Size(749, 25);
+			this.toolStrip3.TabIndex = 0;
+			this.toolStrip3.Text = "toolStrip3";
+			// 
+			// tsbAddWave
+			// 
+			this.tsbAddWave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbAddWave.Image = global::DLSeditor.Properties.Resources.plus;
+			this.tsbAddWave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbAddWave.Name = "tsbAddWave";
+			this.tsbAddWave.Size = new System.Drawing.Size(23, 22);
+			this.tsbAddWave.Text = "波形追加";
+			this.tsbAddWave.Click += new System.EventHandler(this.tsbAddWave_Click);
+			// 
+			// tsbDeleteWave
+			// 
+			this.tsbDeleteWave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbDeleteWave.Image = global::DLSeditor.Properties.Resources.minus;
+			this.tsbDeleteWave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbDeleteWave.Name = "tsbDeleteWave";
+			this.tsbDeleteWave.Size = new System.Drawing.Size(23, 22);
+			this.tsbDeleteWave.Text = "波形削除";
+			this.tsbDeleteWave.Click += new System.EventHandler(this.tsbDeleteWave_Click);
+			// 
+			// tsbOutputWave
+			// 
+			this.tsbOutputWave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbOutputWave.Image = global::DLSeditor.Properties.Resources.waveout;
+			this.tsbOutputWave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbOutputWave.Name = "tsbOutputWave";
+			this.tsbOutputWave.Size = new System.Drawing.Size(23, 22);
+			this.tsbOutputWave.Text = "波形ファイル出力";
+			this.tsbOutputWave.Click += new System.EventHandler(this.tsbOutputWave_Click);
+			// 
 			// tbpInstAttribute
 			// 
 			this.tbpInstAttribute.Controls.Add(this.grdArt);
@@ -337,7 +395,7 @@
 			// tslPos
 			// 
 			this.tslPos.Name = "tslPos";
-			this.tslPos.Size = new System.Drawing.Size(86, 22);
+			this.tslPos.Size = new System.Drawing.Size(95, 22);
 			this.tslPos.Text = "toolStripLabel1";
 			// 
 			// pnlRegion
@@ -379,6 +437,10 @@
 			this.tbpInstList.PerformLayout();
 			this.toolStrip2.ResumeLayout(false);
 			this.toolStrip2.PerformLayout();
+			this.tbpPcmList.ResumeLayout(false);
+			this.tbpPcmList.PerformLayout();
+			this.toolStrip3.ResumeLayout(false);
+			this.toolStrip3.PerformLayout();
 			this.tbpInstAttribute.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.grdArt)).EndInit();
 			this.tbpLayerAttribute.ResumeLayout(false);
@@ -409,8 +471,6 @@
         private System.Windows.Forms.ToolStripMenuItem 追加AToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-		private System.Windows.Forms.ToolStripMenuItem 表示VToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem pCM一覧表示PToolStripMenuItem;
 		private System.Windows.Forms.TabControl tabControl;
 		private System.Windows.Forms.TabPage tbpInstList;
 		private System.Windows.Forms.ToolStrip toolStrip2;
@@ -426,6 +486,13 @@
 		private System.Windows.Forms.Panel pnlRegion;
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		private System.Windows.Forms.ToolStripLabel tslPos;
+		private System.Windows.Forms.TabPage tbpPcmList;
+		private System.Windows.Forms.ListBox lstWave;
+		private System.Windows.Forms.ToolStrip toolStrip3;
+		private System.Windows.Forms.ToolStripButton tsbAddWave;
+		private System.Windows.Forms.ToolStripButton tsbDeleteWave;
+		private System.Windows.Forms.ToolStripButton tsbOutputWave;
+		private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
 	}
 }
 

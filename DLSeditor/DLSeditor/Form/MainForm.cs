@@ -40,6 +40,7 @@ namespace DLSeditor
 
 			mDLS = new DLS.File(filePath);
 			DispInstList();
+			DispPcmList();
 			tabControl.SelectedIndex = 0;
 		}
 
@@ -77,18 +78,6 @@ namespace DLSeditor
 		}
 		#endregion
 
-		#region メニューバー[表示]
-		private void 詳細表示IToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			DispInstInfo();
-		}
-
-		private void pCM一覧表示PToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			DispPcmList();
-		}
-		#endregion
-
 		#region ツールストリップ
 		private void tsbAddInst_Click(object sender, EventArgs e)
 		{
@@ -108,6 +97,21 @@ namespace DLSeditor
 		private void tsbPasteInst_Click(object sender, EventArgs e)
 		{
 			PasteInst();
+		}
+
+		private void tsbAddWave_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void tsbDeleteWave_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void tsbOutputWave_Click(object sender, EventArgs e)
+		{
+			WaveFileOut();
 		}
 		#endregion
 
@@ -133,6 +137,7 @@ namespace DLSeditor
 			tabControl.Height = height;
 
 			SetInstListSize();
+			SetWaveListSize();
 			SetInstAttributeSize();
 			SetInstRegionSize();
 		}
@@ -140,12 +145,23 @@ namespace DLSeditor
 		private void SetInstListSize()
 		{
 			var offsetX = 16;
-			var offsetY = 62;
+			var offsetY = 60;
 			var width = tabControl.Width - offsetX;
 			var height = tabControl.Height - offsetY;
 
 			lstInst.Width = width;
 			lstInst.Height = height;
+		}
+
+		private void SetWaveListSize()
+		{
+			var offsetX = 16;
+			var offsetY = 60;
+			var width = tabControl.Width - offsetX;
+			var height = tabControl.Height - offsetY;
+
+			lstWave.Width = width;
+			lstWave.Height = height;
 		}
 
 		private void SetInstAttributeSize()
@@ -177,6 +193,27 @@ namespace DLSeditor
 			DispInstInfo();
 		}
 
+		private void pictRange_DoubleClick(object sender, EventArgs e)
+		{
+			var cp = pictRange.PointToClient(Cursor.Position);
+			cp.X = (int)(cp.X / 6 + 0.5);
+			cp.Y = (int)((pictRange.Height - cp.Y) / 6 + 0.5);
+
+			DLS.RGN rgn;
+			var inst = mDLS.InstList[lstInst.SelectedIndex];
+			foreach (var region in inst.Regions.Values) {
+				var key = region.RegionHeader.RangeKey;
+				var vel = region.RegionHeader.RangeVelocity;
+				if (key.Low <= cp.X && cp.X <= key.High
+				&& vel.Low <= cp.Y && cp.Y <= vel.High) {
+					rgn = region;
+					break;
+				}
+			}
+
+			tslPos.Text = string.Format("X:{0} Y:{1}", cp.X, cp.Y);
+		}
+
 		private void DispInstList()
 		{
 			lstInst.Items.Clear();
@@ -192,28 +229,6 @@ namespace DLSeditor
 				));
 			}
 		}
-
-		private void AddInst()
-		{
-			InstAddForm fm = new InstAddForm(mDLS);
-			fm.ShowDialog();
-			DispInstList();
-		}
-
-		private void DeleteInst()
-		{
-			DispInstList();
-		}
-
-		private void CopyInst()
-		{
-		}
-
-		private void PasteInst()
-		{
-			DispInstList();
-		}
-		#endregion
 
 		private void DispInstInfo()
 		{
@@ -253,12 +268,12 @@ namespace DLSeditor
 		{
 			var inst = mDLS.InstList[lstInst.SelectedIndex];
 
-			tbpLayerAttribute.Text = string.Format("音色設定[{0}]", inst.Info.Name);
+			tbpLayerAttribute.Text = string.Format("レイヤー設定[{0}]", inst.Info.Name);
 
 			var bmp = new Bitmap(pictRange.Width, pictRange.Height);
 			var g = Graphics.FromImage(bmp);
 			var redLine = new Pen(Color.FromArgb(255, 255, 0, 0), 2.0f);
-			var greenFill = new Pen(Color.FromArgb(24, 0, 255, 0), 1.0f).Brush;
+			var greenFill = new Pen(Color.FromArgb(64, 0, 255, 0), 1.0f).Brush;
 
 			foreach (var region in inst.Regions.Values) {
 				var key = region.RegionHeader.RangeKey;
@@ -282,31 +297,88 @@ namespace DLSeditor
 			pictRange.Image = bmp;
 		}
 
-		private void DispPcmList()
+		private void AddInst()
 		{
-			WaveListForm fm = new WaveListForm(mWaveOut, mDLS);
+			InstAddForm fm = new InstAddForm(mDLS);
+			fm.ShowDialog();
+			DispInstList();
+		}
+
+		private void DeleteInst()
+		{
+			DispInstList();
+		}
+
+		private void CopyInst()
+		{
+		}
+
+		private void PasteInst()
+		{
+			DispInstList();
+		}
+		#endregion
+
+		#region 波形一覧
+		private void lstWave_DoubleClick(object sender, EventArgs e)
+		{
+			var idx = lstWave.SelectedIndex;
+			var fm = new WaveInfoForm(mWaveOut, mDLS, idx);
 			fm.ShowDialog();
 		}
 
-		private void pictRange_DoubleClick(object sender, EventArgs e)
+		private void DispPcmList()
 		{
-			var cp = pictRange.PointToClient(Cursor.Position);
-			cp.X = (int)(cp.X / 6 + 0.5);
-			cp.Y = (int)((pictRange.Height - cp.Y) / 6 + 0.5);
-
-			DLS.RGN rgn;
-			var inst = mDLS.InstList[lstInst.SelectedIndex];
-			foreach (var region in inst.Regions.Values) {
-				var key = region.RegionHeader.RangeKey;
-				var vel = region.RegionHeader.RangeVelocity;
-				if (key.Low <= cp.X && cp.X <= key.High
-				&& vel.Low <= cp.Y && cp.Y <= vel.High) {
-					rgn = region;
-					break;
+			lstWave.Items.Clear();
+			int count = 0;
+			foreach (var wave in mDLS.WavePool.Values) {
+				var name = "";
+				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
+					name = string.Format("Wave[{0}]", count);
 				}
+				else {
+					name = wave.Info.Name;
+				}
+
+				var use = false;
+				foreach (var inst in mDLS.InstList.Values) {
+					foreach (var rgn in inst.Regions.Values) {
+						if (count == rgn.WaveLink.WaveIndex) {
+							use = true;
+							break;
+						}
+					}
+				}
+
+				lstWave.Items.Add(string.Format(
+					"{0}{1}{2}",
+					(use ? "[use]" : "     "),
+					(0 < wave.Samplers.LoopCount ? "[loop]" : "      "),
+					name
+				));
+				++count;
+			}
+		}
+
+		private void WaveFileOut()
+		{
+			folderBrowserDialog1.ShowDialog();
+			var folderPath = folderBrowserDialog1.SelectedPath;
+			if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath)) {
+				return;
 			}
 
-			tslPos.Text = string.Format("X:{0} Y:{1}", cp.X, cp.Y);
+			var indices = lstWave.SelectedIndices;
+			foreach (var idx in indices) {
+				var wave = mDLS.WavePool[(int)idx];
+				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
+					wave.ToFile(Path.Combine(folderPath, string.Format("Wave{0}.wav", idx)));
+				}
+				else {
+					wave.ToFile(Path.Combine(folderPath, wave.Info.Name + ".wav"));
+				}
+			}
 		}
+		#endregion
 	}
 }

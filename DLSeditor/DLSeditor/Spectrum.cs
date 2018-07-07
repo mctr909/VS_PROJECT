@@ -19,25 +19,25 @@ public class Spectrum
 		public double attenuation;
 	}
 
-	private double mFreqToOmega = 0.0;
-	private BANK[] mBanks;
 	private double[] mLevel;
+	private BANK[] mBanks;
+	private double mFreqToOmega;
 	private double mMax;
 
 	private readonly double mScale;
 	private readonly double mAttenuation;
 
-	public int Banks
-	{
-		get {
-			return mBanks.Length;
-		}
-	}
-
 	public double[] Level
 	{
 		get {
 			return mLevel;
+		}
+	}
+
+	public int Banks
+	{
+		get {
+			return mLevel.Length;
 		}
 	}
 
@@ -53,13 +53,24 @@ public class Spectrum
 		mFreqToOmega = 8.0 * Math.Atan(1.0) / sampleRate;
 		mBanks = new BANK[banks];
 		mLevel = new double[banks];
-		for (UInt32 b = 0; b < banks; ++b) {
-			mBanks[b] = new BANK();
-			var w = 6.0 - 12.0 * b / banks;
-			if (w < 0.75) {
-				w = 0.75;
+		for (UInt32 bankNo = 0; bankNo < banks; ++bankNo) {
+			mBanks[bankNo] = new BANK();
+			var width = 6.0 - 12.0 * bankNo / banks;
+			if (width < 0.75) {
+				width = 0.75;
 			}
-			Bandpass(b, baseFreq * Math.Pow(2.0, (double)b / octDiv), w / 12.0, 1.0 / w);
+
+			var omega = Math.Pow(2.0, (double)bankNo / octDiv) * baseFreq * mFreqToOmega;
+			var x = Math.Log(2.0) / 2.0 * width * omega / Math.Sin(omega) / 12.0;
+			var alpha = Math.Sin(omega) * (Math.Exp(x) - Math.Exp(-x)) / 2.0;
+			var a0 = 1.0 + alpha;
+			var bank = mBanks[bankNo];
+			bank.a1 = -2.0 * Math.Cos(omega) / a0;
+			bank.a2 = (1.0 - alpha) / a0;
+			bank.b0 = alpha / a0;
+			bank.b1 = 0.0;
+			bank.b2 = -alpha / a0;
+			bank.attenuation = 1.0 / width;
 		}
 		mScale = 32768.0;
 		mAttenuation = 0.75;
@@ -105,21 +116,5 @@ public class Spectrum
 				mMax = mLevel[b];
 			}
 		}
-	}
-
-	private void Bandpass(UInt32 bankNo, double freq, double oct, double att)
-	{
-		double omega = freq * mFreqToOmega;
-		double x = Math.Log(2.0) / 2.0 * oct * omega / Math.Sin(omega);
-		double alpha = Math.Sin(omega) * (Math.Exp(x) - Math.Exp(-x)) / 2.0;
-		double a0 = 1.0 + alpha;
-
-		var bank = mBanks[bankNo];
-		bank.a1 = -2.0 * Math.Cos(omega) / a0;
-		bank.a2 = (1.0 - alpha) / a0;
-		bank.b0 = alpha / a0;
-		bank.b1 = 0.0;
-		bank.b2 = -alpha / a0;
-		bank.attenuation = att;
 	}
 }
