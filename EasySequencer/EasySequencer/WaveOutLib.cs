@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-unsafe public class WaveOutLib
+unsafe public class WaveOut
 {
 	[StructLayout(LayoutKind.Sequential)]
 	private struct WAVEFORMATEX
@@ -110,38 +110,30 @@ unsafe public class WaveOutLib
 	private IntPtr mWaveOutHandle;
 	private IntPtr[] mWaveHeaderPtr;
 	private WAVEHDR[] mWaveHeader;
-	private DCallback mCallback;
 	private WAVEFORMATEX mWaveFormatEx;
+	private DCallback mCallback;
+	private bool mIsPlay;
 
 	protected short[] WaveBuffer;
 
 	private int mSampleRate;
 	private int mChannels;
-	private int mBufferSize;
-	private int mBufferIndex;
 
 	public int SampleRate { get { return mSampleRate; } }
 	public int Channels { get { return mChannels; } }
-	public int BufferSize { get { return mBufferSize; } }
 
-	public WaveOutLib(int sampleRate = 44100, int channels = 2, int bufferSize = 882, int bufferCount = 8)
+	public WaveOut(int sampleRate = 48000, int channels = 2, int bufferSize = 882, int bufferCount = 16)
 	{
 		mSampleRate = sampleRate;
 		mChannels = channels;
-		mBufferSize = bufferSize;
-		mBufferIndex = 0;
 
 		mWaveOutHandle = IntPtr.Zero;
 		mWaveHeaderPtr = new IntPtr[bufferCount];
 		mWaveHeader = new WAVEHDR[bufferCount];
-		WaveBuffer = new short[mBufferSize];
-
-		OpenWaveOutHandle();
-		PrepareHeader();
+		WaveBuffer = new short[bufferSize];
 	}
 
-	private void OpenWaveOutHandle()
-	{
+	public void Open() {
 		if (IntPtr.Zero != mWaveOutHandle) {
 			MMRESULT mr = waveOutReset(mWaveOutHandle);
 			if (MMRESULT.MMSYSERR_NOERROR != mr) {
@@ -165,6 +157,41 @@ unsafe public class WaveOutLib
 
 		mCallback = new DCallback(Callback);
 		MMRESULT rc = waveOutOpen(ref mWaveOutHandle, WAVE_MAPPER, ref mWaveFormatEx, mCallback, IntPtr.Zero, 0x00030000);
+
+		PrepareHeader();
+	}
+
+	public void Close() {
+		if (IntPtr.Zero != mWaveOutHandle) {
+			if (mIsPlay) {
+				Stop();
+			}
+
+			for (int i = 0; i < mWaveHeaderPtr.Length; ++i) {
+				Marshal.FreeHGlobal(mWaveHeaderPtr[i]);
+				waveOutReset(mWaveOutHandle);
+				waveOutUnprepareHeader(mWaveOutHandle, mWaveHeaderPtr[i], (uint)Marshal.SizeOf(typeof(WAVEHDR)));
+			}
+			waveOutClose(mWaveOutHandle);
+			mWaveOutHandle = IntPtr.Zero;
+		}
+	}
+
+	public void Play() {
+		if (IntPtr.Zero != mWaveOutHandle) {
+			for (int i = 0; i < mWaveHeader.Length; ++i) {
+				waveOutPrepareHeader(mWaveOutHandle, mWaveHeaderPtr[i], Marshal.SizeOf(typeof(WAVEHDR)));
+				waveOutWrite(mWaveOutHandle, mWaveHeaderPtr[i], (uint)Marshal.SizeOf(typeof(WAVEHDR)));
+			}
+			mIsPlay = true;
+		}
+	}
+
+	public void Stop() {
+		if (IntPtr.Zero != mWaveOutHandle) {
+			mIsPlay = false;
+			waveOutReset(mWaveOutHandle);
+		}
 	}
 
 	private void PrepareHeader()
@@ -176,30 +203,27 @@ unsafe public class WaveOutLib
 			mWaveHeader[i].dwFlags = 0;
 			Marshal.Copy(WaveBuffer, 0, mWaveHeader[i].lpData, WaveBuffer.Length);
 			Marshal.StructureToPtr(mWaveHeader[i], mWaveHeaderPtr[i], true);
-
-			MMRESULT mmrc = waveOutPrepareHeader(mWaveOutHandle, mWaveHeaderPtr[i], Marshal.SizeOf(typeof(WAVEHDR)));
-			waveOutWrite(mWaveOutHandle, mWaveHeaderPtr[i], (uint)Marshal.SizeOf(typeof(WAVEHDR)));
 		}
 	}
 
-	private void Callback(IntPtr hdrvr, WaveOutMessage uMsg, int dwUser, IntPtr waveHdr, int dwParam2)
-	{
+	private void Callback(IntPtr hdrvr, WaveOutMessage uMsg, int dwUser, IntPtr waveHdr, int dwParam2) {
 		switch (uMsg) {
 		case WaveOutMessage.Close:
 			break;
 
-		case WaveOutMessage.Done: {
+		case WaveOutMessage.Done:
+			if (mIsPlay) {
 				waveOutWrite(mWaveOutHandle, waveHdr, (uint)Marshal.SizeOf(typeof(WAVEHDR)));
-
-				for (mBufferIndex = 0; mBufferIndex < mWaveHeader.Length; ++mBufferIndex) {
-					if (mWaveHeaderPtr[mBufferIndex] == waveHdr) {
-						SetData();
-						mWaveHeader[mBufferIndex] = (WAVEHDR)Marshal.PtrToStructure(mWaveHeaderPtr[mBufferIndex], typeof(WAVEHDR));
-						Marshal.Copy(WaveBuffer, 0, mWaveHeader[mBufferIndex].lpData, WaveBuffer.Length);
-						Marshal.StructureToPtr(mWaveHeader[mBufferIndex], mWaveHeaderPtr[mBufferIndex], true);
+				for (var i = 0; i < mWaveHeader.Length; ++i) {
+					if (mWaveHeaderPtr[i] == waveHdr) {
+						SetWave();
+						mWaveHeader[i] = (WAVEHDR)Marshal.PtrToStructure(mWaveHeaderPtr[i], typeof(WAVEHDR));
+						Marshal.Copy(WaveBuffer, 0, mWaveHeader[i].lpData, WaveBuffer.Length);
+						Marshal.StructureToPtr(mWaveHeader[i], mWaveHeaderPtr[i], true);
 					}
 				}
 			}
+
 			break;
 
 		case WaveOutMessage.Open:
@@ -207,5 +231,5 @@ unsafe public class WaveOutLib
 		}
 	}
 
-	protected virtual void SetData() { }
+	protected virtual void SetWave() { }
 }
