@@ -10,7 +10,7 @@
 			get { return mChannel; }
 		}
 
-		public MessageSender(InstTable instTable) : base(Const.SampleRate, 2, 512, 16) {
+		public MessageSender(InstTable instTable) : base(Const.SampleRate, 2, 256, 16) {
 			mChannel = new Channel[CHANNEL_COUNT];
 			mSampler = new Sampler[SAMPLER_COUNT];
 

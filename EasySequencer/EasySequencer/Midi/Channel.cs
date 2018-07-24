@@ -7,6 +7,11 @@
 		public bool[] Keyboard;
 
 		public double Wave;
+		public Envelope EnvAmp;
+		public Envelope EnvCutoff;
+		public WaveInfo[] WaveList;
+
+		private InstTable mInstTable;
 
 		private double mVolD;
 		private byte mVolB;
@@ -38,11 +43,13 @@
 
 		private double mFcD;
 		private byte mFcB;
-		public double Fc { get { return mFcD; } }
+		public byte Fc { get { return mFcB; } }
+		public double FcD { get { return mFcD; } }
 
 		private double mFqD;
 		private byte mFqB;
-		public double Fq { get { return mFqD; } }
+		public byte Fq { get { return mFqB; } }
+		public double FqD { get { return mFqD; } }
 
 		private byte mPitchRange;
 		public byte PitchRange { get { return mPitchRange; } }
@@ -55,12 +62,6 @@
 
 		private byte mRPN_MSB;
 		private byte mRPN_LSB;
-
-		public Envelope EnvAmp;
-		public Envelope EnvCutoff;
-
-		private InstTable mInstTable;
-		public WaveInfo[] WaveList;
 
 		private int mWriteIndex;
 		private int mDelayIndex;
@@ -78,7 +79,7 @@
 
 		public Channel(int no, InstTable instTable) {
 			No = no;
-
+			
 			Enable = true;
 			InstID = new InstID();
 			Keyboard = new bool[128];
@@ -88,58 +89,7 @@
 			mDelayTapL = new double[Const.SampleRate];
 			mDelayTapR = new double[Const.SampleRate];
 
-			mChoLfoK = 0.25 * 6.283185307 * Const.DeltaTime;
-			mChoLfo1Re = 1.0;
-			mChoLfo1Im = 0.0;
-			mChoLfo2Re = System.Math.Cos(3 * 2 * System.Math.PI / 16.0);
-			mChoLfo2Im = System.Math.Sin(3 * 2 * System.Math.PI / 16.0);
-			mChoLfo3Re = System.Math.Cos(6 * 2 * System.Math.PI / 16.0);
-			mChoLfo3Im = System.Math.Sin(6 * 2 * System.Math.PI / 16.0);
-
 			AllReset();
-		}
-
-		public void AllReset() {
-			InstID.ProgramNo = 0;
-			InstID.BankMSB = 0;
-			InstID.BankLSB = 0;
-			InstID.IsDrum = (9 == No);
-			WaveList = mInstTable.InstList[InstID].WaveInfo;
-
-			Const.ChgInst(this);
-
-			ProgramChange(InstID.ProgramNo);
-
-			mVolB = 100;
-			mExpB = 100;
-			mPanB = 64;
-			mVolD = Const.Amp[mVolB];
-			mExpD = Const.Amp[mExpB];
-			mPanL = Const.Cos[mPanB];
-			mPanR = Const.Sin[mPanB];
-
-			mRevB = 0;
-			mChoB = 0;
-			mDelB = 0;
-			mRevD = 0.0;
-			mChoD = 0.0;
-			mDelD = 0.0;
-
-			mHldD = 1.0;
-
-			mFcB = 64;
-			mFqB = 64;
-			mFcD = mFcB / 127.0;
-			mFqD = mFqB / 127.0;
-
-			mRPN_MSB = 255;
-			mRPN_LSB = 255;
-
-			mPitchRange = 2;
-			mPitchS = 0;
-			mPitchD = 1.0;
-
-			mDelaySteps = (int)(0.125 * Const.SampleRate);
 		}
 
 		public void Step(ref double left, ref double right) {
@@ -168,9 +118,9 @@
 
 			// Chorus
 			{
-				var index1 = mWriteIndex - 600 * (0.5 - 0.49 * mChoLfo1Re);
-				var index2 = mWriteIndex - 600 * (0.5 - 0.49 * mChoLfo2Re);
-				var index3 = mWriteIndex - 600 * (0.5 - 0.49 * mChoLfo3Re);
+				var index1 = mWriteIndex - 1600 * (0.5 - 0.48 * mChoLfo1Re);
+				var index2 = mWriteIndex - 1600 * (0.5 - 0.48 * mChoLfo2Re);
+				var index3 = mWriteIndex - 1600 * (0.5 - 0.48 * mChoLfo3Re);
 
 				var indexCur1 = (int)index1;
 				var indexCur2 = (int)index2;
@@ -186,21 +136,39 @@
 				if (indexCur1 < 0) {
 					indexCur1 += mDelayTapL.Length;
 				}
+				if (mDelayTapL.Length <= indexCur1) {
+					indexCur1 -= mDelayTapL.Length;
+				}
 				if (indexCur2 < 0) {
 					indexCur2 += mDelayTapL.Length;
 				}
+				if (mDelayTapL.Length <= indexCur2) {
+					indexCur2 -= mDelayTapL.Length;
+				}
 				if (indexCur3 < 0) {
 					indexCur3 += mDelayTapL.Length;
+				}
+				if (mDelayTapL.Length <= indexCur3) {
+					indexCur3 -= mDelayTapL.Length;
 				}
 
 				if (indexPre1 < 0) {
 					indexPre1 += mDelayTapL.Length;
 				}
+				if (mDelayTapL.Length <= indexPre1) {
+					indexPre1 -= mDelayTapL.Length;
+				}
 				if (indexPre2 < 0) {
 					indexPre2 += mDelayTapL.Length;
 				}
+				if (mDelayTapL.Length <= indexPre2) {
+					indexPre2 -= mDelayTapL.Length;
+				}
 				if (indexPre3 < 0) {
 					indexPre3 += mDelayTapL.Length;
+				}
+				if (mDelayTapL.Length <= indexPre3) {
+					indexPre3 -= mDelayTapL.Length;
 				}
 
 				var chorusL1 = mDelayTapL[indexCur1] * dt1 + mDelayTapL[indexPre1] * (1.0 - dt1);
@@ -210,8 +178,8 @@
 
 				waveL += mChoD * (chorusL1 + chorusL2);
 				waveR += mChoD * (chorusR1 + chorusR2);
-				waveL *= (1.0 - 0.3 * mChoD);
-				waveR *= (1.0 - 0.3 * mChoD);
+				waveL *= (1.0 - 0.375 * mChoD);
+				waveR *= (1.0 - 0.375 * mChoD);
 
 				mChoLfo1Re -= mChoLfoK * mChoLfo1Im;
 				mChoLfo1Im += mChoLfoK * mChoLfo1Re;
@@ -282,12 +250,12 @@
 				break;
 
 			case CTRL_TYPE.HOLD:
-				mHldD = (value < 64) ? 1.0 : 0.1;
+				mHldD = (value < 64) ? 1.0 : 0.125;
 				break;
 
 			case CTRL_TYPE.CUTOFF:
 				mFcB = value;
-				mFcD = value / 112.0;
+				mFcD = value / 132.0 + 0.01;
 				break;
 			case CTRL_TYPE.RESONANCE:
 				mFqB = value;
@@ -313,7 +281,6 @@
 
 			if (mInstTable.InstList.ContainsKey(InstID)) {
 				instInfo = mInstTable.InstList[InstID];
-				Const.ChgInst(this);
 			}
 			else {
 				if (InstID.IsDrum) {
@@ -325,14 +292,22 @@
 					}
 				}
 				else {
-					instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0)];
-					Const.ChgInst(this);
+					if (mInstTable.InstList.ContainsKey(new InstID(InstID.ProgramNo, 0, 0))) {
+						instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0)];
+					}
+					else {
+						instInfo = mInstTable.InstList[new InstID(0, 0, 0)];
+					}
 				}
 			}
 
 			WaveList = instInfo.WaveInfo;
 			EnvAmp = instInfo.EnvAmp;
 			EnvCutoff = instInfo.EnvFilter;
+
+			if (!InstID.IsDrum && 32 <= InstID.ProgramNo && InstID.ProgramNo <= 39) {
+				Const.ChgInst(this);
+			}
 		}
 
 		public void PitchBend(byte lsb, byte msb) {
@@ -345,6 +320,58 @@
 			else {
 				mPitchD = Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128];
 			}
+		}
+
+		private void AllReset() {
+			InstID.ProgramNo = 0;
+			InstID.BankMSB = 0;
+			InstID.BankLSB = 0;
+			InstID.IsDrum = (9 == No);
+			WaveList = mInstTable.InstList[InstID].WaveInfo;
+
+			Const.ChgInst(this);
+
+			ProgramChange(InstID.ProgramNo);
+
+			mVolB = 100;
+			mExpB = 100;
+			mPanB = 64;
+			mVolD = Const.Amp[mVolB];
+			mExpD = Const.Amp[mExpB];
+			mPanL = Const.Cos[mPanB];
+			mPanR = Const.Sin[mPanB];
+
+			mRevB = 0;
+			mChoB = 0;
+			mDelB = 0;
+			mRevD = 0.0;
+			mChoD = 0.0;
+			mDelD = 0.0;
+
+			mHldD = 1.0;
+
+			mFcB = 64;
+			mFqB = 64;
+			mFcD = mFcB / 132.0 + 0.01;
+			mFqD = mFqB / 112.0;
+
+			mRPN_MSB = 255;
+			mRPN_LSB = 255;
+
+			mPitchRange = 2;
+			mPitchS = 0;
+			mPitchD = 1.0;
+
+			mDelaySteps = (int)(0.125 * Const.SampleRate);
+
+			// ChorusLFO
+			mChoLfoK = 0.1 * 6.283185307 * Const.DeltaTime;
+			mChoLfo1Re = 1.0;
+			mChoLfo1Im = 0.0;
+			mChoLfo2Re = System.Math.Cos(3 * 2 * System.Math.PI / 16.0);
+			mChoLfo2Im = System.Math.Sin(3 * 2 * System.Math.PI / 16.0);
+			mChoLfo3Re = System.Math.Cos(6 * 2 * System.Math.PI / 16.0);
+			mChoLfo3Im = System.Math.Sin(6 * 2 * System.Math.PI / 16.0);
 		}
 	}
 }

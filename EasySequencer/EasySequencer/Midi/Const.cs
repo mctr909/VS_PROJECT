@@ -1,4 +1,6 @@
-﻿namespace MIDI
+﻿using System.Drawing;
+
+namespace MIDI
 {
 	public enum FORMAT : ushort
 	{
@@ -366,12 +368,12 @@
 			case 37:
 			case 38:
 			case 39:
-				ch.EnvCutoff.AttackLevel = 106;
-				ch.EnvCutoff.DecayLevel = 106;
-				ch.EnvCutoff.SustainLevel = 25;
-				ch.EnvCutoff.ReleaceLevel = 25;
+				ch.EnvCutoff.AttackLevel = 112;
+				ch.EnvCutoff.DecayLevel = 80;
+				ch.EnvCutoff.SustainLevel = 55;
+				ch.EnvCutoff.ReleaceLevel = 55;
 				ch.EnvCutoff.AttackTime = 0.0;
-				ch.EnvCutoff.DecayTime = 0.09;
+				ch.EnvCutoff.DecayTime = 0.15;
 				ch.EnvCutoff.ReleaseTime = 0.1;
 				ch.EnvAmp.AttackLevel = 127;
 				ch.EnvAmp.DecayLevel = 127;
@@ -550,6 +552,99 @@
 				break;
 			}
 		}
+
+		public static readonly DrawPosition [] KeyboardPos = {
+			new DrawPosition( 1, 15, 6,  9),	// C
+			new DrawPosition( 5,  0, 5, 16),	// Db
+			new DrawPosition( 8, 15, 6,  9),	// D
+			new DrawPosition(12,  0, 5, 16),	// Eb
+			new DrawPosition(15, 15, 6,  9),	// E
+			new DrawPosition(22, 15, 6,  9),	// F
+			new DrawPosition(26,  0, 5, 16),	// Gb
+			new DrawPosition(29, 15, 6,  9),	// G
+			new DrawPosition(33,  0, 5, 16),	// Ab
+			new DrawPosition(36, 15, 6,  9),	// A
+			new DrawPosition(40,  0, 5, 16),	// Bb
+			new DrawPosition(43, 15, 6,  9)		// B
+		};
+
+		public static readonly double[][] Knob = {
+			new double[] { -0.604,  0.797 }, new double[] { -0.635,  0.773 },
+			new double[] { -0.665,  0.747 }, new double[] { -0.694,  0.720 },
+			new double[] { -0.721,  0.693 }, new double[] { -0.748,  0.664 },
+			new double[] { -0.774,  0.634 }, new double[] { -0.798,  0.603 },
+			new double[] { -0.821,  0.571 }, new double[] { -0.843,  0.539 },
+			new double[] { -0.863,  0.505 }, new double[] { -0.882,  0.471 },
+			new double[] { -0.900,  0.436 }, new double[] { -0.917,  0.400 },
+			new double[] { -0.932,  0.364 }, new double[] { -0.945,  0.327 },
+			new double[] { -0.957,  0.290 }, new double[] { -0.968,  0.252 },
+			new double[] { -0.977,  0.214 }, new double[] { -0.985,  0.175 },
+			new double[] { -0.991,  0.137 }, new double[] { -0.996,  0.098 },
+			new double[] { -0.999,  0.058 }, new double[] { -1.000,  0.019 },
+			new double[] { -1.000, -0.020 }, new double[] { -0.999, -0.059 },
+			new double[] { -0.996, -0.099 }, new double[] { -0.991, -0.138 },
+			new double[] { -0.985, -0.176 }, new double[] { -0.977, -0.215 },
+			new double[] { -0.968, -0.253 }, new double[] { -0.957, -0.291 },
+			new double[] { -0.945, -0.328 }, new double[] { -0.932, -0.365 },
+			new double[] { -0.917, -0.401 }, new double[] { -0.900, -0.437 },
+			new double[] { -0.882, -0.472 }, new double[] { -0.863, -0.506 },
+			new double[] { -0.843, -0.540 }, new double[] { -0.821, -0.572 },
+			new double[] { -0.798, -0.604 }, new double[] { -0.774, -0.635 },
+			new double[] { -0.748, -0.665 }, new double[] { -0.721, -0.694 },
+			new double[] { -0.694, -0.721 }, new double[] { -0.665, -0.748 },
+			new double[] { -0.635, -0.774 }, new double[] { -0.604, -0.798 },
+			new double[] { -0.572, -0.821 }, new double[] { -0.540, -0.843 },
+			new double[] { -0.506, -0.863 }, new double[] { -0.472, -0.882 },
+			new double[] { -0.437, -0.900 }, new double[] { -0.401, -0.917 },
+			new double[] { -0.365, -0.932 }, new double[] { -0.328, -0.945 },
+			new double[] { -0.291, -0.957 }, new double[] { -0.253, -0.968 },
+			new double[] { -0.215, -0.977 }, new double[] { -0.176, -0.985 },
+			new double[] { -0.138, -0.991 }, new double[] { -0.099, -0.996 },
+			new double[] { -0.059, -0.999 }, new double[] { -0.020, -1.000 },
+			new double[] {  0.019, -1.000 }, new double[] {  0.058, -0.999 },
+			new double[] {  0.098, -0.996 }, new double[] {  0.137, -0.991 },
+			new double[] {  0.175, -0.985 }, new double[] {  0.214, -0.977 },
+			new double[] {  0.252, -0.968 }, new double[] {  0.290, -0.957 },
+			new double[] {  0.327, -0.945 }, new double[] {  0.364, -0.932 },
+			new double[] {  0.400, -0.917 }, new double[] {  0.436, -0.900 },
+			new double[] {  0.471, -0.882 }, new double[] {  0.505, -0.863 },
+			new double[] {  0.539, -0.843 }, new double[] {  0.571, -0.821 },
+			new double[] {  0.603, -0.798 }, new double[] {  0.634, -0.774 },
+			new double[] {  0.664, -0.748 }, new double[] {  0.693, -0.721 },
+			new double[] {  0.720, -0.694 }, new double[] {  0.747, -0.665 },
+			new double[] {  0.773, -0.635 }, new double[] {  0.797, -0.604 },
+			new double[] {  0.820, -0.572 }, new double[] {  0.842, -0.540 },
+			new double[] {  0.862, -0.506 }, new double[] {  0.881, -0.472 },
+			new double[] {  0.899, -0.437 }, new double[] {  0.916, -0.401 },
+			new double[] {  0.931, -0.365 }, new double[] {  0.944, -0.328 },
+			new double[] {  0.956, -0.291 }, new double[] {  0.967, -0.253 },
+			new double[] {  0.976, -0.215 }, new double[] {  0.984, -0.176 },
+			new double[] {  0.990, -0.138 }, new double[] {  0.995, -0.099 },
+			new double[] {  0.998, -0.059 }, new double[] {  0.999, -0.020 },
+			new double[] {  0.999,  0.019 }, new double[] {  0.998,  0.058 },
+			new double[] {  0.995,  0.098 }, new double[] {  0.990,  0.137 },
+			new double[] {  0.984,  0.175 }, new double[] {  0.976,  0.214 },
+			new double[] {  0.967,  0.252 }, new double[] {  0.956,  0.290 },
+			new double[] {  0.944,  0.327 }, new double[] {  0.931,  0.364 },
+			new double[] {  0.916,  0.400 }, new double[] {  0.899,  0.436 },
+			new double[] {  0.881,  0.471 }, new double[] {  0.862,  0.505 },
+			new double[] {  0.842,  0.539 }, new double[] {  0.820,  0.571 },
+			new double[] {  0.797,  0.603 }, new double[] {  0.773,  0.634 },
+			new double[] {  0.747,  0.664 }, new double[] {  0.720,  0.693 },
+			new double[] {  0.693,  0.720 }, new double[] {  0.664,  0.747 },
+			new double[] {  0.634,  0.773 }, new double[] {  0.603,  0.797 }
+		};
+
+		public static readonly Point[] KnobPos = {
+			new Point(537, 9),
+			new Point(561, 9),
+			new Point(585, 9),
+			new Point(609, 9),
+			new Point(633, 9),
+			new Point(657, 9),
+			new Point(681, 9),
+			new Point(705, 9)
+		};
 
 		public static readonly int SampleRate = 44100;
 		public static readonly double DeltaTime = 1.0 / SampleRate;
