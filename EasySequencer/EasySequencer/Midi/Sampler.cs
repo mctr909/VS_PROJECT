@@ -159,14 +159,10 @@
 		}
 
 		public void DrumOutput() {
-			if (mOnKey) {
-				mCurAmp = 1.0;
-			}
-			else {
-				mCurAmp -= mCurAmp * 2.0 * Const.DeltaTime;
-				if (mCurAmp < 0.001) {
-					mIsActive = false;
-				}
+
+			mCurAmp -= mCurAmp * 3.0 * Const.DeltaTime;
+			if (mCurAmp < 0.001) {
+				mIsActive = false;
 			}
 
 			mCurIndex += mDelta * mChannel.PitchD;

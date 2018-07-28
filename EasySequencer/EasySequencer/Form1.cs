@@ -24,7 +24,7 @@ namespace EasySequencer
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			mNoteOut = new MIDI.MessageSender(new MIDI.InstTable("C:\\Users\\user\\Desktop\\gm1.dls"));
+			mNoteOut = new MIDI.MessageSender(new MIDI.InstTable("C:\\Users\\user\\Desktop\\gm.dls"));
 			mPlayer = new MIDI.Player(mNoteOut);
 
 			timer1.Interval = 10;
@@ -261,7 +261,19 @@ namespace EasySequencer
 
 			if (0 <= knobY && knobY <= 15) {
 				if (knobX == 8) {
-					mPlayer.Channel[knobY].Enable = !mPlayer.Channel[knobY].Enable;
+					if (e.Button == MouseButtons.Right) {
+						for(int i=0; i< mPlayer.Channel.Length; ++i) {
+							if (knobY == i) {
+								mPlayer.Channel[i].Enable = true;
+							}
+							else {
+								mPlayer.Channel[i].Enable = false;
+							}
+						}
+					}
+					else {
+						mPlayer.Channel[knobY].Enable = !mPlayer.Channel[knobY].Enable;
+					}
 				}
 
 				if (0 <= knobX && knobX <= 7) {

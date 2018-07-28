@@ -118,9 +118,9 @@
 
 			// Chorus
 			{
-				var index1 = mWriteIndex - 1600 * (0.5 - 0.48 * mChoLfo1Re);
-				var index2 = mWriteIndex - 1600 * (0.5 - 0.48 * mChoLfo2Re);
-				var index3 = mWriteIndex - 1600 * (0.5 - 0.48 * mChoLfo3Re);
+				var index1 = mWriteIndex - 2000 * (0.5 - 0.48 * mChoLfo1Re);
+				var index2 = mWriteIndex - 2000 * (0.5 - 0.48 * mChoLfo2Re);
+				var index3 = mWriteIndex - 2000 * (0.5 - 0.48 * mChoLfo3Re);
 
 				var indexCur1 = (int)index1;
 				var indexCur2 = (int)index2;
@@ -365,7 +365,7 @@
 			mDelaySteps = (int)(0.125 * Const.SampleRate);
 
 			// ChorusLFO
-			mChoLfoK = 0.1 * 6.283185307 * Const.DeltaTime;
+			mChoLfoK = 0.05 * 6.283185307 * Const.DeltaTime;
 			mChoLfo1Re = 1.0;
 			mChoLfo1Im = 0.0;
 			mChoLfo2Re = System.Math.Cos(3 * 2 * System.Math.PI / 16.0);
