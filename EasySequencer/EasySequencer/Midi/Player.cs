@@ -97,6 +97,10 @@ namespace MIDI {
 		}
 
 		public void Play() {
+			if (null == mEventList) {
+				return;
+			}
+
 			mIsPlay = true;
 			mTask = Task.Factory.StartNew(() => Loop());
 		}

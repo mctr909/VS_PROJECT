@@ -636,14 +636,25 @@ namespace MIDI
 		};
 
 		public static readonly Point[] KnobPos = {
-			new Point(537, 9),
-			new Point(561, 9),
-			new Point(585, 9),
-			new Point(609, 9),
-			new Point(633, 9),
-			new Point(657, 9),
-			new Point(681, 9),
-			new Point(705, 9)
+			new Point(536, 9),
+			new Point(560, 9),
+			new Point(584, 9),
+			new Point(608, 9),
+			new Point(632, 9),
+			new Point(656, 9),
+			new Point(680, 9),
+			new Point(704, 9)
+		};
+
+		public static readonly Point[] KnobValPos = {
+			new Point(527, 28),
+			new Point(551, 28),
+			new Point(575, 28),
+			new Point(599, 28),
+			new Point(623, 28),
+			new Point(647, 28),
+			new Point(671, 28),
+			new Point(695, 28)
 		};
 
 		public static readonly int SampleRate = 44100;

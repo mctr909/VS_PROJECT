@@ -45,24 +45,26 @@
 			this.編集EToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnPalyStop = new System.Windows.Forms.Button();
 			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-			this.panel1 = new System.Windows.Forms.Panel();
+			this.pnlPlayer = new System.Windows.Forms.Panel();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
+			this.pnlKeyboard = new System.Windows.Forms.Panel();
 			((System.ComponentModel.ISupportInitialize)(this.picKeyboard)).BeginInit();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-			this.panel1.SuspendLayout();
+			this.pnlPlayer.SuspendLayout();
 			this.tabControl1.SuspendLayout();
 			this.tabPage2.SuspendLayout();
+			this.pnlKeyboard.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// picKeyboard
 			// 
 			this.picKeyboard.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("picKeyboard.BackgroundImage")));
 			this.picKeyboard.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.picKeyboard.Image = ((System.Drawing.Image)(resources.GetObject("picKeyboard.Image")));
-			this.picKeyboard.Location = new System.Drawing.Point(3, 3);
+			this.picKeyboard.InitialImage = null;
+			this.picKeyboard.Location = new System.Drawing.Point(0, 0);
 			this.picKeyboard.Name = "picKeyboard";
 			this.picKeyboard.Size = new System.Drawing.Size(940, 644);
 			this.picKeyboard.TabIndex = 0;
@@ -129,20 +131,20 @@
             this.上書き保存SToolStripMenuItem,
             this.名前を付けて保存ToolStripMenuItem});
 			this.ファイルFToolStripMenuItem.Name = "ファイルFToolStripMenuItem";
-			this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(67, 20);
+			this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
 			this.ファイルFToolStripMenuItem.Text = "ファイル(F)";
 			// 
 			// 新規作成ToolStripMenuItem
 			// 
 			this.新規作成ToolStripMenuItem.Name = "新規作成ToolStripMenuItem";
-			this.新規作成ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.新規作成ToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.新規作成ToolStripMenuItem.Text = "新規作成(N)";
 			// 
 			// 開くOToolStripMenuItem
 			// 
 			this.開くOToolStripMenuItem.Name = "開くOToolStripMenuItem";
 			this.開くOToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.開くOToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.開くOToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.開くOToolStripMenuItem.Text = "開く(O)";
 			this.開くOToolStripMenuItem.Click += new System.EventHandler(this.開くOToolStripMenuItem_Click);
 			// 
@@ -150,19 +152,19 @@
 			// 
 			this.上書き保存SToolStripMenuItem.Name = "上書き保存SToolStripMenuItem";
 			this.上書き保存SToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.上書き保存SToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.上書き保存SToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.上書き保存SToolStripMenuItem.Text = "上書き保存(S)";
 			// 
 			// 名前を付けて保存ToolStripMenuItem
 			// 
 			this.名前を付けて保存ToolStripMenuItem.Name = "名前を付けて保存ToolStripMenuItem";
-			this.名前を付けて保存ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.名前を付けて保存ToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.名前を付けて保存ToolStripMenuItem.Text = "名前を付けて保存(A)";
 			// 
 			// 編集EToolStripMenuItem
 			// 
 			this.編集EToolStripMenuItem.Name = "編集EToolStripMenuItem";
-			this.編集EToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+			this.編集EToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
 			this.編集EToolStripMenuItem.Text = "編集(E)";
 			// 
 			// btnPalyStop
@@ -194,18 +196,18 @@
 			this.numericUpDown1.TabIndex = 28;
 			this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
 			// 
-			// panel1
+			// pnlPlayer
 			// 
-			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panel1.Controls.Add(this.lblPosition);
-			this.panel1.Controls.Add(this.lblTempo);
-			this.panel1.Controls.Add(this.hsbSeek);
-			this.panel1.Controls.Add(this.numericUpDown1);
-			this.panel1.Controls.Add(this.btnPalyStop);
-			this.panel1.Location = new System.Drawing.Point(12, 27);
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(365, 53);
-			this.panel1.TabIndex = 35;
+			this.pnlPlayer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.pnlPlayer.Controls.Add(this.lblPosition);
+			this.pnlPlayer.Controls.Add(this.lblTempo);
+			this.pnlPlayer.Controls.Add(this.hsbSeek);
+			this.pnlPlayer.Controls.Add(this.numericUpDown1);
+			this.pnlPlayer.Controls.Add(this.btnPalyStop);
+			this.pnlPlayer.Location = new System.Drawing.Point(12, 27);
+			this.pnlPlayer.Name = "pnlPlayer";
+			this.pnlPlayer.Size = new System.Drawing.Size(365, 53);
+			this.pnlPlayer.TabIndex = 35;
 			// 
 			// tabControl1
 			// 
@@ -230,7 +232,7 @@
 			// tabPage2
 			// 
 			this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
-			this.tabPage2.Controls.Add(this.picKeyboard);
+			this.tabPage2.Controls.Add(this.pnlKeyboard);
 			this.tabPage2.Font = new System.Drawing.Font("MS UI Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.tabPage2.Location = new System.Drawing.Point(4, 22);
 			this.tabPage2.Name = "tabPage2";
@@ -239,26 +241,37 @@
 			this.tabPage2.TabIndex = 1;
 			this.tabPage2.Text = "演奏画面";
 			// 
+			// pnlKeyboard
+			// 
+			this.pnlKeyboard.AutoScroll = true;
+			this.pnlKeyboard.Controls.Add(this.picKeyboard);
+			this.pnlKeyboard.Location = new System.Drawing.Point(4, 7);
+			this.pnlKeyboard.Name = "pnlKeyboard";
+			this.pnlKeyboard.Size = new System.Drawing.Size(940, 614);
+			this.pnlKeyboard.TabIndex = 0;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(988, 804);
+			this.ClientSize = new System.Drawing.Size(988, 741);
 			this.Controls.Add(this.tabControl1);
-			this.Controls.Add(this.panel1);
+			this.Controls.Add(this.pnlPlayer);
 			this.Controls.Add(this.menuStrip1);
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "Form1";
 			this.Text = "Form1";
 			this.Load += new System.EventHandler(this.Form1_Load);
+			this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
 			((System.ComponentModel.ISupportInitialize)(this.picKeyboard)).EndInit();
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-			this.panel1.ResumeLayout(false);
-			this.panel1.PerformLayout();
+			this.pnlPlayer.ResumeLayout(false);
+			this.pnlPlayer.PerformLayout();
 			this.tabControl1.ResumeLayout(false);
 			this.tabPage2.ResumeLayout(false);
+			this.pnlKeyboard.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -281,10 +294,11 @@
 		private System.Windows.Forms.ToolStripMenuItem 編集EToolStripMenuItem;
 		private System.Windows.Forms.Button btnPalyStop;
 		private System.Windows.Forms.NumericUpDown numericUpDown1;
-		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.Panel pnlPlayer;
 		private System.Windows.Forms.TabControl tabControl1;
 		private System.Windows.Forms.TabPage tabPage1;
 		private System.Windows.Forms.TabPage tabPage2;
+		private System.Windows.Forms.Panel pnlKeyboard;
 	}
 }
 

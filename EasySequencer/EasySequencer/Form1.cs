@@ -7,11 +7,13 @@ namespace EasySequencer
 {
 	public partial class Form1 : Form
 	{
+		private static readonly Font mFont = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular, GraphicsUnit.Point);
+
 		MIDI.MessageSender mNoteOut;
 		private bool mIsSeek = false;
 		private bool mIsParamChg = false;
-		private int mKnobX = -1;
-		private int mKnobY = -1;
+		private int mKnobX = 0;
+		private int mKnobY = 0;
 		private int mChangeValue = 0;
 
 		private MIDI.SMF mSMF;
@@ -24,7 +26,7 @@ namespace EasySequencer
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			mNoteOut = new MIDI.MessageSender(new MIDI.InstTable("C:\\Users\\user\\Desktop\\gm.dls"));
+			mNoteOut = new MIDI.MessageSender(new MIDI.InstTable("C:\\Users\\owner\\Desktop\\gm2.dls"));
 			mPlayer = new MIDI.Player(mNoteOut);
 
 			timer1.Interval = 10;
@@ -55,12 +57,12 @@ namespace EasySequencer
 		{
 			if (mPlayer.IsPlay) {
 				mPlayer.Stop();
-				btnPalyStop.Text = "再生";
 			}
 			else {
 				mPlayer.Play();
-				btnPalyStop.Text = "停止";
 			}
+
+			btnPalyStop.Text = mPlayer.IsPlay ? "停止" : "再生";
 		}
 
 		private void hsbSeek_MouseLeave(object sender, EventArgs e)
@@ -179,6 +181,7 @@ namespace EasySequencer
 
 			for (int ch = 0; ch < mPlayer.Channel.Length; ++ch) {
 				var y_ch = 40 * ch;
+
 				for (int k = 0; k < 127; ++k) {
 					if (mPlayer.Channel[ch].Keyboard[k]) {
 						var x_oct = 7 * whiteWidth * (k / 12 - 1);
@@ -187,53 +190,125 @@ namespace EasySequencer
 					}
 				}
 
+				// Vol
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Vol][0]) + MIDI.Const.KnobPos[0].X - 1,
+					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Vol][0]) + MIDI.Const.KnobPos[0].X,
 					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Vol][1]) + MIDI.Const.KnobPos[0].Y + y_ch,
 					3, 3
 				);
+				g.DrawString(
+					mPlayer.Channel[ch].Vol.ToString("000"),
+					mFont, Brushes.Black,
+					MIDI.Const.KnobValPos[0].X, MIDI.Const.KnobValPos[0].Y + y_ch
+				);
+
+				// Exp
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Exp][0]) + MIDI.Const.KnobPos[1].X - 1,
+					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Exp][0]) + MIDI.Const.KnobPos[1].X,
 					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Exp][1]) + MIDI.Const.KnobPos[1].Y + y_ch,
 					3, 3
 				);
+				g.DrawString(
+					mPlayer.Channel[ch].Exp.ToString("000"),
+					mFont, Brushes.Black,
+					MIDI.Const.KnobValPos[1].X, MIDI.Const.KnobValPos[1].Y + y_ch
+				);
+
+				// Pan
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Pan][0]) + MIDI.Const.KnobPos[2].X - 1,
+					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Pan][0]) + MIDI.Const.KnobPos[2].X,
 					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Pan][1]) + MIDI.Const.KnobPos[2].Y + y_ch,
 					3, 3
 				);
+				var exp = mPlayer.Channel[ch].Pan - 64;
+				if (0 == exp) {
+					g.DrawString(
+						" C ",
+						mFont, Brushes.Black,
+						MIDI.Const.KnobValPos[2].X, MIDI.Const.KnobValPos[2].Y + y_ch
+					);
+				}
+				else if (exp < 0) {
+					g.DrawString(
+						"L" + (-exp).ToString("00"),
+						mFont, Brushes.Black,
+						MIDI.Const.KnobValPos[2].X, MIDI.Const.KnobValPos[2].Y + y_ch
+					);
+				}
+				else {
+					g.DrawString(
+						"R" + exp.ToString("00"),
+						mFont, Brushes.Black,
+						MIDI.Const.KnobValPos[2].X, MIDI.Const.KnobValPos[2].Y + y_ch
+					);
+				}
+
+				// Rev
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Rev][0]) + MIDI.Const.KnobPos[3].X - 1,
+					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Rev][0]) + MIDI.Const.KnobPos[3].X,
 					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Rev][1]) + MIDI.Const.KnobPos[3].Y + y_ch,
 					3, 3
 				);
+				g.DrawString(
+					mPlayer.Channel[ch].Rev.ToString("000"),
+					mFont, Brushes.Black,
+					MIDI.Const.KnobValPos[3].X, MIDI.Const.KnobValPos[3].Y + y_ch
+				);
+
+				// Cho
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Cho][0]) + MIDI.Const.KnobPos[4].X - 1,
+					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Cho][0]) + MIDI.Const.KnobPos[4].X,
 					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Cho][1]) + MIDI.Const.KnobPos[4].Y + y_ch,
 					3, 3
 				);
+				g.DrawString(
+					mPlayer.Channel[ch].Cho.ToString("000"),
+					mFont, Brushes.Black,
+					MIDI.Const.KnobValPos[4].X, MIDI.Const.KnobValPos[4].Y + y_ch
+				);
+
+				// Del
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Del][0]) + MIDI.Const.KnobPos[5].X - 1,
+					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Del][0]) + MIDI.Const.KnobPos[5].X,
 					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Del][1]) + MIDI.Const.KnobPos[5].Y + y_ch,
 					3, 3
 				);
+				g.DrawString(
+					mPlayer.Channel[ch].Del.ToString("000"),
+					mFont, Brushes.Black,
+					MIDI.Const.KnobValPos[5].X, MIDI.Const.KnobValPos[5].Y + y_ch
+				);
+
+				// Fc
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fc][0]) + MIDI.Const.KnobPos[6].X - 1,
+					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fc][0]) + MIDI.Const.KnobPos[6].X,
 					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fc][1]) + MIDI.Const.KnobPos[6].Y + y_ch,
 					3, 3
 				);
+				g.DrawString(
+					mPlayer.Channel[ch].Fc.ToString("000"),
+					mFont, Brushes.Black,
+					MIDI.Const.KnobValPos[6].X, MIDI.Const.KnobValPos[6].Y + y_ch
+				);
+
+				// Fq
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fq][0]) + MIDI.Const.KnobPos[7].X - 1,
+					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fq][0]) + MIDI.Const.KnobPos[7].X,
 					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fq][1]) + MIDI.Const.KnobPos[7].Y + y_ch,
 					3, 3
+				);
+				g.DrawString(
+					mPlayer.Channel[ch].Fq.ToString("000"),
+					mFont, Brushes.Black,
+					MIDI.Const.KnobValPos[7].X, MIDI.Const.KnobValPos[7].Y + y_ch
 				);
 
 				if (!mPlayer.Channel[ch].Enable) {
@@ -262,12 +337,24 @@ namespace EasySequencer
 			if (0 <= knobY && knobY <= 15) {
 				if (knobX == 8) {
 					if (e.Button == MouseButtons.Right) {
-						for(int i=0; i< mPlayer.Channel.Length; ++i) {
-							if (knobY == i) {
-								mPlayer.Channel[i].Enable = true;
+						if (mPlayer.Channel[knobY].Enable) {
+							for (int i = 0; i < mPlayer.Channel.Length; ++i) {
+								if (knobY == i) {
+									mPlayer.Channel[i].Enable = false;
+								}
+								else {
+									mPlayer.Channel[i].Enable = true;
+								}
 							}
-							else {
-								mPlayer.Channel[i].Enable = false;
+						}
+						else {
+							for (int i = 0; i < mPlayer.Channel.Length; ++i) {
+								if (knobY == i) {
+									mPlayer.Channel[i].Enable = true;
+								}
+								else {
+									mPlayer.Channel[i].Enable = false;
+								}
 							}
 						}
 					}
@@ -287,8 +374,8 @@ namespace EasySequencer
 		private void picKeyboard_MouseUp(Object sender, MouseEventArgs e) {
 			if (mIsParamChg) {
 				mIsParamChg = false;
-				mKnobX = -1;
-				mKnobY = -1;
+				mKnobX = 0;
+				mKnobY = 0;
 			}
 		}
 
@@ -316,6 +403,14 @@ namespace EasySequencer
 					mChangeValue = 127;
 				}
 			}
+		}
+
+		private void Form1_SizeChanged(object sender, EventArgs e)
+		{
+			tabControl1.Width = Width - tabControl1.Location.X - 20;
+			tabControl1.Height = Height - tabControl1.Location.Y - 48;
+			pnlKeyboard.Width = tabControl1.Width - 16;
+			pnlKeyboard.Height = tabControl1.Height - 38;
 		}
 	}
 }
