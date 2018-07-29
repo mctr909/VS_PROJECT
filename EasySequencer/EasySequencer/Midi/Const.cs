@@ -370,8 +370,8 @@ namespace MIDI
 			case 39:
 				ch.EnvCutoff.AttackLevel = 112;
 				ch.EnvCutoff.DecayLevel = 80;
-				ch.EnvCutoff.SustainLevel = 55;
-				ch.EnvCutoff.ReleaceLevel = 55;
+				ch.EnvCutoff.SustainLevel = 58;
+				ch.EnvCutoff.ReleaceLevel = 58;
 				ch.EnvCutoff.AttackTime = 0.0;
 				ch.EnvCutoff.DecayTime = 0.15;
 				ch.EnvCutoff.ReleaseTime = 0.1;
