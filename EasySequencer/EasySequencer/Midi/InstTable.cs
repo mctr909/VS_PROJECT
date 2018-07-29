@@ -76,7 +76,13 @@ namespace MIDI {
 							;
 							instInfo.WaveInfo[i].Gain = region.Sampler.Gain;
 
-							instInfo.WaveInfo[i].Buff = waveList[waveIdx];
+							if (null == waveList[waveIdx] || 0 == waveList[waveIdx].Length) {
+								instInfo.WaveInfo[i].Buff = new short[1];
+							}
+							else {
+								instInfo.WaveInfo[i].Buff = waveList[waveIdx];
+							}
+
 							if (0 < region.Sampler.List.Count) {
 								instInfo.WaveInfo[i].LoopEnable = true;
 								instInfo.WaveInfo[i].LoopBegin = region.Sampler[0].Begin;

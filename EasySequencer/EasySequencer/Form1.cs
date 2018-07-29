@@ -26,7 +26,7 @@ namespace EasySequencer
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			mNoteOut = new MIDI.MessageSender(new MIDI.InstTable("C:\\Users\\owner\\Desktop\\gm2.dls"));
+			mNoteOut = new MIDI.MessageSender(new MIDI.InstTable("C:\\Users\\user\\Desktop\\gm1.dls"));
 			mPlayer = new MIDI.Player(mNoteOut);
 
 			timer1.Interval = 10;

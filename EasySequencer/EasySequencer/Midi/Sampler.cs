@@ -98,6 +98,25 @@
 		}
 
 		public void NoteOutput() {
+			if (null == mWaveInfo.Buff) {
+				return;
+			}
+
+			var cur = (int)mCurIndex;
+			var pre = cur - 1;
+			var dt = mCurIndex - cur;
+			if (pre < 0) {
+				pre += (int)mWaveInfo.LoopEnd;
+			}
+
+			double wave = mVelocity * mCurAmp * (mWaveInfo.Buff[cur] * dt + mWaveInfo.Buff[pre] * (1.0 - dt)) / 32768.0;
+
+			mFilter.Cutoff = mCurCutoff;
+			mFilter.Resonance = mCurResonance;
+			mFilter.Step(wave, ref wave);
+
+			mChannel.Wave += wave;
+
 			if (mOnKey) {
 				if (mCurTime < mEnvAmp.ATime) {
 					mCurAmp += (mEnvAmp.DLevel - mCurAmp) * mEnvAmp.ADelta * Const.DeltaTime;
@@ -116,55 +135,51 @@
 			else {
 				mCurAmp -= mCurAmp * mEnvAmp.RDelta * mChannel.Hld * Const.DeltaTime;
 				mCurCutoff += (mEnvCutoff.RLevel * mChannel.FcD - mCurCutoff) * mEnvCutoff.RDelta * Const.DeltaTime;
+
 				if (mCurAmp < 0.001) {
 					mIsActive = false;
 				}
 			}
 
+			if (1.0 < mCurCutoff) {
+				mCurCutoff = 1.0;
+			}
+
+			mCurResonance += 10.0 * (mChannel.FqD - mCurResonance) * Const.DeltaTime;
+			if (1.0 < mCurResonance) {
+				mCurResonance = 1.0;
+			}
+
+			mCurTime += Const.DeltaTime;
 			mCurIndex += mDelta * mChannel.PitchD;
-			
 			if (mWaveInfo.LoopEnd <= mCurIndex) {
 				mCurIndex = mWaveInfo.LoopBegin + mCurIndex - (int)mCurIndex;
 				if (!mWaveInfo.LoopEnable) {
 					mIsActive = false;
 				}
 			}
-
-			var indexCur = (int)mCurIndex;
-			var indexPre = indexCur - 1;
-			var dt = mCurIndex - indexCur;
-			if (indexPre < 0) {
-				indexPre += (int)mWaveInfo.LoopEnd;
-			}
-
-			double temp = mCurAmp * mVelocity * (mWaveInfo.Buff[indexCur] * dt + mWaveInfo.Buff[indexPre] * (1.0 - dt)) / 32768.0;
-
-			var tempCutoff = mCurCutoff;
-			if (1.0 < tempCutoff) {
-				tempCutoff = 1.0;
-			}
-
-			mCurResonance += 10.0 * (mChannel.FqD - mCurResonance) * Const.DeltaTime;
-			var tempResonance = mCurResonance;
-			if (1.0 < tempResonance) {
-				tempResonance = 1.0;
-			}
-
-			mFilter.Cutoff = tempCutoff;
-			mFilter.Resonance = tempResonance;
-			mFilter.Step(temp, ref temp);
-
-			mChannel.Wave += temp;
-			mCurTime += Const.DeltaTime;
 		}
 
 		public void DrumOutput() {
+			if(null == mWaveInfo.Buff) {
+				return;
+			}
 
-			mCurAmp -= mCurAmp * 3.0 * Const.DeltaTime;
+			var cur = (int)mCurIndex;
+			var pre = cur - 1;
+			var dt = mCurIndex - cur;
+			if (pre < 0) {
+				pre += (int)mWaveInfo.LoopEnd;
+			}
+
+			mChannel.Wave += mVelocity * mCurAmp * (mWaveInfo.Buff[cur] * dt + mWaveInfo.Buff[pre] * (1.0 - dt)) / 32768.0;
+
+			mCurAmp -= mCurAmp * 6.0 * Const.DeltaTime;
 			if (mCurAmp < 0.001) {
 				mIsActive = false;
 			}
 
+			mCurTime += Const.DeltaTime;
 			mCurIndex += mDelta * mChannel.PitchD;
 			if (mWaveInfo.LoopEnd <= mCurIndex) {
 				mCurIndex = mWaveInfo.LoopBegin + mCurIndex - (int)mCurIndex;
@@ -173,16 +188,6 @@
 					return;
 				}
 			}
-
-			var indexCur = (int)mCurIndex;
-			var indexPre = indexCur - 1;
-			var dt = mCurIndex - indexCur;
-			if (indexPre < 0) {
-				indexPre += mWaveInfo.Buff.Length;
-			}
-
-			mChannel.Wave += mVelocity * mCurAmp * (mWaveInfo.Buff[indexCur] * dt + mWaveInfo.Buff[indexPre] * (1.0 - dt)) / 32768.0;
-			mCurTime += Const.DeltaTime;
 		}
 	}
 }

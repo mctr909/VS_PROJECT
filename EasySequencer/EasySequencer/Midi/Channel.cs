@@ -255,7 +255,7 @@
 
 			case CTRL_TYPE.CUTOFF:
 				mFcB = value;
-				mFcD = value / 132.0 + 0.01;
+				mFcD = (Const.Amp[value] + 0.02) / 1.02;
 				break;
 			case CTRL_TYPE.RESONANCE:
 				mFqB = value;
@@ -304,10 +304,6 @@
 			WaveList = instInfo.WaveInfo;
 			EnvAmp = instInfo.EnvAmp;
 			EnvCutoff = instInfo.EnvFilter;
-
-			if (!InstID.IsDrum && 32 <= InstID.ProgramNo && InstID.ProgramNo <= 39) {
-				Const.ChgInst(this);
-			}
 		}
 
 		public void PitchBend(byte lsb, byte msb) {
@@ -329,8 +325,6 @@
 			InstID.IsDrum = (9 == No);
 			WaveList = mInstTable.InstList[InstID].WaveInfo;
 
-			Const.ChgInst(this);
-
 			ProgramChange(InstID.ProgramNo);
 
 			mVolB = 100;
@@ -350,9 +344,9 @@
 
 			mHldD = 1.0;
 
-			mFcB = 64;
+			mFcB = 127;
 			mFqB = 64;
-			mFcD = mFcB / 132.0 + 0.01;
+			mFcD = (Const.Amp[mFcB] + 0.02) / 1.02;
 			mFqD = mFqB / 112.0;
 
 			mRPN_MSB = 255;
