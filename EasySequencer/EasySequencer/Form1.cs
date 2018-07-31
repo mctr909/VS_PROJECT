@@ -26,7 +26,7 @@ namespace EasySequencer
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			mNoteOut = new MIDI.MessageSender(new MIDI.InstTable("C:\\Users\\user\\Desktop\\gm1.dls"));
+			mNoteOut = new MIDI.MessageSender(new MIDI.Instruments("C:\\Users\\user\\Desktop\\gm1.dls"));
 			mPlayer = new MIDI.Player(mNoteOut);
 
 			timer1.Interval = 10;
@@ -77,6 +77,10 @@ namespace EasySequencer
 		private void hsbSeek_Scroll(object sender, ScrollEventArgs e)
 		{
 			mIsSeek = true;
+		}
+
+		private void trkSpeed_Scroll(Object sender, EventArgs e) {
+			mPlayer.Speed = trkSpeed.Value / 100.0;
 		}
 
 		private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -180,11 +184,12 @@ namespace EasySequencer
 			var whiteWidth = MIDI.Const.KeyboardPos[0].Width + 1;
 
 			for (int ch = 0; ch < mPlayer.Channel.Length; ++ch) {
+				var channel = mPlayer.Channel[ch];
 				var y_ch = 40 * ch;
 
 				for (int k = 0; k < 127; ++k) {
-					if (mPlayer.Channel[ch].Keyboard[k]) {
-						var x_oct = 7 * whiteWidth * (k / 12 - 1);
+					if (channel.Keyboard[k]) {
+						var x_oct = 7 * whiteWidth * (k / 12 - 1) + (int)(0.5 * whiteWidth * channel.Pitch * channel.PitchRange / 8192.0);
 						var key = MIDI.Const.KeyboardPos[k % 12];
 						g.FillRectangle(Brushes.Red, key.X + x_oct, key.Y + y_ch, key.Width, key.Height);
 					}
@@ -193,12 +198,12 @@ namespace EasySequencer
 				// Vol
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Vol][0]) + MIDI.Const.KnobPos[0].X,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Vol][1]) + MIDI.Const.KnobPos[0].Y + y_ch,
+					(int)(7 * MIDI.Const.Knob[channel.Vol][0]) + MIDI.Const.KnobPos[0].X,
+					(int)(7 * MIDI.Const.Knob[channel.Vol][1]) + MIDI.Const.KnobPos[0].Y + y_ch,
 					3, 3
 				);
 				g.DrawString(
-					mPlayer.Channel[ch].Vol.ToString("000"),
+					channel.Vol.ToString("000"),
 					mFont, Brushes.Black,
 					MIDI.Const.KnobValPos[0].X, MIDI.Const.KnobValPos[0].Y + y_ch
 				);
@@ -206,12 +211,12 @@ namespace EasySequencer
 				// Exp
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Exp][0]) + MIDI.Const.KnobPos[1].X,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Exp][1]) + MIDI.Const.KnobPos[1].Y + y_ch,
+					(int)(7 * MIDI.Const.Knob[channel.Exp][0]) + MIDI.Const.KnobPos[1].X,
+					(int)(7 * MIDI.Const.Knob[channel.Exp][1]) + MIDI.Const.KnobPos[1].Y + y_ch,
 					3, 3
 				);
 				g.DrawString(
-					mPlayer.Channel[ch].Exp.ToString("000"),
+					channel.Exp.ToString("000"),
 					mFont, Brushes.Black,
 					MIDI.Const.KnobValPos[1].X, MIDI.Const.KnobValPos[1].Y + y_ch
 				);
@@ -219,11 +224,11 @@ namespace EasySequencer
 				// Pan
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Pan][0]) + MIDI.Const.KnobPos[2].X,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Pan][1]) + MIDI.Const.KnobPos[2].Y + y_ch,
+					(int)(7 * MIDI.Const.Knob[channel.Pan][0]) + MIDI.Const.KnobPos[2].X,
+					(int)(7 * MIDI.Const.Knob[channel.Pan][1]) + MIDI.Const.KnobPos[2].Y + y_ch,
 					3, 3
 				);
-				var exp = mPlayer.Channel[ch].Pan - 64;
+				var exp = channel.Pan - 64;
 				if (0 == exp) {
 					g.DrawString(
 						" C ",
@@ -249,12 +254,12 @@ namespace EasySequencer
 				// Rev
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Rev][0]) + MIDI.Const.KnobPos[3].X,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Rev][1]) + MIDI.Const.KnobPos[3].Y + y_ch,
+					(int)(7 * MIDI.Const.Knob[channel.Rev][0]) + MIDI.Const.KnobPos[3].X,
+					(int)(7 * MIDI.Const.Knob[channel.Rev][1]) + MIDI.Const.KnobPos[3].Y + y_ch,
 					3, 3
 				);
 				g.DrawString(
-					mPlayer.Channel[ch].Rev.ToString("000"),
+					channel.Rev.ToString("000"),
 					mFont, Brushes.Black,
 					MIDI.Const.KnobValPos[3].X, MIDI.Const.KnobValPos[3].Y + y_ch
 				);
@@ -262,12 +267,12 @@ namespace EasySequencer
 				// Cho
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Cho][0]) + MIDI.Const.KnobPos[4].X,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Cho][1]) + MIDI.Const.KnobPos[4].Y + y_ch,
+					(int)(7 * MIDI.Const.Knob[channel.Cho][0]) + MIDI.Const.KnobPos[4].X,
+					(int)(7 * MIDI.Const.Knob[channel.Cho][1]) + MIDI.Const.KnobPos[4].Y + y_ch,
 					3, 3
 				);
 				g.DrawString(
-					mPlayer.Channel[ch].Cho.ToString("000"),
+					channel.Cho.ToString("000"),
 					mFont, Brushes.Black,
 					MIDI.Const.KnobValPos[4].X, MIDI.Const.KnobValPos[4].Y + y_ch
 				);
@@ -275,12 +280,12 @@ namespace EasySequencer
 				// Del
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Del][0]) + MIDI.Const.KnobPos[5].X,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Del][1]) + MIDI.Const.KnobPos[5].Y + y_ch,
+					(int)(7 * MIDI.Const.Knob[channel.Del][0]) + MIDI.Const.KnobPos[5].X,
+					(int)(7 * MIDI.Const.Knob[channel.Del][1]) + MIDI.Const.KnobPos[5].Y + y_ch,
 					3, 3
 				);
 				g.DrawString(
-					mPlayer.Channel[ch].Del.ToString("000"),
+					channel.Del.ToString("000"),
 					mFont, Brushes.Black,
 					MIDI.Const.KnobValPos[5].X, MIDI.Const.KnobValPos[5].Y + y_ch
 				);
@@ -288,12 +293,12 @@ namespace EasySequencer
 				// Fc
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fc][0]) + MIDI.Const.KnobPos[6].X,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fc][1]) + MIDI.Const.KnobPos[6].Y + y_ch,
+					(int)(7 * MIDI.Const.Knob[channel.Fc][0]) + MIDI.Const.KnobPos[6].X,
+					(int)(7 * MIDI.Const.Knob[channel.Fc][1]) + MIDI.Const.KnobPos[6].Y + y_ch,
 					3, 3
 				);
 				g.DrawString(
-					mPlayer.Channel[ch].Fc.ToString("000"),
+					channel.Fc.ToString("000"),
 					mFont, Brushes.Black,
 					MIDI.Const.KnobValPos[6].X, MIDI.Const.KnobValPos[6].Y + y_ch
 				);
@@ -301,17 +306,17 @@ namespace EasySequencer
 				// Fq
 				g.FillRectangle(
 					Brushes.White,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fq][0]) + MIDI.Const.KnobPos[7].X,
-					(int)(7 * MIDI.Const.Knob[mPlayer.Channel[ch].Fq][1]) + MIDI.Const.KnobPos[7].Y + y_ch,
+					(int)(7 * MIDI.Const.Knob[channel.Fq][0]) + MIDI.Const.KnobPos[7].X,
+					(int)(7 * MIDI.Const.Knob[channel.Fq][1]) + MIDI.Const.KnobPos[7].Y + y_ch,
 					3, 3
 				);
 				g.DrawString(
-					mPlayer.Channel[ch].Fq.ToString("000"),
+					channel.Fq.ToString("000"),
 					mFont, Brushes.Black,
 					MIDI.Const.KnobValPos[7].X, MIDI.Const.KnobValPos[7].Y + y_ch
 				);
 
-				if (!mPlayer.Channel[ch].Enable) {
+				if (!channel.Enable) {
 					g.FillRectangle(Brushes.Red, 722, 4 + y_ch, 13, 18);
 				}
 			}

@@ -13,55 +13,24 @@
 		}
 	}
 
-	public struct InstInfo {
-		public Envelope EnvAmp;
-		public Envelope EnvFilter;
-		public WaveInfo[] WaveInfo;
-	}
-
-	unsafe public struct WaveInfo {
-		public short[] Buff;
-		public uint LoopBegin;
-		public uint LoopEnd;
-		public bool LoopEnable;
-		public byte BaseNote;
-		public double Delta;
-		public double Gain;
-	}
-
 	public struct Envelope {
-		public double ALevel;
-		public double DLevel;
-		public double SLevel;
-		public double RLevel;
-		public double ATime;
-		public double ADelta;
-		public double DDelta;
-		public double RDelta;
-
-		public byte AttackLevel {
-			set { ALevel = Const.Level[value]; }
-		}
-
-		public byte DecayLevel {
-			set { DLevel = Const.Level[value]; }
-		}
-
-		public byte SustainLevel {
-			set { SLevel = Const.Level[value]; }
-		}
-
-		public byte ReleaceLevel {
-			set { RLevel = Const.Level[value]; }
-		}
+		public double LevelA;
+		public double LevelH;
+		public double LevelS;
+		public double LevelR;
+		public double TimeA;
+		public double TimeH;
+		public double DeltaA;
+		public double DeltaD;
+		public double DeltaR;
 
 		public double AttackTime {
 			set {
 				if (value < 0.001) {
 					value = 0.001;
 				}
-				ATime = value;
-				ADelta = 16.0 / value;
+				TimeA = value;
+				DeltaA = 12.0 / value;
 			}
 		}
 
@@ -70,7 +39,7 @@
 				if (value < 0.001) {
 					value = 0.001;
 				}
-				DDelta = 16.0 / value;
+				DeltaD = 12.0 / value;
 			}
 		}
 
@@ -79,9 +48,21 @@
 				if (value < 0.001) {
 					value = 0.001;
 				}
-				RDelta = 16.0 / value;
+				DeltaR = 12.0 / value;
 			}
 		}
+	}
+
+	public struct WaveInfo {
+		public Envelope EnvAmp;
+		public Envelope EnvCutoff;
+		public uint LoopBegin;
+		public uint LoopEnd;
+		public bool LoopEnable;
+		public byte BaseNoteNo;
+		public double Delta;
+		public double Gain;
+		public short[] Buff;
 	}
 
 	public struct Filter {

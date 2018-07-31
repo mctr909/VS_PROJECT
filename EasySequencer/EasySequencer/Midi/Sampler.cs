@@ -61,7 +61,7 @@
 			mWaveInfo = channel.WaveList[noteNo];
 			mVelocity = mWaveInfo.Gain * Const.Amp[velocity];
 
-			var note = noteNo - mWaveInfo.BaseNote;
+			var note = noteNo - mWaveInfo.BaseNoteNo;
 			if (note < 0) {
 				mDelta = mWaveInfo.Delta / Const.SemiTone[-note];
 			}
@@ -72,11 +72,11 @@
 			mIsActive = true;
 			mOnKey = true;
 
-			mEnvAmp = channel.EnvAmp;
-			mCurAmp = mEnvAmp.ALevel;
+			mEnvAmp = mWaveInfo.EnvAmp;
+			mCurAmp = mEnvAmp.LevelA;
 
-			mEnvCutoff = channel.EnvCutoff;
-			mCurCutoff = mEnvCutoff.ALevel * mChannel.FcD;
+			mEnvCutoff = mWaveInfo.EnvCutoff;
+			mCurCutoff = mEnvCutoff.LevelA * mChannel.FcD;
 
 			var tempCutoff = mCurCutoff;
 			if (1.0 < tempCutoff) {
@@ -118,23 +118,23 @@
 			mChannel.Wave += wave;
 
 			if (mOnKey) {
-				if (mCurTime < mEnvAmp.ATime) {
-					mCurAmp += (mEnvAmp.DLevel - mCurAmp) * mEnvAmp.ADelta * Const.DeltaTime;
+				if (mCurTime < (mEnvAmp.TimeA + mEnvAmp.TimeH)) {
+					mCurAmp += (mEnvAmp.LevelH - mCurAmp) * mEnvAmp.DeltaA * Const.DeltaTime;
 				}
 				else {
-					mCurAmp += (mEnvAmp.SLevel - mCurAmp) * mEnvAmp.DDelta * Const.DeltaTime;
+					mCurAmp += (mEnvAmp.LevelS - mCurAmp) * mEnvAmp.DeltaD * Const.DeltaTime;
 				}
 
-				if (mCurTime < mEnvCutoff.ATime) {
-					mCurCutoff += (mEnvCutoff.DLevel * mChannel.FcD - mCurCutoff) * mEnvCutoff.ADelta * Const.DeltaTime;
+				if (mCurTime < (mEnvCutoff.TimeA + mEnvCutoff.TimeH)) {
+					mCurCutoff += (mEnvCutoff.LevelH * mChannel.FcD - mCurCutoff) * mEnvCutoff.DeltaA * Const.DeltaTime;
 				}
 				else {
-					mCurCutoff += (mEnvCutoff.SLevel * mChannel.FcD - mCurCutoff) * mEnvCutoff.DDelta * Const.DeltaTime;
+					mCurCutoff += (mEnvCutoff.LevelS * mChannel.FcD - mCurCutoff) * mEnvCutoff.DeltaD * Const.DeltaTime;
 				}
 			}
 			else {
-				mCurAmp -= mCurAmp * mEnvAmp.RDelta * mChannel.Hld * Const.DeltaTime;
-				mCurCutoff += (mEnvCutoff.RLevel * mChannel.FcD - mCurCutoff) * mEnvCutoff.RDelta * Const.DeltaTime;
+				mCurAmp -= mCurAmp * mEnvAmp.DeltaR * mChannel.Hld * Const.DeltaTime;
+				mCurCutoff += (mEnvCutoff.LevelR * mChannel.FcD - mCurCutoff) * mEnvCutoff.DeltaR * Const.DeltaTime;
 
 				if (mCurAmp < 0.001) {
 					mIsActive = false;
@@ -174,7 +174,7 @@
 
 			mChannel.Wave += mVelocity * mCurAmp * (mWaveInfo.Buff[cur] * dt + mWaveInfo.Buff[pre] * (1.0 - dt)) / 32768.0;
 
-			mCurAmp -= mCurAmp * 6.0 * Const.DeltaTime;
+			mCurAmp -= mCurAmp * mEnvAmp.DeltaR * Const.DeltaTime;
 			if (mCurAmp < 0.001) {
 				mIsActive = false;
 			}

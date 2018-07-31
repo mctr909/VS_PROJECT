@@ -10,12 +10,12 @@
 			get { return mChannel; }
 		}
 
-		public MessageSender(InstTable instTable) : base(Const.SampleRate, 2, 256, 16) {
+		public MessageSender(Instruments inst) : base(Const.SampleRate, 2, 256, 16) {
 			mChannel = new Channel[CHANNEL_COUNT];
 			mSampler = new Sampler[SAMPLER_COUNT];
 
 			for (int i = 0; i < CHANNEL_COUNT; ++i) {
-				mChannel[i] = new Channel(i, instTable);
+				mChannel[i] = new Channel(i, inst);
 			}
 
 			for (int i = 0; i < SAMPLER_COUNT; ++i) {
