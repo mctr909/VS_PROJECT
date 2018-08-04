@@ -252,7 +252,7 @@
 
 			case CTRL_TYPE.CUTOFF:
 				mFcB = value;
-				mFcD = (1.375 * Const.Amp[mFcB] + 0.015);
+				mFcD = (1.25 * Const.Amp[mFcB] + 0.01);
 				break;
 			case CTRL_TYPE.RESONANCE:
 				mFqB = value;
@@ -336,9 +336,9 @@
 
 			mHldD = 1.0;
 
-			mFcB = 80;
+			mFcB = 127;
 			mFqB = 64;
-			mFcD = (1.375 * Const.Amp[mFcB] + 0.015);
+			mFcD = (1.25 * Const.Amp[mFcB] + 0.01);
 			mFqD = mFqB / 112.0;
 
 			mRPN_MSB = 255;

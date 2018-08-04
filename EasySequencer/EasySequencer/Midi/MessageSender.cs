@@ -1,8 +1,9 @@
 ﻿namespace MIDI {
-	public class MessageSender : WaveOut {
+	public class MessageSender {
 		private const int CHANNEL_COUNT = 16;
 		private const int SAMPLER_COUNT = 128;
 
+		private Instruments mInstruments;
 		private Channel[] mChannel;
 		private Sampler[] mSampler;
 
@@ -10,39 +11,32 @@
 			get { return mChannel; }
 		}
 
-		public MessageSender(Instruments inst) : base(Const.SampleRate, 2, 256, 16) {
+		public MessageSender(Instruments instruments) {
+			mInstruments = instruments;
 			mChannel = new Channel[CHANNEL_COUNT];
 			mSampler = new Sampler[SAMPLER_COUNT];
 
 			for (int i = 0; i < CHANNEL_COUNT; ++i) {
-				mChannel[i] = new Channel(i, inst);
+				mChannel[i] = new Channel(i, mInstruments);
 			}
 
 			for (int i = 0; i < SAMPLER_COUNT; ++i) {
 				mSampler[i] = new Sampler();
 			}
-
-			Open();
-			Play();
 		}
 
-		protected override void SetWave() {
+		public void SetWave(ref short[] waveBuffer) {
 			int i, s, ch;
 			double sumL = 0.0;
 			double sumR = 0.0;
 
-			for (i = 0; i < WaveBuffer.Length; i += 2) {
+			for (i = 0; i < waveBuffer.Length; i += 2) {
 				for (s = 0; s < SAMPLER_COUNT; ++s) {
 					if (null == mSampler[s]) {
 						continue;
 					}
 					if (mSampler[s].IsActive) {
-						if (mChannel[mSampler[s].ChannelNo].InstID.IsDrum) {
-							mSampler[s].DrumOutput();
-						}
-						else {
-							mSampler[s].NoteOutput();
-						}
+						mSampler[s].Output();
 					}
 				}
 
@@ -66,8 +60,8 @@
 					sumR = 1.0;
 				}
 
-				WaveBuffer[i] = (short)(32767 * sumL);
-				WaveBuffer[i + 1] = (short)(32767 * sumR);
+				waveBuffer[i] = (short)(32767 * sumL);
+				waveBuffer[i + 1] = (short)(32767 * sumR);
 			}
 		}
 

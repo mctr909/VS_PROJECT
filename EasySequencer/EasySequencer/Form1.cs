@@ -2,14 +2,14 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace EasySequencer
-{
-	public partial class Form1 : Form
-	{
+namespace EasySequencer {
+	unsafe public partial class Form1 : Form {
 		private static readonly Font mFont = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular, GraphicsUnit.Point);
+		private readonly string mInstFilePath;
 
-		MIDI.MessageSender mNoteOut;
 		private bool mIsSeek = false;
 		private bool mIsParamChg = false;
 		private int mKnobX = 0;
@@ -17,25 +17,30 @@ namespace EasySequencer
 		private int mChangeValue = 0;
 
 		private MIDI.SMF mSMF;
+		private MIDI.Instruments mInstruments;
+		private MIDI.MessageSender mMsgSender;
+		private MIDI.WaveOut mWaveOut;
 		public MIDI.Player mPlayer;
+		public int mProgress = 0;
+		public double mCurrentTime = 0.0;
 
-		public Form1()
-		{
+		public Form1() {
 			InitializeComponent();
+			mInstFilePath = "C:\\Users\\user\\Desktop\\gm1.dls";
 		}
 
-		private void Form1_Load(object sender, EventArgs e)
-		{
-			mNoteOut = new MIDI.MessageSender(new MIDI.Instruments("C:\\Users\\user\\Desktop\\gm1.dls"));
-			mPlayer = new MIDI.Player(mNoteOut);
+		private void Form1_Load(object sender, EventArgs e) {
+			mInstruments = new MIDI.Instruments(mInstFilePath);
+			mMsgSender = new MIDI.MessageSender(mInstruments);
+			mWaveOut = new MIDI.WaveOut(mMsgSender);
+			mPlayer = new MIDI.Player(mMsgSender);
 
 			timer1.Interval = 10;
 			timer1.Enabled = true;
 			timer1.Start();
 		}
 
-		private void 開くOToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+		private void 開くOToolStripMenuItem_Click(object sender, EventArgs e) {
 			openFileDialog1.Filter = "MIDIファイル(*.mid)|*.mid";
 			openFileDialog1.ShowDialog();
 			var filePath = openFileDialog1.FileName;
@@ -51,10 +56,76 @@ namespace EasySequencer
 			mSMF = new MIDI.SMF(filePath);
 			mPlayer.SetEventList(mSMF.EventList, mSMF.Ticks);
 			hsbSeek.Maximum = mPlayer.MaxTime;
+			Text = Path.GetFileNameWithoutExtension(filePath);
 		}
 
-		private void btnPalyStop_Click(object sender, EventArgs e)
-		{
+		private void wavファイル出力ToolStripMenuItem_Click(Object sender, EventArgs e) {
+			if (null == mSMF || null == mSMF.EventList) {
+				return;
+			}
+
+			saveFileDialog1.Filter = "wavファイル(*.wav)|*.wav";
+			saveFileDialog1.FileName = Text;
+			saveFileDialog1.ShowDialog();
+			var filePath = saveFileDialog1.FileName;
+
+			Task task = Task.Factory.StartNew(() => {
+				var wavFile = new RiffWave(filePath, MIDI.Const.SampleRate, 2, 16);
+				var msgSender = new MIDI.MessageSender(mInstruments);
+				var events = mSMF.EventList;
+
+				var buffSamples = 256;
+				var waveBuff = new short[2 * buffSamples];
+				var eventIdx = 0;
+				var currentTick = 0.0;
+				var delta = 1000.0 / mSMF.Ticks;
+				var bpm = 120.0;
+
+				mCurrentTime = 0.0;
+
+				while (eventIdx < events.Length) {
+					while (currentTick < (events[eventIdx].Time * delta)) {
+						msgSender.SetWave(ref waveBuff);
+						wavFile.Write(ref waveBuff);
+						currentTick += bpm * (1000.0 * buffSamples * MIDI.Const.DeltaTime) / 60.0;
+						mCurrentTime += buffSamples * MIDI.Const.DeltaTime;
+					}
+
+					for (; eventIdx < events.Length && (events[eventIdx].Time * delta) <= currentTick; ++eventIdx) {
+						var ev = events[eventIdx];
+						var msg = ev.Message;
+						var type = msg.Type;
+
+						if (MIDI.EVENT_TYPE.META == type) {
+							if (MIDI.META_TYPE.TEMPO == msg.Meta.Type) {
+								bpm = msg.Meta.BPM;
+							}
+						}
+						msgSender.Send(ev.Message);
+					}
+
+					mProgress = 1000 * eventIdx / events.Length;
+				}
+
+				wavFile.Close();
+			});
+
+			var wndStatus = new StatusWindow();
+			wndStatus.StartPosition = FormStartPosition.CenterParent;
+			wndStatus.Task = task;
+			wndStatus.ProgressMax = 1000;
+			fixed (int* ptr = &mProgress)
+			{
+				wndStatus.Progress = ptr;
+			}
+			fixed (double* ptr = &mCurrentTime)
+			{
+				wndStatus.Time = ptr;
+			}
+			wndStatus.Show();
+		}
+
+		private void btnPalyStop_Click(object sender, EventArgs e) {
 			if (mPlayer.IsPlay) {
 				mPlayer.Stop();
 			}
@@ -65,8 +136,7 @@ namespace EasySequencer
 			btnPalyStop.Text = mPlayer.IsPlay ? "停止" : "再生";
 		}
 
-		private void hsbSeek_MouseLeave(object sender, EventArgs e)
-		{
+		private void hsbSeek_MouseLeave(object sender, EventArgs e) {
 			if (mIsSeek) {
 				mIsSeek = false;
 				mPlayer.SeekTime = hsbSeek.Value;
@@ -74,8 +144,7 @@ namespace EasySequencer
 			}
 		}
 
-		private void hsbSeek_Scroll(object sender, ScrollEventArgs e)
-		{
+		private void hsbSeek_Scroll(object sender, ScrollEventArgs e) {
 			mIsSeek = true;
 		}
 
@@ -83,8 +152,7 @@ namespace EasySequencer
 			mPlayer.Speed = trkSpeed.Value / 100.0;
 		}
 
-		private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-		{
+		private void numKey_ValueChanged(Object sender, EventArgs e) {
 			mIsSeek = true;
 			mPlayer.Transpose = (int)numericUpDown1.Value;
 			mPlayer.SeekTime = hsbSeek.Value;
@@ -177,7 +245,7 @@ namespace EasySequencer
 				}
 			}
 
-			Bitmap bmp = new Bitmap(picKeyboard.Width, picKeyboard.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			Bitmap bmp = new Bitmap(numKey.Width, numKey.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			bmp.MakeTransparent(Color.Black);
 			Graphics g = Graphics.FromImage(bmp);
 
@@ -326,16 +394,16 @@ namespace EasySequencer
 				g = null;
 			}
 
-			if (null != picKeyboard.Image) {
-				picKeyboard.Image.Dispose();
-				picKeyboard.Image = null;
+			if (null != numKey.Image) {
+				numKey.Image.Dispose();
+				numKey.Image = null;
 			}
 
-			picKeyboard.Image = bmp;
+			numKey.Image = bmp;
 		}
 
 		private void picKeyboard_MouseDown(Object sender, MouseEventArgs e) {
-			var pos = picKeyboard.PointToClient(Cursor.Position);
+			var pos = numKey.PointToClient(Cursor.Position);
 			var knobX = (pos.X - 525) / 24;
 			var knobY = pos.Y / 40;
 
@@ -386,7 +454,7 @@ namespace EasySequencer
 
 		private void picKeyboard_MouseMove(Object sender, MouseEventArgs e) {
 			if (mIsParamChg) {
-				var pos = picKeyboard.PointToClient(Cursor.Position);
+				var pos = numKey.PointToClient(Cursor.Position);
 				var knobCenter = MIDI.Const.KnobPos[mKnobX];
 				knobCenter.Y += mKnobY * 40;
 
@@ -410,8 +478,7 @@ namespace EasySequencer
 			}
 		}
 
-		private void Form1_SizeChanged(object sender, EventArgs e)
-		{
+		private void Form1_SizeChanged(object sender, EventArgs e) {
 			tabControl1.Width = Width - tabControl1.Location.X - 20;
 			tabControl1.Height = Height - tabControl1.Location.Y - 48;
 			pnlKeyboard.Width = tabControl1.Width - 16;

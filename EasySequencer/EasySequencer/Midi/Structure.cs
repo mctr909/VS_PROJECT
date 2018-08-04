@@ -30,7 +30,7 @@
 					value = 0.001;
 				}
 				TimeA = value;
-				DeltaA = 12.0 / value;
+				DeltaA = 12.0 * Const.DeltaTime / value;
 			}
 		}
 
@@ -39,7 +39,7 @@
 				if (value < 0.001) {
 					value = 0.001;
 				}
-				DeltaD = 12.0 / value;
+				DeltaD = 12.0 * Const.DeltaTime / value;
 			}
 		}
 
@@ -48,7 +48,7 @@
 				if (value < 0.001) {
 					value = 0.001;
 				}
-				DeltaR = 12.0 / value;
+				DeltaR = 12.0 * Const.DeltaTime / value;
 			}
 		}
 	}
@@ -62,6 +62,7 @@
 		public byte BaseNoteNo;
 		public double Delta;
 		public double Gain;
+		public double Resonance;
 		public short[] Buff;
 	}
 

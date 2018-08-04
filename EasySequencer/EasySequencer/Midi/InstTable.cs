@@ -32,6 +32,8 @@ namespace MIDI {
 
 				Envelope envAmp = new Envelope();
 				Envelope envCutoff = new Envelope();
+				double resonance = 0.0;
+
 				if (null != inst.ArtPool) {
 					envAmp.LevelA = 1.0;
 					envAmp.LevelH = 1.0;
@@ -68,6 +70,9 @@ namespace MIDI {
 						case DLS.CONN_DST_TYPE.EG2_RELEASE_TIME:
 							envCutoff.LevelR = 0.5;
 							envCutoff.ReleaseTime = art.Value;
+							break;
+						case DLS.CONN_DST_TYPE.FILTER_Q:
+							resonance = art.Value;
 							break;
 						}
 					}
@@ -113,12 +118,16 @@ namespace MIDI {
 									envCutoff.LevelR = 0.5;
 									envCutoff.ReleaseTime = art.Value;
 									break;
+								case DLS.CONN_DST_TYPE.FILTER_Q:
+									resonance = art.Value;
+									break;
 								}
 							}
 						}
 
 						waveInfo[noteNo].EnvAmp = envAmp;
 						waveInfo[noteNo].EnvCutoff = envCutoff;
+						waveInfo[noteNo].Resonance = resonance;
 
 						var waveIdx = (int)region.WaveLink.WaveIndex;
 						if ((region.RegionHeader.KeyRangeLow <= noteNo) && (noteNo <= region.RegionHeader.KeyRangeHigh)) {
