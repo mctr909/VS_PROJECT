@@ -9,14 +9,14 @@ namespace DLSeditor
 	public partial class MainForm : Form
 	{
 		private WavePlayback mWaveOut;
-		private DLS.File mDLS;
+		private DLS.DLS mDLS;
 
 		public MainForm()
 		{
 			InitializeComponent();
 			SetTabSize();
 			mWaveOut = new WavePlayback();
-			mDLS = new DLS.File();
+			mDLS = new DLS.DLS();
 		}
 
 		private void Form1_SizeChanged(object sender, EventArgs e)
@@ -30,15 +30,31 @@ namespace DLSeditor
 
 		}
 
-		private void 開くOToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+		unsafe private void 開くOToolStripMenuItem_Click(object sender, EventArgs e) {
 			openFileDialog1.FileName = "";
 			openFileDialog1.Filter = "DLSファイル(*.dls)|*.dls";
 			openFileDialog1.ShowDialog();
 			var filePath = openFileDialog1.FileName;
-			if (!File.Exists(filePath)) return;
+			if (!File.Exists(filePath))
+				return;
 
-			mDLS = new DLS.File(filePath);
+			using (var fs = new FileStream(filePath, FileMode.Open))
+			using (var br = new BinaryReader(fs)) {
+				br.ReadUInt32();
+				var size = br.ReadUInt32();
+				br.ReadUInt32();
+
+				var mBuff = new byte[size - 4];
+				fs.Read(mBuff, 0, mBuff.Length);
+
+				fixed (byte* p = &mBuff[0])
+				{
+					mDLS = new DLS.DLS(p, (UInt32)(p + mBuff.Length));
+				}
+
+				fs.Close();
+			}
+
 			DispInstList();
 			DispPcmList();
 			tabControl.SelectedIndex = 0;
@@ -200,10 +216,10 @@ namespace DLSeditor
 			cp.Y = (int)((pictRange.Height - cp.Y) / 6 + 0.5);
 
 			DLS.RGN rgn;
-			var inst = mDLS.InstList[lstInst.SelectedIndex];
-			foreach (var region in inst.Regions.Values) {
-				var key = region.RegionHeader.RangeKey;
-				var vel = region.RegionHeader.RangeVelocity;
+			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
+			foreach (var region in inst.Regions.List.Values) {
+				var key = region.RegionHeader.Key;
+				var vel = region.RegionHeader.Velocity;
 				if (key.Low <= cp.X && cp.X <= key.High
 				&& vel.Low <= cp.Y && cp.Y <= vel.High) {
 					rgn = region;
@@ -218,13 +234,13 @@ namespace DLSeditor
 		{
 			lstInst.Items.Clear();
 			lstInst.Font = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular);
-			foreach (var inst in mDLS.InstList.Values) {
+			foreach (var inst in mDLS.Instruments.List.Values) {
 				lstInst.Items.Add(string.Format(
 					"{0} {1} {2} {3} {4}",
-					(inst.InstHeader.Flags & 0x8000) == 0x8000 ? "Drum" : "Note",
-					inst.InstHeader.ProgramNo.ToString("000"),
-					inst.InstHeader.BankMSB.ToString("000"),
-					inst.InstHeader.BankLSB.ToString("000"),
+					(inst.InstHeader.Locale.BankFlags & 0x80) == 0x80 ? "Drum" : "Note",
+					inst.InstHeader.Locale.ProgramNo.ToString("000"),
+					inst.InstHeader.Locale.BankMSB.ToString("000"),
+					inst.InstHeader.Locale.BankLSB.ToString("000"),
 					inst.Info.Name
 				));
 			}
@@ -232,7 +248,7 @@ namespace DLSeditor
 
 		private void DispInstInfo()
 		{
-			var inst = mDLS.InstList[lstInst.SelectedIndex];
+			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
 
 			tbpInstAttribute.Text = string.Format("音色設定[{0}]", inst.Info.Name);
 
@@ -243,7 +259,7 @@ namespace DLSeditor
 			tb.Columns.Add("Value", typeof(double));
 
 			if (null != inst.Articulations) {
-				foreach (var art in inst.Articulations.Values) {
+				foreach (var art in inst.Articulations.List.Values) {
 					foreach (var conn in art.Connections) {
 						var row = tb.NewRow();
 						row["Destination"] = conn.Destination;
@@ -266,7 +282,7 @@ namespace DLSeditor
 
 		private void DispRegionInfo()
 		{
-			var inst = mDLS.InstList[lstInst.SelectedIndex];
+			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
 
 			tbpLayerAttribute.Text = string.Format("レイヤー設定[{0}]", inst.Info.Name);
 
@@ -275,9 +291,9 @@ namespace DLSeditor
 			var redLine = new Pen(Color.FromArgb(255, 255, 0, 0), 2.0f);
 			var greenFill = new Pen(Color.FromArgb(64, 0, 255, 0), 1.0f).Brush;
 
-			foreach (var region in inst.Regions.Values) {
-				var key = region.RegionHeader.RangeKey;
-				var vel = region.RegionHeader.RangeVelocity;
+			foreach (var region in inst.Regions.List.Values) {
+				var key = region.RegionHeader.Key;
+				var vel = region.RegionHeader.Velocity;
 				g.DrawRectangle(
 					redLine,
 					key.Low * 6,
@@ -331,7 +347,7 @@ namespace DLSeditor
 		{
 			lstWave.Items.Clear();
 			int count = 0;
-			foreach (var wave in mDLS.WavePool.Values) {
+			foreach (var wave in mDLS.WavePool.List.Values) {
 				var name = "";
 				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
 					name = string.Format("Wave[{0}]", count);
@@ -341,9 +357,9 @@ namespace DLSeditor
 				}
 
 				var use = false;
-				foreach (var inst in mDLS.InstList.Values) {
-					foreach (var rgn in inst.Regions.Values) {
-						if (count == rgn.WaveLink.WaveIndex) {
+				foreach (var inst in mDLS.Instruments.List.Values) {
+					foreach (var rgn in inst.Regions.List.Values) {
+						if (count == rgn.WaveLink.TableIndex) {
 							use = true;
 							break;
 						}
@@ -353,7 +369,7 @@ namespace DLSeditor
 				lstWave.Items.Add(string.Format(
 					"{0}{1}{2}",
 					(use ? "[use]" : "     "),
-					(0 < wave.Samplers.LoopCount ? "[loop]" : "      "),
+					(0 < wave.Sampler.LoopCount ? "[loop]" : "      "),
 					name
 				));
 				++count;
@@ -370,7 +386,7 @@ namespace DLSeditor
 
 			var indices = lstWave.SelectedIndices;
 			foreach (var idx in indices) {
-				var wave = mDLS.WavePool[(int)idx];
+				var wave = mDLS.WavePool.List[(int)idx];
 				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
 					wave.ToFile(Path.Combine(folderPath, string.Format("Wave{0}.wav", idx)));
 				}

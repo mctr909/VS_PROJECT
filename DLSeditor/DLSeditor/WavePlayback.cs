@@ -28,13 +28,13 @@ namespace DLSeditor
 
 		public void SetValue(DLS.WAVE wave)
 		{
-			mWave = new short[8 * wave.Data.Length / wave.Format.BitsPerSample];
+			mWave = new short[8 * wave.Data.Length / wave.Format.Bits];
 			mLoopBegin = 0;
 			mLoopEnd = (uint)mWave.Length;
 
 			var br = new BinaryReader(new MemoryStream(wave.Data));
 
-			switch (wave.Format.BitsPerSample) {
+			switch (wave.Format.Bits) {
 			case 8:
 				for (var i = 0; i < mWave.Length; ++i) {
 					mWave[i] = (short)((br.ReadByte() - 128) * 256);
@@ -49,9 +49,9 @@ namespace DLSeditor
 				return;
 			}
 
-			if (0 < wave.Samplers.LoopCount) {
-				mLoopBegin = wave.Samplers.Loops[0].Start;
-				mLoopEnd = mLoopBegin + wave.Samplers.Loops[0].Length;
+			if (0 < wave.Sampler.LoopCount) {
+				mLoopBegin = wave.Loops[0].Start;
+				mLoopEnd = mLoopBegin + wave.Loops[0].Length;
 			}
 
 			mDelta = (double)wave.Format.SampleRate / SampleRate;

@@ -1,85 +1,73 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.IO;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
-namespace DLS
-{
-	unsafe public struct FMT_
-	{
-		public UInt16 FormatTag;
-		public UInt16 Channels;
-		public UInt32 SampleRate;
-		public UInt32 BytesPerSec;
-		public UInt16 BlockAlign;
-		public UInt16 BitsPerSample;
+namespace DLS {
+	unsafe public class WVPL : Chunk {
+		public Dictionary<int, WAVE> List = new Dictionary<int, WAVE>();
 
-		public FMT_(byte* ptr)
-		{
-			FormatTag = *(UInt16*)ptr;
-			ptr += 2;
-			Channels = *(UInt16*)ptr;
-			ptr += 2;
-			SampleRate = *(UInt32*)ptr;
-			ptr += 4;
-			BytesPerSec = *(UInt32*)ptr;
-			ptr += 4;
-			BlockAlign = *(UInt16*)ptr;
-			ptr += 2;
-			BitsPerSample = *(UInt16*)ptr;
+		public WVPL() { }
+
+		public WVPL(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
+
+		protected override void LoadList(byte* ptr, UInt32 endAddr) {
+			switch (ListId) {
+			case LIST_ID.WAVE:
+				List.Add(List.Count, new WAVE(ptr, endAddr));
+				break;
+			default:
+				throw new Exception();
+			}
 		}
 	}
 
-	unsafe public class WAVE
-	{
-		public FMT_ Format;
-		public WSMP Samplers;
+	unsafe public class WAVE : Chunk {
+		public CK_DLID DlId;
+		public CK_FMT Format;
+		public CK_WSMP Sampler;
+		public WaveLoop[] Loops;
+
 		public byte[] Data;
 		public INFO Info;
 
-		public WAVE(byte* ptr, UInt32 endAddr)
-		{
-			while ((UInt32)ptr < endAddr) {
-				var chunkType = *(ChunkID*)ptr;
-				ptr += 4;
-				var chunkSize = *(UInt32*)ptr;
-				ptr += 4;
+		public WAVE(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
-				switch (chunkType) {
-				case ChunkID.FMT_:
-					Format = new FMT_(ptr);
-					break;
-				case ChunkID.WSMP:
-					Samplers = new WSMP(ptr);
-					break;
-				case ChunkID.DATA:
-					Data = new byte[chunkSize];
-					Marshal.Copy((IntPtr)ptr, Data, 0, Data.Length);
-					break;
-				case ChunkID.LIST:
-					ReadList(ptr, chunkSize);
-					break;
+		protected override unsafe void LoadChunk(Byte* ptr) {
+			switch (ChunkId) {
+			case CHUNK_ID.DLID:
+			case CHUNK_ID.GUID:
+				DlId = (CK_DLID)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_DLID));
+				break;
+			case CHUNK_ID.FMT_:
+				Format = (CK_FMT)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_FMT));
+				break;
+			case CHUNK_ID.DATA:
+				Data = new byte[Size];
+				Marshal.Copy((IntPtr)ptr, Data, 0, Data.Length);
+				break;
+			case CHUNK_ID.WSMP:
+				Sampler = (CK_WSMP)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_WSMP));
+				Loops = new WaveLoop[Sampler.LoopCount];
+				var pLoop = ptr + sizeof(CK_WSMP);
+				for (var i = 0; i < Loops.Length; ++i) {
+					Loops[i] = (WaveLoop)Marshal.PtrToStructure((IntPtr)pLoop, typeof(WaveLoop));
+					pLoop += sizeof(WaveLoop);
 				}
-
-				ptr += chunkSize;
+				break;
 			}
 		}
 
-		private void ReadList(byte* ptr, UInt32 size)
-		{
-			var listType = *(ListID*)ptr;
-			var endAddr = (UInt32)ptr + size;
-			ptr += 4;
-
-			switch (listType) {
-			case ListID.INFO:
+		protected override unsafe void LoadList(byte* ptr, UInt32 endAddr) {
+			switch (ListId) {
+			case LIST_ID.INFO:
 				Info = new INFO(ptr, endAddr);
 				break;
 			}
 		}
 
-		public void ToFile(string filePath)
-		{
-			if (16 != Format.BitsPerSample) {
+		public void ToFile(string filePath) {
+			if (16 != Format.Bits) {
 				return;
 			}
 
@@ -91,13 +79,13 @@ namespace DLS
 			var msw = new MemoryStream();
 			var bmw = new BinaryWriter(msw);
 
-			if (0 < Samplers.Loops.Length) {
-				for (var i = 0; i < Samplers.Loops[0].Start; ++i) {
+			if (0 < Sampler.LoopCount) {
+				for (var i = 0; i < Loops[0].Start; ++i) {
 					bmw.Write(bmr.ReadInt16());
 				}
 				for (int j = 0; j < 100; ++j) {
-					msr.Seek(2 * Samplers.Loops[0].Start, SeekOrigin.Begin);
-					for (var i = 0; i < Samplers.Loops[0].Length; ++i) {
+					msr.Seek(2 * Loops[0].Start, SeekOrigin.Begin);
+					for (var i = 0; i < Loops[0].Length; ++i) {
 						bmw.Write(bmr.ReadInt16());
 					}
 				}
@@ -117,18 +105,18 @@ namespace DLS
 			bw.Write((UInt32)RIFF_CONST.TYPE_WAVE);
 
 			// fmt
-			bw.Write((UInt32)ChunkID.FMT_);
+			bw.Write((UInt32)CHUNK_ID.FMT_);
 			bw.Write((UInt32)16);
-			bw.Write(Format.FormatTag);
+			bw.Write(Format.Tag);
 			bw.Write(Format.Channels);
 			bw.Write(Format.SampleRate);
 			bw.Write(Format.BytesPerSec);
 			bw.Write(Format.BlockAlign);
-			bw.Write(Format.BitsPerSample);
+			bw.Write(Format.Bits);
 
 
 			// data
-			bw.Write((UInt32)ChunkID.DATA);
+			bw.Write((UInt32)CHUNK_ID.DATA);
 			bw.Write((UInt32)msw.Length);
 			bw.Write(msw.ToArray());
 
@@ -136,46 +124,6 @@ namespace DLS
 			bw.Write((UInt32)(fs.Length - 8));
 
 			fs.Close();
-		}
-	}
-
-	unsafe public class WVPL : List<WAVE>
-	{
-		public WVPL() {}
-
-		public WVPL(byte* ptr, UInt32 endAddr)
-		{
-			while ((UInt32)ptr < endAddr) {
-				var chunkType = *(ChunkID*)ptr;
-				ptr += 4;
-				var chunkSize = *(UInt32*)ptr;
-				ptr += 4;
-
-				switch (chunkType) {
-				case ChunkID.LIST:
-					ReadList(ptr, chunkSize);
-					break;
-				default:
-					throw new Exception();
-				}
-
-				ptr += chunkSize;
-			}
-		}
-
-		private void ReadList(byte* ptr, UInt32 size)
-		{
-			var listType = *(ListID*)ptr;
-			var endAddr = (UInt32)ptr + size;
-			ptr += 4;
-
-			switch (listType) {
-			case ListID.WAVE:
-				Add(new WAVE(ptr, endAddr));
-				break;
-			default:
-				throw new Exception();
-			}
 		}
 	}
 }

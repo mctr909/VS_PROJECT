@@ -1,41 +1,7 @@
 ﻿using System;
 
-namespace DLS
-{
-	public enum ChunkID : UInt32
-	{
-		COLH = 0x686C6F63,
-		VERS = 0x73726576,
-		MSYN = 0x6E79736D,
-		PTBL = 0x6C627470,
-		LIST = 0x5453494C,
-		DLID = 0x64696C64,
-		INSH = 0x68736E69,
-		RGNH = 0x686E6772,
-		WSMP = 0x706D7377,
-		WLNK = 0x6B6E6C77,
-		ART1 = 0x31747261,
-		ART2 = 0x32747261,
-		FMT_ = 0x20746D66,
-		DATA = 0x61746164
-	}
-
-	public enum ListID : UInt32
-	{
-		LINS = 0x736E696C,
-		WVPL = 0x6C707677,
-		INFO = 0x4F464E49,
-		INS_ = 0x20736E69,
-		WAVE = 0x65766177,
-		LRGN = 0x6E67726C,
-		LART = 0x7472616C,
-		LAR2 = 0x3272616C,
-		RGN_ = 0x206E6772,
-		RGN2 = 0x326E6772
-	}
-
-	public enum InfoID: UInt32
-	{
+namespace DLS {
+	public enum InfoID : UInt32 {
 		IARL = 0x4C524149, // ArchivalLocation
 		IART = 0x54524149, // Artists
 		ICMS = 0x534D4349, // Commissioned
@@ -55,8 +21,7 @@ namespace DLS
 		ITCH = 0x48435449  // Technician
 	}
 
-	public enum CONN_SRC_TYPE : UInt16
-	{
+	public enum CONN_SRC_TYPE : UInt16 {
 		// MODULATOR SOURCES
 		NONE = 0x0000,
 		LFO = 0x0001,
@@ -83,8 +48,7 @@ namespace DLS
 		RPN2 = 0x0102
 	}
 
-	public enum CONN_DST_TYPE : UInt16
-	{
+	public enum CONN_DST_TYPE : UInt16 {
 		// GENERIC DESTINATIONS
 		NONE = 0x0000,
 		ATTENUATION = 0x0001,
@@ -133,16 +97,14 @@ namespace DLS
 		FILTER_Q = 0x0501
 	}
 
-	public enum CONN_TRN_TYPE : UInt16
-	{
+	public enum CONN_TRN_TYPE : UInt16 {
 		NONE = 0x0000,
 		CONCAVE = 0x0001,
 		CONVEX = 0x0002,
 		SWITCH = 0x0003
 	}
 
-	public enum RIFF_CONST : UInt32
-	{
+	public enum RIFF_CONST : UInt32 {
 		ID = 0x46464952,
 		TYPE_DLS_ = 0x20534C44,
 		TYPE_WAVE = 0x45564157

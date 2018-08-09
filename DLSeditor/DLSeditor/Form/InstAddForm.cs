@@ -5,7 +5,7 @@ namespace DLSeditor
 {
 	public partial class InstAddForm : Form
 	{
-		private DLS.File mDLS;
+		private DLS.DLS mDLS;
 		private DLS.INS mINS;
 
 		private readonly string[] GM_INST_NAME = new string[] {
@@ -139,7 +139,7 @@ namespace DLSeditor
 			"Gunshot"
 		};
 
-		public InstAddForm(DLS.File dls)
+		public InstAddForm(DLS.DLS dls)
 		{
 			InitializeComponent();
 			StartPosition = FormStartPosition.CenterParent;

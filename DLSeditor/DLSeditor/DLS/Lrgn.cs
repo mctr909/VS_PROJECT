@@ -1,217 +1,69 @@
 ﻿using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
-namespace DLS
-{
-	unsafe public struct Range
-	{
-		public UInt16 Low;
-		public UInt16 High;
-	}
+namespace DLS {
+	unsafe public class LRGN : Chunk {
+		public Dictionary<int, RGN> List = new Dictionary<int, RGN>();
 
-	unsafe public struct RGNH
-	{
-		public Range RangeKey;
-		public Range RangeVelocity;
-		public UInt16 Options;
-		public UInt16 KeyGroup;
-		public UInt16 Layer;
+		public LRGN() { }
 
-		public RGNH(byte* pre, UInt32 size)
-		{
-			RangeKey.Low = *(UInt16*)pre;
-			pre += 2;
-			RangeKey.High = *(UInt16*)pre;
-			pre += 2;
+		public LRGN(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
-			RangeVelocity.Low = *(UInt16*)pre;
-			pre += 2;
-			RangeVelocity.High = *(UInt16*)pre;
-			pre += 2;
-
-			Options = *(UInt16*)pre;
-			pre += 2;
-			KeyGroup = *(UInt16*)pre;
-			pre += 2;
-
-			if (14 <= size) {
-				Layer = *(UInt16*)pre;
-			}
-			else {
-				Layer = 0;
+		protected override void LoadList(byte* ptr, UInt32 endAddr) {
+			switch (ListId) {
+			case LIST_ID.RGN_:
+				List.Add(List.Count, new RGN(ptr, endAddr));
+				break;
+			default:
+				throw new Exception(string.Format("Unknown ListId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)ListId))));
 			}
 		}
 	}
 
-	unsafe public struct Loop
-	{
-		public UInt32 Size;
-		public UInt32 Type;
-		public UInt32 Start;
-		public UInt32 Length;
-
-		public Loop(byte* ptr)
-		{
-			Size = *(UInt32*)ptr;
-			ptr += 4;
-			Type = *(UInt32*)ptr;
-			ptr += 4;
-			Start = *(UInt32*)ptr;
-			ptr += 4;
-			Length = *(UInt32*)ptr;
-		}
-	}
-
-	unsafe public struct WSMP
-	{
-		public UInt32 Size;
-		public UInt16 UnityNoote;
-		public Int16 FineTune;
-		private Int32 GainInt;
-		public UInt32 Options;
-		public UInt32 LoopCount;
-		public Loop[] Loops;
-
-		public WSMP(byte* ptr)
-		{
-			Size = *(UInt32*)ptr;
-			ptr += 4;
-			UnityNoote = *(UInt16*)ptr;
-			ptr += 2;
-			FineTune = *(Int16*)ptr;
-			ptr += 2;
-			GainInt = *(Int32*)ptr;
-			ptr += 4;
-			Options = *(UInt32*)ptr;
-			ptr += 4;
-			LoopCount = *(UInt32*)ptr;
-			ptr += 4;
-
-			Loops = new Loop[LoopCount];
-			for (var i = 0; i < LoopCount; ++i) {
-				Loops[i] = new Loop(ptr);
-				ptr += sizeof(Loop);
-			}
-		}
-
-		public double Gain
-		{
-			get {
-				return Math.Pow(10.0, GainInt / (200 * 65536.0));
-			}
-			set {
-				GainInt = (Int32)(Math.Log10(value) * 200 * 65536);
-			}
-		}
-	}
-
-	unsafe public struct WLNK
-	{
-		public UInt16 Options;
-		public UInt16 PhaseGroup;
-		public UInt32 Channel;
-		public UInt32 WaveIndex;
-
-		public WLNK(byte* ptr)
-		{
-			Options = *(UInt16*)ptr;
-			ptr += 2;
-			PhaseGroup = *(UInt16*)ptr;
-			ptr += 2;
-			Channel = *(UInt32*)ptr;
-			ptr += 4;
-			WaveIndex = *(UInt32*)ptr;
-		}
-	}
-
-	unsafe public class RGN
-	{
-		public RGNH RegionHeader;
-		public WSMP Sampler;
-		public WLNK WaveLink;
+	unsafe public class RGN : Chunk {
+		public CK_RGNH RegionHeader;
+		public CK_WSMP Sampler;
+		public WaveLoop[] Loops;
+		public CK_WLNK WaveLink;
 		public LART Articulations;
 
-		public RGN(byte* ptr, UInt32 endAddr)
-		{
-			while ((UInt32)ptr < endAddr) {
-				var chunkType = *(ChunkID*)ptr;
-				ptr += 4;
-				var chunkSize = *(UInt32*)ptr;
-				ptr += 4;
+		public RGN(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
-				switch (chunkType) {
-				case ChunkID.RGNH:
-					RegionHeader = new RGNH(ptr, chunkSize);
-					break;
-				case ChunkID.WSMP:
-					Sampler = new WSMP(ptr);
-					break;
-				case ChunkID.WLNK:
-					WaveLink = new WLNK(ptr);
-					break;
-				case ChunkID.LIST:
-					ReadList(ptr, chunkSize);
-					break;
-				default:
-					throw new Exception();
+		protected override unsafe void LoadChunk(Byte* ptr) {
+			switch (ChunkId) {
+			case CHUNK_ID.RGNH:
+				RegionHeader = (CK_RGNH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_RGNH));
+				if (Size < sizeof(CK_RGNH)) {
+					RegionHeader.Layer = 0;
 				}
-
-				ptr += chunkSize;
+				break;
+			case CHUNK_ID.WSMP:
+				Sampler = (CK_WSMP)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_WSMP));
+				Loops = new WaveLoop[Sampler.LoopCount];
+				var pLoop = ptr + sizeof(CK_WSMP);
+				for (var i = 0; i < Loops.Length; ++i) {
+					Loops[i] = (WaveLoop)Marshal.PtrToStructure((IntPtr)pLoop, typeof(WaveLoop));
+					pLoop += sizeof(WaveLoop);
+				}
+				break;
+			case CHUNK_ID.WLNK:
+				WaveLink = (CK_WLNK)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_WLNK));
+				break;
+			default:
+				throw new Exception(string.Format("Unknown ChunkId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)ChunkId))));
 			}
 		}
 
-		private void ReadList(byte* ptr, UInt32 size)
-		{
-			var listType = *(ListID*)ptr;
-			var endAddr = (UInt32)ptr + size;
-			ptr += 4;
-
-			switch (listType) {
-			case ListID.LART:
-			case ListID.LAR2:
+		protected override unsafe void LoadList(byte* ptr, UInt32 endAddr) {
+			switch (ListId) {
+			case LIST_ID.LART:
+			case LIST_ID.LAR2:
 				Articulations = new LART(ptr, endAddr);
 				break;
 			default:
-				throw new Exception();
-			}
-		}
-	}
-
-	unsafe public class LRGN : List<RGN>
-	{
-		public LRGN() {}
-
-		public LRGN(byte* ptr, UInt32 endAddr)
-		{
-			while ((UInt32)ptr < endAddr) {
-				var chunkType = *(ChunkID*)ptr;
-				ptr += 4;
-				var chunkSize = *(UInt32*)ptr;
-				ptr += 4;
-
-				switch (chunkType) {
-				case ChunkID.LIST:
-					ReadList(ptr, chunkSize);
-					break;
-				default:
-					throw new Exception();
-				}
-
-				ptr += chunkSize;
-			}
-		}
-
-		private void ReadList(byte* ptr, UInt32 size)
-		{
-			var listType = *(ListID*)ptr;
-			var endAddr = (UInt32)ptr + size;
-			ptr += 4;
-
-			switch (listType) {
-			case ListID.RGN_:
-				Add(new RGN(ptr, endAddr));
-				break;
-			default:
-				throw new Exception();
+				throw new Exception(string.Format("Unknown ListId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)ListId))));
 			}
 		}
 	}

@@ -1,102 +1,64 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices;
 
-namespace DLS
-{
-	unsafe public class File
-	{
-		private byte[] mBuff;
-		private UInt32 mID;
-		private UInt32 mSize;
-		private UInt32 mType;
+namespace DLS {
+	unsafe public class DLS : Chunk {
 		private UInt32 mInstCount;
-		private byte[] mVersion;
+		private CK_VERS mVersion;
 		private UInt32 mMSYN;
+		private CK_PTBL mPtbl;
+		private UInt32[] mWaveCue;
+		private CK_DLID mDlId;
 
-		public LINS InstList;
+		public LINS Instruments;
 		public WVPL WavePool;
 		public INFO Info;
 
-		public File()
-		{
-			mID = (UInt32)RIFF_CONST.ID;
-			mSize = 0;
-			mType = (UInt32)RIFF_CONST.TYPE_WAVE;
-
-			mInstCount = 0;
-			mVersion = new byte[8];
+		public DLS() {
 			mMSYN = 1;
-
-			InstList = new LINS();
+			Instruments = new LINS();
 			WavePool = new WVPL();
 		}
 
-		public File(string filePath)
-		{
-			using (var fs = new FileStream(filePath, FileMode.Open))
-			using (var br = new BinaryReader(fs)) {
-				mID = br.ReadUInt32();
-				mSize = br.ReadUInt32();
-				mType = br.ReadUInt32();
+		public DLS(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
-				mBuff = new byte[mSize - 4];
-				fs.Read(mBuff, 0, mBuff.Length);
-				fs.Close();
-			}
-
-			fixed (byte* p = &mBuff[0])
-			{
-				var ptr = p;
-				var endAddr = (UInt32)(ptr + mBuff.Length);
-
-				while ((UInt32)ptr < endAddr) {
-					var chunkType = *(ChunkID*)ptr;
-					ptr += 4;
-					var chunkSize = *(UInt32*)ptr;
-					ptr += 4;
-
-					switch (chunkType) {
-					case ChunkID.COLH:
-						mInstCount = *(UInt32*)ptr;
-						break;
-					case ChunkID.VERS:
-						mVersion = new byte[chunkSize];
-						Marshal.Copy((IntPtr)ptr, mVersion, 0, mVersion.Length);
-						break;
-					case ChunkID.MSYN:
-						mMSYN = *(UInt32*)ptr;
-						break;
-					case ChunkID.PTBL:
-						break;
-					case ChunkID.LIST:
-						ReadList(ptr, chunkSize);
-						break;
-					case ChunkID.DLID:
-						break;
-					default:
-						throw new Exception();
-					}
-
-					ptr += chunkSize;
+		protected override unsafe void LoadChunk(Byte* ptr) {
+			switch (ChunkId) {
+			case CHUNK_ID.COLH:
+				mInstCount = *(UInt32*)ptr;
+				break;
+			case CHUNK_ID.VERS:
+				mVersion = (CK_VERS)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_VERS));
+				break;
+			case CHUNK_ID.MSYN:
+				mMSYN = *(UInt32*)ptr;
+				break;
+			case CHUNK_ID.PTBL:
+				mPtbl = (CK_PTBL)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_PTBL));
+				ptr += sizeof(CK_PTBL);
+				mWaveCue = new UInt32[mPtbl.Cues];
+				for (var i = 0; i < mPtbl.Cues; ++i) {
+					mWaveCue[i] = *(UInt32*)ptr;
+					ptr += sizeof(UInt32);
 				}
+				break;
+			case CHUNK_ID.DLID:
+				mDlId = (CK_DLID)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_DLID));
+				break;
+			default:
+				throw new Exception();
 			}
 		}
 
-		private void ReadList(byte* ptr, UInt32 size)
-		{
-			var listType = *(ListID*)ptr;
-			var endAddr = (UInt32)ptr + size;
-			ptr += 4;
-
-			switch (listType) {
-			case ListID.LINS:
-				InstList = new LINS(ptr, endAddr);
+		protected override unsafe void LoadList(byte* ptr, UInt32 endAddr) {
+			switch (ListId) {
+			case LIST_ID.LINS:
+				Instruments = new LINS(ptr, endAddr);
 				break;
-			case ListID.WVPL:
+			case LIST_ID.WVPL:
 				WavePool = new WVPL(ptr, endAddr);
 				break;
-			case ListID.INFO:
+			case LIST_ID.INFO:
 				Info = new INFO(ptr, endAddr);
 				break;
 			default:

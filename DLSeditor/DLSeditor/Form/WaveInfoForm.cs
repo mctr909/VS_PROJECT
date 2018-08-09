@@ -17,7 +17,7 @@ namespace DLSeditor
 {
 	public partial class WaveInfoForm : Form
 	{
-		private DLS.File mDLS;
+		private DLS.DLS mFile;
 		private int mIndex;
 		private WavePlayback mWaveOut;
 
@@ -28,12 +28,12 @@ namespace DLSeditor
 		private double mTimeDiv;
 		private double mDelta;
 
-		public WaveInfoForm(WavePlayback waveOut, DLS.File dls, int index)
+		public WaveInfoForm(WavePlayback waveOut, DLS.DLS dls, int index)
 		{
 			InitializeComponent();
 			StartPosition = FormStartPosition.CenterParent;
 			mWaveOut = waveOut;
-			mDLS = dls;
+			mFile = dls;
 			mIndex = index;
 
 			chart1.BackColor = Color.Black;
@@ -100,7 +100,7 @@ namespace DLSeditor
 		private void btnPlay_Click(object sender, EventArgs e)
 		{
 			if ("再生" == btnPlay.Text) {
-				mWaveOut.SetValue(mDLS.WavePool[mIndex]);
+				mWaveOut.SetValue(mFile.WavePool.List[mIndex]);
 				btnPlay.Text = "停止";
 			}
 			else {
@@ -153,19 +153,19 @@ namespace DLSeditor
 
 		private void InitWave()
 		{
-			var wave = mDLS.WavePool[mIndex];
+			var wave = mFile.WavePool.List[mIndex];
 			if (null != wave.Info && !string.IsNullOrWhiteSpace(wave.Info.Name)) {
 				Text = wave.Info.Name;
 			}
 
 			var ms = new MemoryStream(wave.Data);
 			var br = new BinaryReader(ms);
-			var samples = 8 * wave.Data.Length / wave.Format.BitsPerSample;
+			var samples = 8 * wave.Data.Length / wave.Format.Bits;
 			var packSize = 128;
 			samples += packSize - (samples % packSize);
 
 			mWave = new short[samples];
-			switch (wave.Format.BitsPerSample) {
+			switch (wave.Format.Bits) {
 			case 8:
 				for (var i = 0; ms.Position < ms.Length; ++i) {
 					mWave[i] = (short)(256 * (br.ReadByte() - 128));
@@ -220,12 +220,12 @@ namespace DLSeditor
 			var green = new Pen(Color.FromArgb(0, 168, 0), 1.0f);
 			var blue = new Pen(Color.FromArgb(0, 0, 255), 1.0f);
 
-			var wave = mDLS.WavePool[mIndex];
+			var wave = mFile.WavePool.List[mIndex];
 			var loopBegin = -1;
 			var loopEnd = -1;
-			if (0 < wave.Samplers.LoopCount) {
-				loopBegin = (int)wave.Samplers.Loops[0].Start;
-				loopEnd = loopBegin + (int)wave.Samplers.Loops[0].Length - 1;
+			if (0 < wave.Sampler.LoopCount) {
+				loopBegin = (int)wave.Loops[0].Start;
+				loopEnd = loopBegin + (int)wave.Loops[0].Length - 1;
 			}
 
 			//
