@@ -4,25 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DLS {
 	unsafe public class INFO {
-		private enum INFO_ID : UInt32 {
-			IARL = 0x4C524149, // ArchivalLocation
-			IART = 0x54524149, // Artists
-			ICMS = 0x534D4349, // Commissioned
-			ICMT = 0x544D4349, // Comments
-			ICOP = 0x504F4349, // Copyright
-			ICRD = 0x44524349, // CreationDate
-			IENG = 0x474E4549, // Engineer
-			IGNR = 0x524E4749, // Genre
-			IKEY = 0x59454B49, // Keywords
-			IMED = 0x44454D49, // Medium
-			INAM = 0x4D414E49, // Name
-			IPRD = 0x44525049, // Product
-			ISFT = 0x54465349, // Software
-			ISRC = 0x43525349, // Source
-			ISRF = 0x46525349, // SourceForm
-			ISBJ = 0x4A425349, // Subject
-			ITCH = 0x48435449  // Technician
-		}
+		private Encoding mEnc = Encoding.GetEncoding("shift-jis");
+		private CK_INFO mInfo;
 
 		public string ArchivalLocation;
 		public string Artists;
@@ -42,78 +25,74 @@ namespace DLS {
 		public string Subject;
 		public string Technician;
 
-		private Encoding mEnc = Encoding.GetEncoding("shift-jis");
-
 		public INFO() { }
 
-		public INFO(byte* buff, UInt32 endAddr) {
-			while ((UInt32)buff < endAddr) {
-				var infoType = *(INFO_ID*)buff;
-				buff += 4;
-				var textSize = *(UInt32*)buff;
-				buff += 4;
+		public INFO(byte* ptr, UInt32 endAddr) {
+			while ((UInt32)ptr < endAddr) {
+				mInfo = (CK_INFO)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_INFO));
+				ptr += sizeof(CK_INFO);
 
-				if (!Enum.IsDefined(typeof(INFO_ID), infoType)) {
+				if (!Enum.IsDefined(typeof(CK_INFO.TYPE), mInfo.Type)) {
 					break;
 				}
 
-				var temp = new byte[textSize];
-				Marshal.Copy((IntPtr)buff, temp, 0, temp.Length);
+				var temp = new byte[mInfo.Size];
+				Marshal.Copy((IntPtr)ptr, temp, 0, temp.Length);
 				var text = mEnc.GetString(temp).Replace("\0", "");
 
-				var pad = (2 - (textSize % 2)) % 2;
-				buff += textSize + pad;
+				var pad = (2 - (mInfo.Size % 2)) % 2;
+				ptr += mInfo.Size + pad;
 
-				switch (infoType) {
-				case INFO_ID.IARL:
+				switch (mInfo.Type) {
+				case CK_INFO.TYPE.IARL:
 					ArchivalLocation = text;
 					break;
-				case INFO_ID.IART:
+				case CK_INFO.TYPE.IART:
 					Artists = text;
 					break;
-				case INFO_ID.ICMS:
+				case CK_INFO.TYPE.ICMS:
 					Commissioned = text;
 					break;
-				case INFO_ID.ICMT:
+				case CK_INFO.TYPE.ICMT:
 					Comments = text;
 					break;
-				case INFO_ID.ICOP:
+				case CK_INFO.TYPE.ICOP:
 					Copyright = text;
 					break;
-				case INFO_ID.ICRD:
+				case CK_INFO.TYPE.ICRD:
 					CreationDate = text;
 					break;
-				case INFO_ID.IENG:
+				case CK_INFO.TYPE.IENG:
 					Engineer = text;
 					break;
-				case INFO_ID.IGNR:
+				case CK_INFO.TYPE.IGNR:
 					Genre = text;
 					break;
-				case INFO_ID.IKEY:
+				case CK_INFO.TYPE.IKEY:
 					Keywords = text;
 					break;
-				case INFO_ID.IMED:
+				case CK_INFO.TYPE.IMED:
 					Medium = text;
 					break;
-				case INFO_ID.INAM:
+				case CK_INFO.TYPE.INAM:
 					Name = text;
 					break;
-				case INFO_ID.IPRD:
+				case CK_INFO.TYPE.IPRD:
 					Product = text;
 					break;
-				case INFO_ID.ISFT:
+				case CK_INFO.TYPE.ISFT:
 					Software = text;
 					break;
-				case INFO_ID.ISRC:
+				case CK_INFO.TYPE.ISRC:
 					Source = text;
 					break;
-				case INFO_ID.ISRF:
+				case CK_INFO.TYPE.ISRF:
 					SourceForm = text;
 					break;
-				case INFO_ID.ISBJ:
+				case CK_INFO.TYPE.ISBJ:
 					Subject = text;
 					break;
-				case INFO_ID.ITCH:
+				case CK_INFO.TYPE.ITCH:
 					Technician = text;
 					break;
 				}

@@ -23,7 +23,7 @@ namespace DLS {
 	}
 
 	unsafe public class INS : Chunk {
-		public CK_INSH InstHeader;
+		public CK_INSH Header;
 		public LRGN Regions;
 		public LART Articulations;
 		public INFO Text;
@@ -33,7 +33,7 @@ namespace DLS {
 		protected override unsafe void LoadChunk(Byte* ptr) {
 			switch (mChunk.Type) {
 			case CK_CHUNK.TYPE.INSH:
-				InstHeader = (CK_INSH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_INSH));
+				Header = (CK_INSH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_INSH));
 				break;
 			default:
 				throw new Exception(string.Format("Unknown ChunkType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mChunk.Type))));

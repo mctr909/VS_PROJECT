@@ -23,7 +23,7 @@ namespace DLS {
 	}
 
 	unsafe public class RGN : Chunk {
-		public CK_RGNH RegionHeader;
+		public CK_RGNH Header;
 		public CK_WSMP Sampler;
 		public Dictionary<int, WaveLoop> Loops = new Dictionary<int, WaveLoop>();
 		public CK_WLNK WaveLink;
@@ -34,9 +34,9 @@ namespace DLS {
 		protected override unsafe void LoadChunk(Byte* ptr) {
 			switch (mChunk.Type) {
 			case CK_CHUNK.TYPE.RGNH:
-				RegionHeader = (CK_RGNH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_RGNH));
+				Header = (CK_RGNH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_RGNH));
 				if (mChunk.Size < sizeof(CK_RGNH)) {
-					RegionHeader.Layer = 0;
+					Header.Layer = 0;
 				}
 				break;
 			case CK_CHUNK.TYPE.WSMP:

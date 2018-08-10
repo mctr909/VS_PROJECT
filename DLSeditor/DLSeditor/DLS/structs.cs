@@ -379,4 +379,33 @@ namespace DLS {
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
 		public UInt16 Bits;
 	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct CK_INFO {
+		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
+		public TYPE Type;
+
+		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
+		public UInt32 Size;
+
+		public enum TYPE : UInt32 {
+			IARL = 0x4C524149, // ArchivalLocation
+			IART = 0x54524149, // Artists
+			ICMS = 0x534D4349, // Commissioned
+			ICMT = 0x544D4349, // Comments
+			ICOP = 0x504F4349, // Copyright
+			ICRD = 0x44524349, // CreationDate
+			IENG = 0x474E4549, // Engineer
+			IGNR = 0x524E4749, // Genre
+			IKEY = 0x59454B49, // Keywords
+			IMED = 0x44454D49, // Medium
+			INAM = 0x4D414E49, // Name
+			IPRD = 0x44525049, // Product
+			ISFT = 0x54465349, // Software
+			ISRC = 0x43525349, // Source
+			ISRF = 0x46525349, // SourceForm
+			ISBJ = 0x4A425349, // Subject
+			ITCH = 0x48435449  // Technician
+		}
+	}
 }

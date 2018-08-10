@@ -218,8 +218,8 @@ namespace DLSeditor
 			DLS.RGN rgn;
 			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
 			foreach (var region in inst.Regions.List.Values) {
-				var key = region.RegionHeader.Key;
-				var vel = region.RegionHeader.Velocity;
+				var key = region.Header.Key;
+				var vel = region.Header.Velocity;
 				if (key.Low <= cp.X && cp.X <= key.High
 				&& vel.Low <= cp.Y && cp.Y <= vel.High) {
 					rgn = region;
@@ -237,10 +237,10 @@ namespace DLSeditor
 			foreach (var inst in mDLS.Instruments.List.Values) {
 				lstInst.Items.Add(string.Format(
 					"{0} {1} {2} {3} {4}",
-					(inst.InstHeader.Locale.BankFlags & 0x80) == 0x80 ? "Drum" : "Note",
-					inst.InstHeader.Locale.ProgramNo.ToString("000"),
-					inst.InstHeader.Locale.BankMSB.ToString("000"),
-					inst.InstHeader.Locale.BankLSB.ToString("000"),
+					(inst.Header.Locale.BankFlags & 0x80) == 0x80 ? "Drum" : "Note",
+					inst.Header.Locale.ProgramNo.ToString("000"),
+					inst.Header.Locale.BankMSB.ToString("000"),
+					inst.Header.Locale.BankLSB.ToString("000"),
 					inst.Text.Name
 				));
 			}
@@ -292,8 +292,8 @@ namespace DLSeditor
 			var greenFill = new Pen(Color.FromArgb(64, 0, 255, 0), 1.0f).Brush;
 
 			foreach (var region in inst.Regions.List.Values) {
-				var key = region.RegionHeader.Key;
-				var vel = region.RegionHeader.Velocity;
+				var key = region.Header.Key;
+				var vel = region.Header.Velocity;
 				g.DrawRectangle(
 					redLine,
 					key.Low * 6,

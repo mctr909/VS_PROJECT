@@ -27,7 +27,6 @@ namespace DLS {
 		public CK_FMT Format;
 		public CK_WSMP Sampler;
 		public Dictionary<int, WaveLoop> Loops = new Dictionary<int, WaveLoop>();
-
 		public byte[] Data;
 		public INFO Text;
 
