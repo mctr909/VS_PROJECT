@@ -15,7 +15,7 @@ namespace DLS {
 
 				if (CK_CHUNK.TYPE.LIST == mChunk.Type) {
 					mList = (CK_LIST)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_LIST));
-					LoadList(ptr + 4, (UInt32)ptr + mChunk.Size);
+					LoadList(ptr + sizeof(CK_LIST), (UInt32)ptr + mChunk.Size);
 				}
 				else {
 					LoadChunk(ptr);
