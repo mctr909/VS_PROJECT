@@ -27,7 +27,9 @@ namespace DLS {
 		public CK_WSMP Sampler;
 		public Dictionary<int, WaveLoop> Loops = new Dictionary<int, WaveLoop>();
 		public CK_WLNK WaveLink;
-		public LART Articulations;
+		public LART Articulations = new LART();
+
+		public RGN() { }
 
 		public RGN(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 

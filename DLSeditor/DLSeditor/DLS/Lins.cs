@@ -24,9 +24,11 @@ namespace DLS {
 
 	unsafe public class INS : Chunk {
 		public CK_INSH Header;
-		public LRGN Regions;
-		public LART Articulations;
-		public INFO Text;
+		public LRGN Regions = new LRGN();
+		public LART Articulations = new LART();
+		public INFO Text = new INFO();
+
+		public INS() { }
 
 		public INS(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 

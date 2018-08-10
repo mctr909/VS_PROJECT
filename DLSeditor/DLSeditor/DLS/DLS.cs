@@ -6,19 +6,15 @@ using System.Collections.Generic;
 namespace DLS {
 	unsafe public class DLS : Chunk {
 		private CK_VERS mVersion;
-		private UInt32 mMSYN;
+		private UInt32 mMSYN = 1;
 		private Dictionary<int, UInt32> mWaveCue = new Dictionary<int, UInt32>();
 		private CK_DLID mDlId;
 
-		public LINS Instruments;
-		public WVPL WavePool;
-		public INFO Text;
+		public LINS Instruments = new LINS();
+		public WVPL WavePool = new WVPL();
+		public INFO Text = new INFO();
 
-		public DLS() {
-			mMSYN = 1;
-			Instruments = new LINS();
-			WavePool = new WVPL();
-		}
+		public DLS() { }
 
 		public DLS(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 

@@ -28,7 +28,9 @@ namespace DLS {
 		public CK_WSMP Sampler;
 		public Dictionary<int, WaveLoop> Loops = new Dictionary<int, WaveLoop>();
 		public byte[] Data;
-		public INFO Text;
+		public INFO Text = new INFO();
+
+		public WAVE() { }
 
 		public WAVE(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 

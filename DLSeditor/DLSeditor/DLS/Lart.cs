@@ -7,6 +7,8 @@ namespace DLS {
 	unsafe public class LART : Chunk {
 		public Dictionary<int, ART> List = new Dictionary<int, ART>();
 
+		public LART() { }
+
 		public LART(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
 		protected override unsafe void LoadChunk(Byte* ptr) {
@@ -23,6 +25,8 @@ namespace DLS {
 
 	unsafe public class ART {
 		public Dictionary<int, Connection> List = new Dictionary<int, Connection>();
+
+		public ART() { }
 
 		public ART(byte* ptr) {
 			var info = (CK_ART1)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_ART1));
