@@ -12,12 +12,12 @@ namespace DLS {
 		public LINS(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
 		protected override void LoadList(byte* ptr, UInt32 endAddr) {
-			switch (ListId) {
-			case LIST_ID.INS_:
+			switch (mList.Type) {
+			case CK_LIST.TYPE.INS_:
 				List.Add(List.Count, new INS(ptr, endAddr));
 				break;
 			default:
-				throw new Exception(string.Format("Unknown ListId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)ListId))));
+				throw new Exception(string.Format("Unknown ListId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mList.Type))));
 			}
 		}
 	}
@@ -26,34 +26,34 @@ namespace DLS {
 		public CK_INSH InstHeader;
 		public LRGN Regions;
 		public LART Articulations;
-		public INFO Info;
+		public INFO Text;
 
 		public INS(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
 		protected override unsafe void LoadChunk(Byte* ptr) {
-			switch (ChunkId) {
-			case CHUNK_ID.INSH:
+			switch (mChunk.Type) {
+			case CK_CHUNK.TYPE.INSH:
 				InstHeader = (CK_INSH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_INSH));
 				break;
 			default:
-				throw new Exception(string.Format("Unknown ChunkId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)ChunkId))));
+				throw new Exception(string.Format("Unknown ChunkType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mChunk.Type))));
 			}
 		}
 
 		protected override unsafe void LoadList(byte* ptr, UInt32 endAddr) {
-			switch (ListId) {
-			case LIST_ID.LRGN:
+			switch (mList.Type) {
+			case CK_LIST.TYPE.LRGN:
 				Regions = new LRGN(ptr, endAddr);
 				break;
-			case LIST_ID.LART:
-			case LIST_ID.LAR2:
+			case CK_LIST.TYPE.LART:
+			case CK_LIST.TYPE.LAR2:
 				Articulations = new LART(ptr, endAddr);
 				break;
-			case LIST_ID.INFO:
-				Info = new INFO(ptr, endAddr);
+			case CK_LIST.TYPE.INFO:
+				Text = new INFO(ptr, endAddr);
 				break;
 			default:
-				throw new Exception(string.Format("Unknown ListId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)ListId))));
+				throw new Exception(string.Format("Unknown ListType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mList.Type))));
 			}
 		}
 	}

@@ -6,7 +6,6 @@ namespace DLSeditor
 	public partial class InstAddForm : Form
 	{
 		private DLS.DLS mDLS;
-		private DLS.INS mINS;
 
 		private readonly string[] GM_INST_NAME = new string[] {
 			"Acoustic Grand Piano",

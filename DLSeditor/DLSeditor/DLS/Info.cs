@@ -2,10 +2,28 @@
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace DLS
-{
-	unsafe public class INFO
-	{
+namespace DLS {
+	unsafe public class INFO {
+		private enum INFO_ID : UInt32 {
+			IARL = 0x4C524149, // ArchivalLocation
+			IART = 0x54524149, // Artists
+			ICMS = 0x534D4349, // Commissioned
+			ICMT = 0x544D4349, // Comments
+			ICOP = 0x504F4349, // Copyright
+			ICRD = 0x44524349, // CreationDate
+			IENG = 0x474E4549, // Engineer
+			IGNR = 0x524E4749, // Genre
+			IKEY = 0x59454B49, // Keywords
+			IMED = 0x44454D49, // Medium
+			INAM = 0x4D414E49, // Name
+			IPRD = 0x44525049, // Product
+			ISFT = 0x54465349, // Software
+			ISRC = 0x43525349, // Source
+			ISRF = 0x46525349, // SourceForm
+			ISBJ = 0x4A425349, // Subject
+			ITCH = 0x48435449  // Technician
+		}
+
 		public string ArchivalLocation;
 		public string Artists;
 		public string Commissioned;
@@ -26,22 +44,16 @@ namespace DLS
 
 		private Encoding mEnc = Encoding.GetEncoding("shift-jis");
 
-		public INFO() {}
+		public INFO() { }
 
-		public INFO(byte* buff, UInt32 endAddr)
-		{
-			ReadText(buff, endAddr);
-		}
-
-		private void ReadText(byte* buff, UInt32 endAddr)
-		{
+		public INFO(byte* buff, UInt32 endAddr) {
 			while ((UInt32)buff < endAddr) {
-				var infoType = *(InfoID*)buff;
+				var infoType = *(INFO_ID*)buff;
 				buff += 4;
 				var textSize = *(UInt32*)buff;
 				buff += 4;
 
-				if (!Enum.IsDefined(typeof(InfoID), infoType)) {
+				if (!Enum.IsDefined(typeof(INFO_ID), infoType)) {
 					break;
 				}
 
@@ -53,55 +65,55 @@ namespace DLS
 				buff += textSize + pad;
 
 				switch (infoType) {
-				case InfoID.IARL:
+				case INFO_ID.IARL:
 					ArchivalLocation = text;
 					break;
-				case InfoID.IART:
+				case INFO_ID.IART:
 					Artists = text;
 					break;
-				case InfoID.ICMS:
+				case INFO_ID.ICMS:
 					Commissioned = text;
 					break;
-				case InfoID.ICMT:
+				case INFO_ID.ICMT:
 					Comments = text;
 					break;
-				case InfoID.ICOP:
+				case INFO_ID.ICOP:
 					Copyright = text;
 					break;
-				case InfoID.ICRD:
+				case INFO_ID.ICRD:
 					CreationDate = text;
 					break;
-				case InfoID.IENG:
+				case INFO_ID.IENG:
 					Engineer = text;
 					break;
-				case InfoID.IGNR:
+				case INFO_ID.IGNR:
 					Genre = text;
 					break;
-				case InfoID.IKEY:
+				case INFO_ID.IKEY:
 					Keywords = text;
 					break;
-				case InfoID.IMED:
+				case INFO_ID.IMED:
 					Medium = text;
 					break;
-				case InfoID.INAM:
+				case INFO_ID.INAM:
 					Name = text;
 					break;
-				case InfoID.IPRD:
+				case INFO_ID.IPRD:
 					Product = text;
 					break;
-				case InfoID.ISFT:
+				case INFO_ID.ISFT:
 					Software = text;
 					break;
-				case InfoID.ISRC:
+				case INFO_ID.ISRC:
 					Source = text;
 					break;
-				case InfoID.ISRF:
+				case INFO_ID.ISRF:
 					SourceForm = text;
 					break;
-				case InfoID.ISBJ:
+				case INFO_ID.ISBJ:
 					Subject = text;
 					break;
-				case InfoID.ITCH:
+				case INFO_ID.ITCH:
 					Technician = text;
 					break;
 				}

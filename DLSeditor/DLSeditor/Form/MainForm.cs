@@ -241,7 +241,7 @@ namespace DLSeditor
 					inst.InstHeader.Locale.ProgramNo.ToString("000"),
 					inst.InstHeader.Locale.BankMSB.ToString("000"),
 					inst.InstHeader.Locale.BankLSB.ToString("000"),
-					inst.Info.Name
+					inst.Text.Name
 				));
 			}
 		}
@@ -250,17 +250,17 @@ namespace DLSeditor
 		{
 			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
 
-			tbpInstAttribute.Text = string.Format("音色設定[{0}]", inst.Info.Name);
+			tbpInstAttribute.Text = string.Format("音色設定[{0}]", inst.Text.Name);
 
 			DataTable tb = new DataTable();
-			tb.Columns.Add("Destination", typeof(DLS.CONN_DST_TYPE));
-			tb.Columns.Add("Source", typeof(DLS.CONN_SRC_TYPE));
-			tb.Columns.Add("Control", typeof(DLS.CONN_SRC_TYPE));
+			tb.Columns.Add("Destination", typeof(DLS.Connection.DST_TYPE));
+			tb.Columns.Add("Source", typeof(DLS.Connection.SRC_TYPE));
+			tb.Columns.Add("Control", typeof(DLS.Connection.SRC_TYPE));
 			tb.Columns.Add("Value", typeof(double));
 
 			if (null != inst.Articulations) {
 				foreach (var art in inst.Articulations.List.Values) {
-					foreach (var conn in art.Connections) {
+					foreach (var conn in art.List.Values) {
 						var row = tb.NewRow();
 						row["Destination"] = conn.Destination;
 						row["Source"] = conn.Source;
@@ -284,7 +284,7 @@ namespace DLSeditor
 		{
 			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
 
-			tbpLayerAttribute.Text = string.Format("レイヤー設定[{0}]", inst.Info.Name);
+			tbpLayerAttribute.Text = string.Format("レイヤー設定[{0}]", inst.Text.Name);
 
 			var bmp = new Bitmap(pictRange.Width, pictRange.Height);
 			var g = Graphics.FromImage(bmp);
@@ -349,11 +349,11 @@ namespace DLSeditor
 			int count = 0;
 			foreach (var wave in mDLS.WavePool.List.Values) {
 				var name = "";
-				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
+				if (null == wave.Text || string.IsNullOrWhiteSpace(wave.Text.Name)) {
 					name = string.Format("Wave[{0}]", count);
 				}
 				else {
-					name = wave.Info.Name;
+					name = wave.Text.Name;
 				}
 
 				var use = false;
@@ -387,11 +387,11 @@ namespace DLSeditor
 			var indices = lstWave.SelectedIndices;
 			foreach (var idx in indices) {
 				var wave = mDLS.WavePool.List[(int)idx];
-				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
+				if (null == wave.Text || string.IsNullOrWhiteSpace(wave.Text.Name)) {
 					wave.ToFile(Path.Combine(folderPath, string.Format("Wave{0}.wav", idx)));
 				}
 				else {
-					wave.ToFile(Path.Combine(folderPath, wave.Info.Name + ".wav"));
+					wave.ToFile(Path.Combine(folderPath, wave.Text.Name + ".wav"));
 				}
 			}
 		}

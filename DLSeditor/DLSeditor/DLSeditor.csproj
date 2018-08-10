@@ -50,8 +50,7 @@
   <ItemGroup>
     <Compile Include="DLS\Chunk.cs" />
     <Compile Include="DLS\DLS.cs" />
-    <Compile Include="DLS\CONST.cs" />
-    <Compile Include="DLS\info.cs" />
+    <Compile Include="DLS\Info.cs" />
     <Compile Include="DLS\Lart.cs" />
     <Compile Include="DLS\Lins.cs" />
     <Compile Include="DLS\Lrgn.cs" />

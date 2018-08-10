@@ -10,29 +10,27 @@ namespace DLS {
 		public LART(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
 		protected override unsafe void LoadChunk(Byte* ptr) {
-			switch (ChunkId) {
-			case CHUNK_ID.ART1:
-			case CHUNK_ID.ART2:
+			switch (mChunk.Type) {
+			case CK_CHUNK.TYPE.ART1:
+			case CK_CHUNK.TYPE.ART2:
 				List.Add(List.Count, new ART(ptr));
 				break;
 			default:
-				throw new Exception(string.Format("Unknown ChunkId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)ChunkId))));
+				throw new Exception(string.Format("Unknown ChunkType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mChunk.Type))));
 			}
 		}
 	}
 
-	unsafe public struct ART {
-		public CK_ART1 Info;
-		public ConnectionBlock[] Connections;
+	unsafe public class ART {
+		public Dictionary<int, Connection> List = new Dictionary<int, Connection>();
 
 		public ART(byte* ptr) {
-			Info = (CK_ART1)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_ART1));
+			var info = (CK_ART1)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_ART1));
 			ptr += sizeof(CK_ART1);
 
-			Connections = new ConnectionBlock[Info.Blocks];
-			for (var i = 0; i < Info.Blocks; ++i) {
-				Connections[i] = (ConnectionBlock)Marshal.PtrToStructure((IntPtr)ptr, typeof(ConnectionBlock));
-				ptr += sizeof(ConnectionBlock);
+			for (var i = 0; i < info.Count; ++i) {
+				List.Add(List.Count, (Connection)Marshal.PtrToStructure((IntPtr)ptr, typeof(Connection)));
+				ptr += sizeof(Connection);
 			}
 		}
 	}

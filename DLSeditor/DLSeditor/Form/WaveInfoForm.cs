@@ -154,8 +154,8 @@ namespace DLSeditor
 		private void InitWave()
 		{
 			var wave = mFile.WavePool.List[mIndex];
-			if (null != wave.Info && !string.IsNullOrWhiteSpace(wave.Info.Name)) {
-				Text = wave.Info.Name;
+			if (null != wave.Text && !string.IsNullOrWhiteSpace(wave.Text.Name)) {
+				Text = wave.Text.Name;
 			}
 
 			var ms = new MemoryStream(wave.Data);
