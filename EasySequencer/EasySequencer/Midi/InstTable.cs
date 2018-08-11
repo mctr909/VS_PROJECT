@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace MIDI {
-	unsafe public class InstTable {
-		public Dictionary<InstID, InstInfo> InstList;
+	unsafe public class Instruments {
+		public Dictionary<InstID, WaveInfo[]> List;
 
-		public InstTable(string filePath) {
+		public Instruments(string filePath) {
 			var dls = new DLS.File(filePath);
-			InstList = new Dictionary<InstID, InstInfo>();
+			List = new Dictionary<InstID, WaveInfo[]>();
 
 			var waveList = new Dictionary<int, short[]>();
 			for (var i = 0; i < dls.WavePool.List.Count; ++i) {
@@ -30,75 +30,133 @@ namespace MIDI {
 					inst.InstHeader.IsDrum
 				);
 
-				var instInfo = new InstInfo();
-
-				instInfo.EnvAmp.ALevel = 1.0;
-				instInfo.EnvAmp.DLevel = 1.0;
-				instInfo.EnvAmp.SLevel = 1.0;
-				instInfo.EnvAmp.RLevel = 0.0;
-				instInfo.EnvFilter.ALevel = 1.0;
-				instInfo.EnvFilter.DLevel = 1.0;
-				instInfo.EnvFilter.SLevel = 1.0;
-				instInfo.EnvFilter.RLevel = 1.0;
+				Envelope envAmp = new Envelope();
+				Envelope envCutoff = new Envelope();
+				double resonance = 0.0;
 
 				if (null != inst.ArtPool) {
+					envAmp.LevelA = 1.0;
+					envAmp.LevelH = 1.0;
+					envAmp.LevelS = 1.0;
+					envAmp.LevelR = 0.0;
+					envCutoff.LevelA = 1.0;
+					envCutoff.LevelH = 1.0;
+					envCutoff.LevelS = 1.0;
+					envCutoff.LevelR = 1.0;
 					foreach (var art in inst.ArtPool.Art.List) {
 						if (DLS.CONN_SRC_TYPE.NONE != art.Source)
 							continue;
 						switch (art.Destination) {
 						case DLS.CONN_DST_TYPE.EG1_ATTACK_TIME:
-							instInfo.EnvAmp.ALevel = 0.0;
-							instInfo.EnvAmp.AttackTime = art.Value;
+							envAmp.LevelA = 0.0;
+							envAmp.AttackTime = art.Value;
+							break;
+						case DLS.CONN_DST_TYPE.EG1_HOLD_TIME:
+							envAmp.TimeH = art.Value;
 							break;
 						case DLS.CONN_DST_TYPE.EG1_DECAY_TIME:
-							instInfo.EnvAmp.DecayTime = art.Value;
+							envAmp.DecayTime = art.Value;
 							break;
 						case DLS.CONN_DST_TYPE.EG1_SUSTAIN_LEVEL:
-							instInfo.EnvAmp.SLevel = (art.Value == 0.0) ? 1.0 : (art.Value / 100.0);
+							envAmp.LevelS = (art.Value == 0.0) ? 1.0 : (art.Value / 100.0);
 							break;
 						case DLS.CONN_DST_TYPE.EG1_RELEASE_TIME:
-							instInfo.EnvAmp.ReleaseTime = art.Value;
+							envAmp.ReleaseTime = art.Value;
+							break;
+						case DLS.CONN_DST_TYPE.EG2_DECAY_TIME:
+							envCutoff.LevelS = 0.5;
+							envCutoff.DecayTime = art.Value;
+							break;
+						case DLS.CONN_DST_TYPE.EG2_RELEASE_TIME:
+							envCutoff.LevelR = 0.5;
+							envCutoff.ReleaseTime = art.Value;
+							break;
+						case DLS.CONN_DST_TYPE.FILTER_Q:
+							resonance = art.Value;
 							break;
 						}
 					}
 				}
 
-				instInfo.WaveInfo = new WaveInfo[128];
-				for (var i = 0; i < instInfo.WaveInfo.Length; ++i) {
+				WaveInfo[] waveInfo = new WaveInfo[128];
+				for (var noteNo = 0; noteNo < waveInfo.Length; ++noteNo) {
 					foreach (var region in inst.RegionPool.List) {
+						if (null != region.ArtPool) {
+							envAmp.LevelA = 1.0;
+							envAmp.LevelH = 1.0;
+							envAmp.LevelS = 1.0;
+							envAmp.LevelR = 0.0;
+							envCutoff.LevelA = 1.0;
+							envCutoff.LevelH = 1.0;
+							envCutoff.LevelS = 1.0;
+							envCutoff.LevelR = 1.0;
+							foreach (var art in region.ArtPool.Art.List) {
+								if (DLS.CONN_SRC_TYPE.NONE != art.Source)
+									continue;
+								switch (art.Destination) {
+								case DLS.CONN_DST_TYPE.EG1_ATTACK_TIME:
+									envAmp.LevelA = 0.0;
+									envAmp.AttackTime = art.Value;
+									break;
+								case DLS.CONN_DST_TYPE.EG1_HOLD_TIME:
+									envAmp.TimeH = art.Value;
+									break;
+								case DLS.CONN_DST_TYPE.EG1_DECAY_TIME:
+									envAmp.DecayTime = art.Value;
+									break;
+								case DLS.CONN_DST_TYPE.EG1_SUSTAIN_LEVEL:
+									envAmp.LevelS = (art.Value == 0.0) ? 1.0 : (art.Value / 100.0);
+									break;
+								case DLS.CONN_DST_TYPE.EG1_RELEASE_TIME:
+									envAmp.ReleaseTime = art.Value;
+									break;
+								case DLS.CONN_DST_TYPE.EG2_DECAY_TIME:
+									envCutoff.LevelS = 0.5;
+									envCutoff.DecayTime = art.Value;
+									break;
+								case DLS.CONN_DST_TYPE.EG2_RELEASE_TIME:
+									envCutoff.LevelR = 0.5;
+									envCutoff.ReleaseTime = art.Value;
+									break;
+								case DLS.CONN_DST_TYPE.FILTER_Q:
+									resonance = art.Value;
+									break;
+								}
+							}
+						}
+
+						waveInfo[noteNo].EnvAmp = envAmp;
+						waveInfo[noteNo].EnvCutoff = envCutoff;
+						waveInfo[noteNo].Resonance = resonance;
+
 						var waveIdx = (int)region.WaveLink.WaveIndex;
-						if ((region.RegionHeader.KeyRangeLow <= i) && (i <= region.RegionHeader.KeyRangeHigh)) {
-							instInfo.WaveInfo[i].BaseNote = (byte)region.Sampler.UnityNote;
-							instInfo.WaveInfo[i].Delta
+						if ((region.RegionHeader.KeyRangeLow <= noteNo) && (noteNo <= region.RegionHeader.KeyRangeHigh)) {
+							if (0 < region.Sampler.List.Count) {
+								waveInfo[noteNo].LoopBegin = region.Sampler[0].Begin;
+								waveInfo[noteNo].LoopEnd = region.Sampler[0].Begin + region.Sampler[0].Length;
+								waveInfo[noteNo].LoopEnable = true;
+							}
+							else {
+								waveInfo[noteNo].LoopBegin = 0;
+								waveInfo[noteNo].LoopEnd = (uint)waveList[waveIdx].Length;
+								waveInfo[noteNo].LoopEnable = false;
+							}
+
+							waveInfo[noteNo].BaseNoteNo = (byte)region.Sampler.UnityNote;
+							waveInfo[noteNo].Delta
 								= Math.Pow(2.0, region.Sampler.FineTune / 1200.0)
 								* dls.WavePool[waveIdx].Format.SamplesPerSec
 								/ Const.SampleRate
 							;
-							instInfo.WaveInfo[i].Gain = region.Sampler.Gain;
+							waveInfo[noteNo].Gain = region.Sampler.Gain;
+							waveInfo[noteNo].Buff = waveList[waveIdx];
 
-							if (null == waveList[waveIdx] || 0 == waveList[waveIdx].Length) {
-								instInfo.WaveInfo[i].Buff = new short[1];
-							}
-							else {
-								instInfo.WaveInfo[i].Buff = waveList[waveIdx];
-							}
-
-							if (0 < region.Sampler.List.Count) {
-								instInfo.WaveInfo[i].LoopEnable = true;
-								instInfo.WaveInfo[i].LoopBegin = region.Sampler[0].Begin;
-								instInfo.WaveInfo[i].LoopEnd = region.Sampler[0].Begin + region.Sampler[0].Length;
-							}
-							else {
-								instInfo.WaveInfo[i].LoopEnable = false;
-								instInfo.WaveInfo[i].LoopBegin = 0;
-								instInfo.WaveInfo[i].LoopEnd = (uint)waveList[waveIdx].Length;
-							}
 							break;
 						}
 					}
 				}
 
-				InstList.Add(id, instInfo);
+				List.Add(id, waveInfo);
 			}
 		}
 	}

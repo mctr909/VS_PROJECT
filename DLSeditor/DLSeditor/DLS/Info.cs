@@ -2,10 +2,11 @@
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace DLS
-{
-	unsafe public class INFO
-	{
+namespace DLS {
+	unsafe public class INFO {
+		private Encoding mEnc = Encoding.GetEncoding("shift-jis");
+		private CK_INFO mInfo;
+
 		public string ArchivalLocation;
 		public string Artists;
 		public string Commissioned;
@@ -24,84 +25,74 @@ namespace DLS
 		public string Subject;
 		public string Technician;
 
-		private Encoding mEnc = Encoding.GetEncoding("shift-jis");
+		public INFO() { }
 
-		public INFO() {}
+		public INFO(byte* ptr, UInt32 endAddr) {
+			while ((UInt32)ptr < endAddr) {
+				mInfo = (CK_INFO)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_INFO));
+				ptr += sizeof(CK_INFO);
 
-		public INFO(byte* buff, UInt32 endAddr)
-		{
-			ReadText(buff, endAddr);
-		}
-
-		private void ReadText(byte* buff, UInt32 endAddr)
-		{
-			while ((UInt32)buff < endAddr) {
-				var infoType = *(InfoID*)buff;
-				buff += 4;
-				var textSize = *(UInt32*)buff;
-				buff += 4;
-
-				if (!Enum.IsDefined(typeof(InfoID), infoType)) {
+				if (!Enum.IsDefined(typeof(CK_INFO.TYPE), mInfo.Type)) {
 					break;
 				}
 
-				var temp = new byte[textSize];
-				Marshal.Copy((IntPtr)buff, temp, 0, temp.Length);
+				var temp = new byte[mInfo.Size];
+				Marshal.Copy((IntPtr)ptr, temp, 0, temp.Length);
 				var text = mEnc.GetString(temp).Replace("\0", "");
 
-				var pad = (2 - (textSize % 2)) % 2;
-				buff += textSize + pad;
+				var pad = (2 - (mInfo.Size % 2)) % 2;
+				ptr += mInfo.Size + pad;
 
-				switch (infoType) {
-				case InfoID.IARL:
+				switch (mInfo.Type) {
+				case CK_INFO.TYPE.IARL:
 					ArchivalLocation = text;
 					break;
-				case InfoID.IART:
+				case CK_INFO.TYPE.IART:
 					Artists = text;
 					break;
-				case InfoID.ICMS:
+				case CK_INFO.TYPE.ICMS:
 					Commissioned = text;
 					break;
-				case InfoID.ICMT:
+				case CK_INFO.TYPE.ICMT:
 					Comments = text;
 					break;
-				case InfoID.ICOP:
+				case CK_INFO.TYPE.ICOP:
 					Copyright = text;
 					break;
-				case InfoID.ICRD:
+				case CK_INFO.TYPE.ICRD:
 					CreationDate = text;
 					break;
-				case InfoID.IENG:
+				case CK_INFO.TYPE.IENG:
 					Engineer = text;
 					break;
-				case InfoID.IGNR:
+				case CK_INFO.TYPE.IGNR:
 					Genre = text;
 					break;
-				case InfoID.IKEY:
+				case CK_INFO.TYPE.IKEY:
 					Keywords = text;
 					break;
-				case InfoID.IMED:
+				case CK_INFO.TYPE.IMED:
 					Medium = text;
 					break;
-				case InfoID.INAM:
+				case CK_INFO.TYPE.INAM:
 					Name = text;
 					break;
-				case InfoID.IPRD:
+				case CK_INFO.TYPE.IPRD:
 					Product = text;
 					break;
-				case InfoID.ISFT:
+				case CK_INFO.TYPE.ISFT:
 					Software = text;
 					break;
-				case InfoID.ISRC:
+				case CK_INFO.TYPE.ISRC:
 					Source = text;
 					break;
-				case InfoID.ISRF:
+				case CK_INFO.TYPE.ISRF:
 					SourceForm = text;
 					break;
-				case InfoID.ISBJ:
+				case CK_INFO.TYPE.ISBJ:
 					Subject = text;
 					break;
-				case InfoID.ITCH:
+				case CK_INFO.TYPE.ITCH:
 					Technician = text;
 					break;
 				}

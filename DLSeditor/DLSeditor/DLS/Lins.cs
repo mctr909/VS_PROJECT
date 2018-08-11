@@ -1,125 +1,61 @@
 ﻿using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
-namespace DLS
-{
-	unsafe public struct INSH
-	{
-		public UInt32 Regions;
-		public Byte BankMSB;
-		public Byte BankLSB;
-		public UInt16 Flags;
-		public UInt32 ProgramNo;
+namespace DLS {
+	unsafe public class LINS : Chunk {
+		public Dictionary<int, INS> List = new Dictionary<int, INS>();
 
-		public INSH(byte* ptr)
-		{
-			Regions = *(UInt32*)ptr;
-			ptr += 4;
-			BankMSB = *ptr;
-			ptr += 1;
-			BankLSB = *ptr;
-			ptr += 1;
-			Flags = *(UInt16*)ptr;
-			ptr += 2;
-			ProgramNo = *(UInt32*)ptr;
+		public LINS() { }
+
+		public LINS(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
+
+		protected override void LoadList(byte* ptr, UInt32 endAddr) {
+			switch (mList.Type) {
+			case CK_LIST.TYPE.INS_:
+				List.Add(List.Count, new INS(ptr, endAddr));
+				break;
+			default:
+				throw new Exception(string.Format("Unknown ListId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mList.Type))));
+			}
 		}
 	}
 
-	unsafe public class INS
-	{
-		public INSH InstHeader;
-		public LRGN Regions;
-		public LART Articulations;
-		public INFO Info;
+	unsafe public class INS : Chunk {
+		public CK_INSH Header;
+		public LRGN Regions = new LRGN();
+		public LART Articulations = new LART();
+		public INFO Text = new INFO();
 
-		public INS()
-		{
-			Regions = new LRGN();
-			Articulations = new LART();
-			Info = new INFO();
-		}
+		public INS() { }
 
-		public INS(byte* ptr, UInt32 endAddr)
-		{
-			while ((UInt32)ptr < endAddr) {
-				var chunkType = *(ChunkID*)ptr;
-				ptr += 4;
-				var chunkSize = *(UInt32*)ptr;
-				ptr += 4;
+		public INS(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
-				switch (chunkType) {
-				case ChunkID.INSH:
-					InstHeader = new INSH(ptr);
-					break;
-				case ChunkID.LIST:
-					ReadList(ptr, chunkSize);
-					break;
-				default:
-					throw new Exception();
-				}
-
-				ptr += chunkSize;
+		protected override unsafe void LoadChunk(Byte* ptr) {
+			switch (mChunk.Type) {
+			case CK_CHUNK.TYPE.INSH:
+				Header = (CK_INSH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_INSH));
+				break;
+			default:
+				throw new Exception(string.Format("Unknown ChunkType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mChunk.Type))));
 			}
 		}
 
-		private void ReadList(byte* ptr, UInt32 size)
-		{
-			var listType = *(ListID*)ptr;
-			var endAddr = (UInt32)ptr + size;
-			ptr += 4;
-
-			switch (listType) {
-			case ListID.LRGN:
+		protected override unsafe void LoadList(byte* ptr, UInt32 endAddr) {
+			switch (mList.Type) {
+			case CK_LIST.TYPE.LRGN:
 				Regions = new LRGN(ptr, endAddr);
 				break;
-			case ListID.LART:
-			case ListID.LAR2:
+			case CK_LIST.TYPE.LART:
+			case CK_LIST.TYPE.LAR2:
 				Articulations = new LART(ptr, endAddr);
 				break;
-			case ListID.INFO:
-				Info = new INFO(ptr, endAddr);
+			case CK_LIST.TYPE.INFO:
+				Text = new INFO(ptr, endAddr);
 				break;
 			default:
-				throw new Exception();
-			}
-		}
-	}
-
-	unsafe public class LINS : List<INS>
-	{
-		public LINS() {}
-
-		public LINS(byte* ptr, UInt32 endAddr)
-		{
-			while ((UInt32)ptr < endAddr) {
-				var chunkType = *(ChunkID*)ptr;
-				ptr += 4;
-				var chunkSize = *(UInt32*)ptr;
-				ptr += 4;
-
-				switch (chunkType) {
-				case ChunkID.LIST:
-					ReadList(ptr, chunkSize);
-					break;
-				default:
-					throw new Exception();
-				}
-
-				ptr += chunkSize;
-			}
-		}
-
-		private void ReadList(byte* ptr, UInt32 size)
-		{
-			var listType = *(ListID*)ptr;
-			var endAddr = (UInt32)ptr + size;
-			ptr += 4;
-
-			switch (listType) {
-			case ListID.INS_:
-				Add(new INS(ptr, endAddr));
-				break;
-			default:
-				throw new Exception();
+				throw new Exception(string.Format("Unknown ListType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mList.Type))));
 			}
 		}
 	}

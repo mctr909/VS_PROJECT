@@ -15,6 +15,7 @@ namespace MIDI {
 
 		public int SoloChannel;
 		public int Transpose;
+		public double Speed;
 
 		#region プロパティ
 		public Channel[] Channel {
@@ -65,7 +66,7 @@ namespace MIDI {
 		}
 
 		public string TempoText {
-			get { return mBPM.ToString("000.00"); }
+			get { return (mBPM * Speed).ToString("000.00"); }
 		}
 		#endregion
 
@@ -76,6 +77,7 @@ namespace MIDI {
 			mTicks = 960;
 			mIsPlay = false;
 			SoloChannel = -1;
+			Speed = 1.0;
 		}
 
 		public void SetEventList(Event[] eventList, int ticks) {
@@ -147,7 +149,7 @@ namespace MIDI {
 					}
 
 					current_mSec = sw.ElapsedMilliseconds;
-					mCurrentTime += mBPM * (current_mSec - previous_mSec) / 60.0;
+					mCurrentTime += mBPM * Speed * (current_mSec - previous_mSec) / 60.0;
 					previous_mSec = current_mSec;
 					Thread.Sleep(1);
 				}

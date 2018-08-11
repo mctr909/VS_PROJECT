@@ -7,11 +7,9 @@
 		public bool[] Keyboard;
 
 		public double Wave;
-		public Envelope EnvAmp;
-		public Envelope EnvCutoff;
 		public WaveInfo[] WaveList;
 
-		private InstTable mInstTable;
+		private Instruments mInstruments;
 
 		private double mVolD;
 		private byte mVolB;
@@ -77,15 +75,14 @@
 		private double mChoLfo3Re;
 		private double mChoLfo3Im;
 
-		public Channel(int no, InstTable instTable) {
+		public Channel(int no, Instruments instruments) {
 			No = no;
 			
 			Enable = true;
 			InstID = new InstID();
 			Keyboard = new bool[128];
 
-			mInstTable = instTable;
-
+			mInstruments = instruments;
 			mDelayTapL = new double[Const.SampleRate];
 			mDelayTapR = new double[Const.SampleRate];
 
@@ -255,7 +252,7 @@
 
 			case CTRL_TYPE.CUTOFF:
 				mFcB = value;
-				mFcD = (Const.Amp[value] + 0.02) / 1.02;
+				mFcD = (1.25 * Const.Amp[mFcB] + 0.01);
 				break;
 			case CTRL_TYPE.RESONANCE:
 				mFqB = value;
@@ -277,33 +274,28 @@
 
 		public void ProgramChange(byte no) {
 			InstID.ProgramNo = no;
-			InstInfo instInfo;
 
-			if (mInstTable.InstList.ContainsKey(InstID)) {
-				instInfo = mInstTable.InstList[InstID];
+			if (mInstruments.List.ContainsKey(InstID)) {
+				WaveList = mInstruments.List[InstID];
 			}
 			else {
 				if (InstID.IsDrum) {
-					if (mInstTable.InstList.ContainsKey(new InstID(InstID.ProgramNo, 0, 0, true))) {
-						instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0, true)];
+					if (mInstruments.List.ContainsKey(new InstID(InstID.ProgramNo, 0, 0, true))) {
+						WaveList = mInstruments.List[new InstID(InstID.ProgramNo, 0, 0, true)];
 					}
 					else {
-						instInfo = mInstTable.InstList[new InstID(0, 0, 0, true)];
+						WaveList = mInstruments.List[new InstID(0, 0, 0, true)];
 					}
 				}
 				else {
-					if (mInstTable.InstList.ContainsKey(new InstID(InstID.ProgramNo, 0, 0))) {
-						instInfo = mInstTable.InstList[new InstID(InstID.ProgramNo, 0, 0)];
+					if (mInstruments.List.ContainsKey(new InstID(InstID.ProgramNo, 0, 0))) {
+						WaveList = mInstruments.List[new InstID(InstID.ProgramNo, 0, 0)];
 					}
 					else {
-						instInfo = mInstTable.InstList[new InstID(0, 0, 0)];
+						WaveList = mInstruments.List[new InstID(0, 0, 0)];
 					}
 				}
 			}
-
-			WaveList = instInfo.WaveInfo;
-			EnvAmp = instInfo.EnvAmp;
-			EnvCutoff = instInfo.EnvFilter;
 		}
 
 		public void PitchBend(byte lsb, byte msb) {
@@ -323,7 +315,7 @@
 			InstID.BankMSB = 0;
 			InstID.BankLSB = 0;
 			InstID.IsDrum = (9 == No);
-			WaveList = mInstTable.InstList[InstID].WaveInfo;
+			WaveList = mInstruments.List[InstID];
 
 			ProgramChange(InstID.ProgramNo);
 
@@ -346,7 +338,7 @@
 
 			mFcB = 127;
 			mFqB = 64;
-			mFcD = (Const.Amp[mFcB] + 0.02) / 1.02;
+			mFcD = (1.25 * Const.Amp[mFcB] + 0.01);
 			mFqD = mFqB / 112.0;
 
 			mRPN_MSB = 255;
@@ -356,7 +348,7 @@
 			mPitchS = 0;
 			mPitchD = 1.0;
 
-			mDelaySteps = (int)(0.125 * Const.SampleRate);
+			mDelaySteps = (int)(0.1 * Const.SampleRate);
 
 			// ChorusLFO
 			mChoLfoK = 0.05 * 6.283185307 * Const.DeltaTime;
