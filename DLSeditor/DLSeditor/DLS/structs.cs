@@ -12,6 +12,17 @@ namespace DLS {
 		public UInt16 Data3;
 		[MarshalAs(UnmanagedType.U8, SizeConst = 8)]
 		public UInt64 Data4;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[16];
+				BitConverter.GetBytes(Data1).CopyTo(buff, 0);
+				BitConverter.GetBytes(Data2).CopyTo(buff, 4);
+				BitConverter.GetBytes(Data3).CopyTo(buff, 6);
+				BitConverter.GetBytes(Data4).CopyTo(buff, 8);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -32,14 +43,38 @@ namespace DLS {
 		public byte Reserve3;
 		[MarshalAs(UnmanagedType.U1, SizeConst = 1)]
 		public byte Reserve4;
+
+		public byte[] Bytes {
+			get {
+				return new byte[] {
+					BankLSB,
+					BankMSB,
+					Reserve1,
+					BankFlags,
+					ProgramNo,
+					Reserve2,
+					Reserve3,
+					Reserve4
+				};
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct RGNRANGE {
+	public struct RANGE {
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
 		public UInt16 Low;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
 		public UInt16 High;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[4];
+				BitConverter.GetBytes(Low).CopyTo(buff, 0);
+				BitConverter.GetBytes(High).CopyTo(buff, 2);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -213,6 +248,18 @@ namespace DLS {
 				}
 			}
 		}
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[12];
+				BitConverter.GetBytes(Source).CopyTo(buff, 0);
+				BitConverter.GetBytes(Control).CopyTo(buff, 2);
+				BitConverter.GetBytes(Destination).CopyTo(buff, 4);
+				BitConverter.GetBytes(Transform).CopyTo(buff, 6);
+				BitConverter.GetBytes(Scale).CopyTo(buff, 8);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -225,6 +272,17 @@ namespace DLS {
 		public UInt32 Start;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
 		public UInt32 Length;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[16];
+				BitConverter.GetBytes(Size).CopyTo(buff, 0);
+				BitConverter.GetBytes(Type).CopyTo(buff, 4);
+				BitConverter.GetBytes(Start).CopyTo(buff, 8);
+				BitConverter.GetBytes(Length).CopyTo(buff, 12);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -279,6 +337,15 @@ namespace DLS {
 		public UInt32 MSB;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
 		public UInt32 LSB;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[8];
+				BitConverter.GetBytes(MSB).CopyTo(buff, 0);
+				BitConverter.GetBytes(LSB).CopyTo(buff, 4);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -290,6 +357,14 @@ namespace DLS {
 	public struct CK_COLH {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
 		public UInt32 Instruments;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[4];
+				BitConverter.GetBytes(Instruments).CopyTo(buff, 0);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -297,18 +372,41 @@ namespace DLS {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
 		public UInt32 Regions;
 		public MIDILOCALE Locale;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[12];
+				BitConverter.GetBytes(Regions).CopyTo(buff, 0);
+				Locale.Bytes.CopyTo(buff, 4);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_RGNH {
-		public RGNRANGE Key;
-		public RGNRANGE Velocity;
+		public RANGE Key;
+		public RANGE Velocity;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
 		public UInt16 Options;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
 		public UInt16 KeyGroup;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
 		public UInt16 Layer;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[0 == Layer ? 12 : 14];
+				Key.Bytes.CopyTo(buff, 0);
+				Velocity.Bytes.CopyTo(buff, 4);
+				BitConverter.GetBytes(Options).CopyTo(buff, 8);
+				BitConverter.GetBytes(KeyGroup).CopyTo(buff, 10);
+				if (0 != Layer) {
+					BitConverter.GetBytes(Layer).CopyTo(buff, 12);
+				}
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -317,6 +415,15 @@ namespace DLS {
 		public UInt32 Size;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
 		public UInt32 Count;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[8];
+				BitConverter.GetBytes(Size).CopyTo(buff, 0);
+				BitConverter.GetBytes(Count).CopyTo(buff, 4);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -329,6 +436,17 @@ namespace DLS {
 		public UInt32 Channel;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
 		public UInt32 TableIndex;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[12];
+				BitConverter.GetBytes(Options).CopyTo(buff, 0);
+				BitConverter.GetBytes(PhaseGroup).CopyTo(buff, 2);
+				BitConverter.GetBytes(Channel).CopyTo(buff, 4);
+				BitConverter.GetBytes(TableIndex).CopyTo(buff, 8);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -354,6 +472,19 @@ namespace DLS {
 				GainInt = (Int32)(Math.Log10(value) * 200 * 65536);
 			}
 		}
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[20];
+				BitConverter.GetBytes(Size).CopyTo(buff, 0);
+				BitConverter.GetBytes(UnityNote).CopyTo(buff, 4);
+				BitConverter.GetBytes(FineTune).CopyTo(buff, 6);
+				BitConverter.GetBytes(GainInt).CopyTo(buff, 8);
+				BitConverter.GetBytes(Options).CopyTo(buff, 12);
+				BitConverter.GetBytes(LoopCount).CopyTo(buff, 16);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -362,6 +493,15 @@ namespace DLS {
 		public UInt32 Size;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
 		public UInt32 Count;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[8];
+				BitConverter.GetBytes(Size).CopyTo(buff, 0);
+				BitConverter.GetBytes(Count).CopyTo(buff, 4);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -378,6 +518,19 @@ namespace DLS {
 		public UInt16 BlockAlign;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
 		public UInt16 Bits;
+
+		public byte[] Bytes {
+			get {
+				var buff = new byte[16];
+				BitConverter.GetBytes(Tag).CopyTo(buff, 0);
+				BitConverter.GetBytes(Channels).CopyTo(buff, 2);
+				BitConverter.GetBytes(SampleRate).CopyTo(buff, 4);
+				BitConverter.GetBytes(BytesPerSec).CopyTo(buff, 8);
+				BitConverter.GetBytes(BlockAlign).CopyTo(buff, 12);
+				BitConverter.GetBytes(Bits).CopyTo(buff, 14);
+				return buff;
+			}
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
