@@ -23,22 +23,31 @@ namespace DLS {
 	}
 
 	unsafe public class RGN : Chunk {
-		public CK_RGNH Header;
+		private CK_RGNH mHeader;
 		public CK_WSMP Sampler;
 		public Dictionary<int, WaveLoop> Loops = new Dictionary<int, WaveLoop>();
 		public CK_WLNK WaveLink;
 		public LART Articulations = new LART();
 
-		public RGN() { }
+		public CK_RGNH Header {
+			get { return mHeader; }
+		}
+
+		public RGN(byte noteLow = 0, byte noteHigh = 127, byte velocityLow = 0, byte velocityHigh = 127) {
+			mHeader.Key.Low = noteLow;
+			mHeader.Key.High = noteHigh;
+			mHeader.Velocity.Low = velocityLow;
+			mHeader.Velocity.High = velocityHigh;
+		}
 
 		public RGN(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
 		protected override unsafe void LoadChunk(Byte* ptr) {
 			switch (mChunk.Type) {
 			case CK_CHUNK.TYPE.RGNH:
-				Header = (CK_RGNH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_RGNH));
+				mHeader = (CK_RGNH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_RGNH));
 				if (mChunk.Size < sizeof(CK_RGNH)) {
-					Header.Layer = 0;
+					mHeader.Layer = 0;
 				}
 				break;
 			case CK_CHUNK.TYPE.WSMP:

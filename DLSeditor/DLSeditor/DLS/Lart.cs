@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace DLS {
 	unsafe public class LART : Chunk {
-		public Dictionary<int, ART> List = new Dictionary<int, ART>();
+		public ART ART;
 
 		public LART() { }
 
@@ -15,7 +15,7 @@ namespace DLS {
 			switch (mChunk.Type) {
 			case CK_CHUNK.TYPE.ART1:
 			case CK_CHUNK.TYPE.ART2:
-				List.Add(List.Count, new ART(ptr));
+				ART = new ART(ptr);
 				break;
 			default:
 				throw new Exception(string.Format("Unknown ChunkType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mChunk.Type))));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
@@ -10,15 +11,15 @@ namespace DLS {
 		private Dictionary<int, UInt32> mWaveCue = new Dictionary<int, UInt32>();
 		private CK_DLID mDlId;
 
+		public INFO Text = new INFO();
 		public LINS Instruments = new LINS();
 		public WVPL WavePool = new WVPL();
-		public INFO Text = new INFO();
 
 		public DLS() { }
 
 		public DLS(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
-		protected override unsafe void LoadChunk(Byte* ptr) {
+		protected override unsafe void LoadChunk(byte* ptr) {
 			switch (mChunk.Type) {
 			case CK_CHUNK.TYPE.COLH:
 				break;
@@ -58,6 +59,18 @@ namespace DLS {
 			default:
 				throw new Exception(string.Format("Unknown ListType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mList.Type))));
 			}
+		}
+
+		public void Save(string filePath) {
+			var fs = new FileStream(filePath, FileMode.Create);
+			var fw = new BinaryWriter(fs);
+
+			// COLH
+			fw.Write((UInt32)CK_CHUNK.TYPE.COLH);
+			fw.Write((UInt32)4);
+			fw.Write((UInt32)Instruments.List.Count);
+
+
 		}
 	}
 }
