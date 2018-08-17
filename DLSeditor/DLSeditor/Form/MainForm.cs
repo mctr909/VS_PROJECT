@@ -313,7 +313,7 @@ namespace DLSeditor
 
 		private void AddInst()
 		{
-			InstAddForm fm = new InstAddForm(mDLS);
+			InstForm fm = new InstForm(mDLS);
 			fm.ShowDialog();
 			DispInstList();
 		}

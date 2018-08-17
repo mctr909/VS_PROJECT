@@ -1,7 +1,7 @@
 ﻿namespace DLSeditor
 {
-    partial class InstAddForm
-    {
+    partial class InstForm
+	{
         /// <summary>
         /// Required designer variable.
         /// </summary>

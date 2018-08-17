@@ -62,11 +62,11 @@
     <Compile Include="Form\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\InstAddForm.cs">
+    <Compile Include="Form\InstForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form\InstAddForm.Designer.cs">
-      <DependentUpon>InstAddForm.cs</DependentUpon>
+    <Compile Include="Form\InstForm.Designer.cs">
+      <DependentUpon>InstForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Spectrum.cs" />
     <Compile Include="Program.cs" />
@@ -82,8 +82,8 @@
     <EmbeddedResource Include="Form\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form\InstAddForm.resx">
-      <DependentUpon>InstAddForm.cs</DependentUpon>
+    <EmbeddedResource Include="Form\InstForm.resx">
+      <DependentUpon>InstForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\WaveInfoForm.resx">
       <DependentUpon>WaveInfoForm.cs</DependentUpon>
