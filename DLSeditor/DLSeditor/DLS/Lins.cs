@@ -23,19 +23,28 @@ namespace DLS {
 	}
 
 	unsafe public class INS : Chunk {
-		public CK_INSH Header;
+		private CK_INSH mHeader;
 		public LRGN Regions = new LRGN();
 		public LART Articulations = new LART();
 		public INFO Text = new INFO();
 
-		public INS() { }
+		public CK_INSH Header {
+			get { return mHeader; }
+		}
+
+		public INS(byte programNo, byte bankMSB = 0, byte bankLSB = 0, bool isDrum = false) {
+			mHeader.Locale.BankFlags = (byte)(isDrum ? 0x00 : 0x80);
+			mHeader.Locale.ProgramNo = programNo;
+			mHeader.Locale.BankMSB = bankMSB;
+			mHeader.Locale.BankLSB = bankLSB;
+		}
 
 		public INS(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
 
 		protected override unsafe void LoadChunk(Byte* ptr) {
 			switch (mChunk.Type) {
 			case CK_CHUNK.TYPE.INSH:
-				Header = (CK_INSH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_INSH));
+				mHeader = (CK_INSH)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_INSH));
 				break;
 			default:
 				throw new Exception(string.Format("Unknown ChunkType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mChunk.Type))));

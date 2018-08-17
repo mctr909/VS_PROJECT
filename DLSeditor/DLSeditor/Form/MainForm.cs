@@ -259,15 +259,13 @@ namespace DLSeditor
 			tb.Columns.Add("Value", typeof(double));
 
 			if (null != inst.Articulations) {
-				foreach (var art in inst.Articulations.List.Values) {
-					foreach (var conn in art.List.Values) {
-						var row = tb.NewRow();
-						row["Destination"] = conn.Destination;
-						row["Source"] = conn.Source;
-						row["Control"] = conn.Control;
-						row["Value"] = conn.Value.ToString("0.000");
-						tb.Rows.Add(row);
-					}
+				foreach (var conn in inst.Articulations.ART.List.Values) {
+					var row = tb.NewRow();
+					row["Destination"] = conn.Destination;
+					row["Source"] = conn.Source;
+					row["Control"] = conn.Control;
+					row["Value"] = conn.Value.ToString("0.000");
+					tb.Rows.Add(row);
 				}
 			}
 
