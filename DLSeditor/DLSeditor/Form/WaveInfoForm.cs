@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
-using System.Threading;
-using System.Runtime.InteropServices;
 
 namespace DLSeditor
 {
@@ -86,7 +78,7 @@ namespace DLSeditor
 			timer1.Enabled = true;
 			timer1.Start();
 
-			timer2.Interval = 20;
+			timer2.Interval = 100;
 			timer2.Enabled = true;
 			timer2.Start();
 		}
@@ -188,7 +180,7 @@ namespace DLSeditor
 			mTimeDiv = 1.0 / mDelta / packSize;
 			mSpectrogram = new byte[(int)(mWave.Length * mTimeDiv)][];
 
-			var sp = new Spectrum(44100, 27.5, 24, 224);
+			var sp = new Spectrum(44100, 27.5, 16, 132);
 			var time = 0.0;
 			for (var s = 0; s < mSpectrogram.Length; ++s) {
 				for (var i = 0; i < packSize && time < mWave.Length; ++i) {

@@ -28,9 +28,9 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-			System.Windows.Forms.DataVisualization.Charting.Legend legend8 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-			System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+			System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			this.btnPlay = new System.Windows.Forms.Button();
 			this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			this.picSpectrum = new System.Windows.Forms.PictureBox();
@@ -57,16 +57,16 @@
 			// 
 			// chart1
 			// 
-			chartArea8.Name = "ChartArea1";
-			this.chart1.ChartAreas.Add(chartArea8);
-			legend8.Name = "Legend1";
-			this.chart1.Legends.Add(legend8);
+			chartArea6.Name = "ChartArea1";
+			this.chart1.ChartAreas.Add(chartArea6);
+			legend6.Name = "Legend1";
+			this.chart1.Legends.Add(legend6);
 			this.chart1.Location = new System.Drawing.Point(93, 12);
 			this.chart1.Name = "chart1";
-			series8.ChartArea = "ChartArea1";
-			series8.Legend = "Legend1";
-			series8.Name = "Series1";
-			this.chart1.Series.Add(series8);
+			series6.ChartArea = "ChartArea1";
+			series6.Legend = "Legend1";
+			series6.Name = "Series1";
+			this.chart1.Series.Add(series6);
 			this.chart1.Size = new System.Drawing.Size(128, 64);
 			this.chart1.TabIndex = 1;
 			this.chart1.Text = "chart1";
@@ -76,13 +76,13 @@
 			this.picSpectrum.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.picSpectrum.Location = new System.Drawing.Point(12, 82);
 			this.picSpectrum.Name = "picSpectrum";
-			this.picSpectrum.Size = new System.Drawing.Size(768, 224);
+			this.picSpectrum.Size = new System.Drawing.Size(768, 132);
 			this.picSpectrum.TabIndex = 2;
 			this.picSpectrum.TabStop = false;
 			// 
 			// hsbTime
 			// 
-			this.hsbTime.Location = new System.Drawing.Point(12, 309);
+			this.hsbTime.Location = new System.Drawing.Point(12, 217);
 			this.hsbTime.Name = "hsbTime";
 			this.hsbTime.Size = new System.Drawing.Size(768, 22);
 			this.hsbTime.TabIndex = 3;
@@ -90,7 +90,7 @@
 			// picWave
 			// 
 			this.picWave.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.picWave.Location = new System.Drawing.Point(12, 334);
+			this.picWave.Location = new System.Drawing.Point(12, 242);
 			this.picWave.Name = "picWave";
 			this.picWave.Size = new System.Drawing.Size(768, 256);
 			this.picWave.TabIndex = 4;
@@ -132,7 +132,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(796, 600);
+			this.ClientSize = new System.Drawing.Size(796, 510);
 			this.Controls.Add(this.numScale);
 			this.Controls.Add(this.picWave);
 			this.Controls.Add(this.hsbTime);

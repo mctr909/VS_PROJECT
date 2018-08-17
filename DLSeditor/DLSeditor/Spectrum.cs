@@ -98,7 +98,7 @@ public class Spectrum
 
 	public void SetLevel()
 	{
-		mMax *= 1.0 - 1.0 / 256.0;
+		mMax *= 1.0 - 1.0 / 8192.0;
 
 		for (uint b = 0; b < mBanks.Length; ++b) {
 			var s = 0.92 - mAttenuation * b / mBanks.Length;
