@@ -24,15 +24,11 @@ namespace DLS {
 
 	unsafe public class WAVE : Chunk {
 		public CK_DLID DlId;
-		private CK_FMT mFormat;
+		public CK_FMT Format;
 		public CK_WSMP Sampler;
 		public Dictionary<int, WaveLoop> Loops = new Dictionary<int, WaveLoop>();
 		public byte[] Data;
 		public INFO Text = new INFO();
-
-		public CK_FMT Format {
-			get { return mFormat; }
-		}
 
 		public WAVE(string filePath) {
 			FileStream fs = new FileStream(filePath, FileMode.Open);
@@ -51,12 +47,12 @@ namespace DLS {
 
 				switch (chunkType) {
 				case CK_CHUNK.TYPE.FMT_:
-					mFormat.Tag			= *(UInt16*)ptr; ptr += 2;
-					mFormat.Channels	= *(UInt16*)ptr; ptr += 2;
-					mFormat.SampleRate	= *(UInt32*)ptr; ptr += 4;
-					mFormat.BytesPerSec	= *(UInt32*)ptr; ptr += 4;
-					mFormat.BlockAlign	= *(UInt16*)ptr; ptr += 2;
-					mFormat.Bits		= *(UInt16*)ptr;
+					Format.Tag			= *(UInt16*)ptr; ptr += 2;
+					Format.Channels		= *(UInt16*)ptr; ptr += 2;
+					Format.SampleRate	= *(UInt32*)ptr; ptr += 4;
+					Format.BytesPerSec	= *(UInt32*)ptr; ptr += 4;
+					Format.BlockAlign	= *(UInt16*)ptr; ptr += 2;
+					Format.Bits			= *(UInt16*)ptr;
 					break;
 				case CK_CHUNK.TYPE.DATA:
 					Data = chunkData;
@@ -78,7 +74,7 @@ namespace DLS {
 				DlId = (CK_DLID)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_DLID));
 				break;
 			case CK_CHUNK.TYPE.FMT_:
-				mFormat = (CK_FMT)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_FMT));
+				Format = (CK_FMT)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_FMT));
 				break;
 			case CK_CHUNK.TYPE.DATA:
 				Data = new byte[mChunk.Size];
@@ -104,7 +100,7 @@ namespace DLS {
 		}
 
 		public void ToFile(string filePath) {
-			if (16 != mFormat.Bits) {
+			if (16 != Format.Bits) {
 				return;
 			}
 
@@ -144,12 +140,12 @@ namespace DLS {
 			// fmt
 			bw.Write((UInt32)CK_CHUNK.TYPE.FMT_);
 			bw.Write((UInt32)16);
-			bw.Write(mFormat.Tag);
-			bw.Write(mFormat.Channels);
-			bw.Write(mFormat.SampleRate);
-			bw.Write(mFormat.BytesPerSec);
-			bw.Write(mFormat.BlockAlign);
-			bw.Write(mFormat.Bits);
+			bw.Write(Format.Tag);
+			bw.Write(Format.Channels);
+			bw.Write(Format.SampleRate);
+			bw.Write(Format.BytesPerSec);
+			bw.Write(Format.BlockAlign);
+			bw.Write(Format.Bits);
 
 			// data
 			bw.Write((UInt32)CK_CHUNK.TYPE.DATA);

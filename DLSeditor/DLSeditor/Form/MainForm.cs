@@ -4,29 +4,24 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 
-namespace DLSeditor
-{
-	public partial class MainForm : Form
-	{
+namespace DLSeditor {
+	public partial class MainForm : Form {
 		private WavePlayback mWaveOut;
 		private DLS.DLS mDLS;
 
-		public MainForm()
-		{
+		public MainForm() {
 			InitializeComponent();
 			SetTabSize();
 			mWaveOut = new WavePlayback();
 			mDLS = new DLS.DLS();
 		}
 
-		private void Form1_SizeChanged(object sender, EventArgs e)
-		{
+		private void Form1_SizeChanged(object sender, EventArgs e) {
 			SetTabSize();
 		}
 
 		#region メニューバー[ファイル]
-		private void 新規作成NToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+		private void 新規作成NToolStripMenuItem_Click(object sender, EventArgs e) {
 
 		}
 
@@ -47,8 +42,7 @@ namespace DLSeditor
 				var mBuff = new byte[size - 4];
 				fs.Read(mBuff, 0, mBuff.Length);
 
-				fixed (byte* p = &mBuff[0])
-				{
+				fixed (byte* p = &mBuff[0]) {
 					mDLS = new DLS.DLS(p, (UInt32)(p + mBuff.Length));
 				}
 
@@ -60,12 +54,10 @@ namespace DLSeditor
 			tabControl.SelectedIndex = 0;
 		}
 
-		private void 上書き保存ToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+		private void 上書き保存ToolStripMenuItem_Click(object sender, EventArgs e) {
 		}
 
-		private void 名前を付けて保存ToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+		private void 名前を付けて保存ToolStripMenuItem_Click(object sender, EventArgs e) {
 			saveFileDialog1.FileName = "";
 			saveFileDialog1.Filter = "DLSファイル(*.dls)|*.dls";
 			saveFileDialog1.ShowDialog();
@@ -73,79 +65,65 @@ namespace DLSeditor
 		#endregion
 
 		#region メニューバー[編集]
-		private void 追加AToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+		private void 追加AToolStripMenuItem_Click(object sender, EventArgs e) {
 			AddInst();
 		}
 
-		private void 削除DToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+		private void 削除DToolStripMenuItem_Click(object sender, EventArgs e) {
 			DeleteInst();
 		}
 
-		private void コピーCToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+		private void コピーCToolStripMenuItem_Click(object sender, EventArgs e) {
 			CopyInst();
 		}
 
-		private void 貼り付けPToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+		private void 貼り付けPToolStripMenuItem_Click(object sender, EventArgs e) {
 			PasteInst();
 		}
 		#endregion
 
 		#region ツールストリップ
-		private void tsbAddInst_Click(object sender, EventArgs e)
-		{
+		private void tsbAddInst_Click(object sender, EventArgs e) {
 			AddInst();
 		}
 
-		private void tsbDeleteInst_Click(object sender, EventArgs e)
-		{
+		private void tsbDeleteInst_Click(object sender, EventArgs e) {
 			DeleteInst();
 		}
 
-		private void tsbCopyInst_Click(object sender, EventArgs e)
-		{
+		private void tsbCopyInst_Click(object sender, EventArgs e) {
 			CopyInst();
 		}
 
-		private void tsbPasteInst_Click(object sender, EventArgs e)
-		{
+		private void tsbPasteInst_Click(object sender, EventArgs e) {
 			PasteInst();
 		}
 
-		private void tsbAddWave_Click(object sender, EventArgs e)
-		{
+		private void tsbAddWave_Click(object sender, EventArgs e) {
 
 		}
 
-		private void tsbDeleteWave_Click(object sender, EventArgs e)
-		{
+		private void tsbDeleteWave_Click(object sender, EventArgs e) {
 
 		}
 
-		private void tsbOutputWave_Click(object sender, EventArgs e)
-		{
+		private void tsbOutputWave_Click(object sender, EventArgs e) {
 			WaveFileOut();
 		}
 		#endregion
 
 		#region サイズ調整
-		private void SetTabSize()
-		{
+		private void SetTabSize() {
 			var offsetX = 40;
 			var offsetY = 80;
 			var width = Width - offsetX;
 			var height = Height - offsetY;
 
-			if (width < 100)
-			{
+			if (width < 100) {
 				return;
 			}
 
-			if (height < 100)
-			{
+			if (height < 100) {
 				return;
 			}
 
@@ -158,8 +136,7 @@ namespace DLSeditor
 			SetInstRegionSize();
 		}
 
-		private void SetInstListSize()
-		{
+		private void SetInstListSize() {
 			var offsetX = 16;
 			var offsetY = 60;
 			var width = tabControl.Width - offsetX;
@@ -169,8 +146,7 @@ namespace DLSeditor
 			lstInst.Height = height;
 		}
 
-		private void SetWaveListSize()
-		{
+		private void SetWaveListSize() {
 			var offsetX = 16;
 			var offsetY = 60;
 			var width = tabControl.Width - offsetX;
@@ -180,8 +156,7 @@ namespace DLSeditor
 			lstWave.Height = height;
 		}
 
-		private void SetInstAttributeSize()
-		{
+		private void SetInstAttributeSize() {
 			var offsetX = 16;
 			var offsetY = 36;
 			var width = tabControl.Width - offsetX;
@@ -191,8 +166,7 @@ namespace DLSeditor
 			grdArt.Height = height;
 		}
 
-		private void SetInstRegionSize()
-		{
+		private void SetInstRegionSize() {
 			var offsetX = 16;
 			var offsetY = 60;
 			var width = tabControl.Width - offsetX;
@@ -204,13 +178,11 @@ namespace DLSeditor
 		#endregion
 
 		#region 音色一覧
-		private void lstInst_DoubleClick(object sender, EventArgs e)
-		{
+		private void lstInst_DoubleClick(object sender, EventArgs e) {
 			DispInstInfo();
 		}
 
-		private void pictRange_DoubleClick(object sender, EventArgs e)
-		{
+		private void pictRange_DoubleClick(object sender, EventArgs e) {
 			var cp = pictRange.PointToClient(Cursor.Position);
 			cp.X = (int)(cp.X / 6 + 0.5);
 			cp.Y = (int)((pictRange.Height - cp.Y) / 6 + 0.5);
@@ -230,8 +202,7 @@ namespace DLSeditor
 			tslPos.Text = string.Format("X:{0} Y:{1}", cp.X, cp.Y);
 		}
 
-		private void DispInstList()
-		{
+		private void DispInstList() {
 			lstInst.Items.Clear();
 			lstInst.Font = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular);
 			foreach (var inst in mDLS.Instruments.List.Values) {
@@ -246,8 +217,7 @@ namespace DLSeditor
 			}
 		}
 
-		private void DispInstInfo()
-		{
+		private void DispInstInfo() {
 			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
 
 			tbpInstAttribute.Text = string.Format("音色設定[{0}]", inst.Text.Name);
@@ -278,8 +248,7 @@ namespace DLSeditor
 			DispRegionInfo();
 		}
 
-		private void DispRegionInfo()
-		{
+		private void DispRegionInfo() {
 			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
 
 			tbpLayerAttribute.Text = string.Format("レイヤー設定[{0}]", inst.Text.Name);
@@ -311,38 +280,32 @@ namespace DLSeditor
 			pictRange.Image = bmp;
 		}
 
-		private void AddInst()
-		{
+		private void AddInst() {
 			InstForm fm = new InstForm(mDLS);
 			fm.ShowDialog();
 			DispInstList();
 		}
 
-		private void DeleteInst()
-		{
+		private void DeleteInst() {
 			DispInstList();
 		}
 
-		private void CopyInst()
-		{
+		private void CopyInst() {
 		}
 
-		private void PasteInst()
-		{
+		private void PasteInst() {
 			DispInstList();
 		}
 		#endregion
 
 		#region 波形一覧
-		private void lstWave_DoubleClick(object sender, EventArgs e)
-		{
+		private void lstWave_DoubleClick(object sender, EventArgs e) {
 			var idx = lstWave.SelectedIndex;
 			var fm = new WaveInfoForm(mWaveOut, mDLS, idx);
 			fm.ShowDialog();
 		}
 
-		private void DispPcmList()
-		{
+		private void DispPcmList() {
 			lstWave.Items.Clear();
 			int count = 0;
 			foreach (var wave in mDLS.WavePool.List.Values) {
@@ -374,8 +337,7 @@ namespace DLSeditor
 			}
 		}
 
-		private void WaveFileOut()
-		{
+		private void WaveFileOut() {
 			folderBrowserDialog1.ShowDialog();
 			var folderPath = folderBrowserDialog1.SelectedPath;
 			if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath)) {

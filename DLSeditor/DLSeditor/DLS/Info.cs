@@ -40,8 +40,7 @@ namespace DLS {
 				Marshal.Copy((IntPtr)ptr, temp, 0, temp.Length);
 				var text = mEnc.GetString(temp).Replace("\0", "");
 
-				var pad = (2 - (mInfo.Size % 2)) % 2;
-				ptr += mInfo.Size + pad;
+				ptr += mInfo.Size + (2 - (mInfo.Size % 2)) % 2;
 
 				switch (mInfo.Type) {
 				case CK_INFO.TYPE.IARL:
