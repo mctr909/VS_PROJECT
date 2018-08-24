@@ -39,6 +39,9 @@ namespace MIDI {
 					envAmp.LevelH = 1.0;
 					envAmp.LevelS = 1.0;
 					envAmp.LevelR = 0.0;
+					envAmp.AttackTime = 0.0;
+					envAmp.HoldTime = 0.0;
+					envAmp.ReleaseTime = 0.0;
 					envCutoff.LevelA = 1.0;
 					envCutoff.LevelH = 1.0;
 					envCutoff.LevelS = 1.0;
@@ -52,7 +55,7 @@ namespace MIDI {
 							envAmp.AttackTime = art.Value;
 							break;
 						case DLS.CONN_DST_TYPE.EG1_HOLD_TIME:
-							envAmp.TimeH = art.Value;
+							envAmp.HoldTime = art.Value;
 							break;
 						case DLS.CONN_DST_TYPE.EG1_DECAY_TIME:
 							envAmp.DecayTime = art.Value;
@@ -86,6 +89,9 @@ namespace MIDI {
 							envAmp.LevelH = 1.0;
 							envAmp.LevelS = 1.0;
 							envAmp.LevelR = 0.0;
+							envAmp.AttackTime = 0.0;
+							envAmp.HoldTime = 0.0;
+							envAmp.ReleaseTime = 0.0;
 							envCutoff.LevelA = 1.0;
 							envCutoff.LevelH = 1.0;
 							envCutoff.LevelS = 1.0;
@@ -99,7 +105,7 @@ namespace MIDI {
 									envAmp.AttackTime = art.Value;
 									break;
 								case DLS.CONN_DST_TYPE.EG1_HOLD_TIME:
-									envAmp.TimeH = art.Value;
+									envAmp.HoldTime = art.Value;
 									break;
 								case DLS.CONN_DST_TYPE.EG1_DECAY_TIME:
 									envAmp.DecayTime = art.Value;
@@ -132,13 +138,13 @@ namespace MIDI {
 						var waveIdx = (int)region.WaveLink.WaveIndex;
 						if ((region.RegionHeader.KeyRangeLow <= noteNo) && (noteNo <= region.RegionHeader.KeyRangeHigh)) {
 							if (0 < region.Sampler.List.Count) {
-								waveInfo[noteNo].LoopBegin = region.Sampler[0].Begin;
-								waveInfo[noteNo].LoopEnd = region.Sampler[0].Begin + region.Sampler[0].Length;
+								waveInfo[noteNo].LoopEnd = region.Sampler[0].Begin + region.Sampler[0].Length - 1;
+								waveInfo[noteNo].LoopLength = region.Sampler[0].Length;
 								waveInfo[noteNo].LoopEnable = true;
 							}
 							else {
-								waveInfo[noteNo].LoopBegin = 0;
-								waveInfo[noteNo].LoopEnd = (uint)waveList[waveIdx].Length;
+								waveInfo[noteNo].LoopEnd = (uint)waveList[waveIdx].Length - 1;
+								waveInfo[noteNo].LoopLength = (uint)waveList[waveIdx].Length;
 								waveInfo[noteNo].LoopEnable = false;
 							}
 

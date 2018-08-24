@@ -1,7 +1,7 @@
 ﻿namespace MIDI {
 	public class MessageSender {
 		private const int CHANNEL_COUNT = 16;
-		private const int SAMPLER_COUNT = 128;
+		private const int SAMPLER_COUNT = 64;
 
 		private Instruments mInstruments;
 		private Channel[] mChannel;

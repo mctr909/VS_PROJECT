@@ -30,7 +30,16 @@
 					value = 0.001;
 				}
 				TimeA = value;
-				DeltaA = 12.0 * Const.DeltaTime / value;
+				DeltaA = 16.0 * Const.DeltaTime / value;
+			}
+		}
+
+		public double HoldTime {
+			set {
+				if (value < 0.001) {
+					value = 0.001;
+				}
+				TimeH = value;
 			}
 		}
 
@@ -39,7 +48,7 @@
 				if (value < 0.001) {
 					value = 0.001;
 				}
-				DeltaD = 12.0 * Const.DeltaTime / value;
+				DeltaD = 16.0 * Const.DeltaTime / value;
 			}
 		}
 
@@ -48,7 +57,7 @@
 				if (value < 0.001) {
 					value = 0.001;
 				}
-				DeltaR = 12.0 * Const.DeltaTime / value;
+				DeltaR = 16.0 * Const.DeltaTime / value;
 			}
 		}
 	}
@@ -56,8 +65,8 @@
 	public struct WaveInfo {
 		public Envelope EnvAmp;
 		public Envelope EnvCutoff;
-		public uint LoopBegin;
 		public uint LoopEnd;
+		public uint LoopLength;
 		public bool LoopEnable;
 		public byte BaseNoteNo;
 		public double Delta;
