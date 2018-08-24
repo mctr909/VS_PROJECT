@@ -35,7 +35,7 @@ namespace MIDI {
 				double resonance = 0.0;
 
 				if (null != inst.ArtPool) {
-					envAmp.LevelA = 1.0;
+					envAmp.LevelA = 0.0;
 					envAmp.LevelH = 1.0;
 					envAmp.LevelS = 1.0;
 					envAmp.LevelR = 0.0;
@@ -51,7 +51,6 @@ namespace MIDI {
 							continue;
 						switch (art.Destination) {
 						case DLS.CONN_DST_TYPE.EG1_ATTACK_TIME:
-							envAmp.LevelA = 0.0;
 							envAmp.AttackTime = art.Value;
 							break;
 						case DLS.CONN_DST_TYPE.EG1_HOLD_TIME:
@@ -85,7 +84,7 @@ namespace MIDI {
 				for (var noteNo = 0; noteNo < waveInfo.Length; ++noteNo) {
 					foreach (var region in inst.RegionPool.List) {
 						if (null != region.ArtPool) {
-							envAmp.LevelA = 1.0;
+							envAmp.LevelA = 0.0;
 							envAmp.LevelH = 1.0;
 							envAmp.LevelS = 1.0;
 							envAmp.LevelR = 0.0;
@@ -101,7 +100,6 @@ namespace MIDI {
 									continue;
 								switch (art.Destination) {
 								case DLS.CONN_DST_TYPE.EG1_ATTACK_TIME:
-									envAmp.LevelA = 0.0;
 									envAmp.AttackTime = art.Value;
 									break;
 								case DLS.CONN_DST_TYPE.EG1_HOLD_TIME:
