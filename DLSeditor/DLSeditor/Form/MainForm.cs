@@ -43,7 +43,7 @@ namespace DLSeditor {
 				fs.Read(mBuff, 0, mBuff.Length);
 
 				fixed (byte* p = &mBuff[0]) {
-					mDLS = new DLS.DLS(p, (UInt32)(p + mBuff.Length));
+					mDLS = new DLS.DLS(p, p + mBuff.Length);
 				}
 
 				fs.Close();
@@ -61,6 +61,12 @@ namespace DLSeditor {
 			saveFileDialog1.FileName = "";
 			saveFileDialog1.Filter = "DLSファイル(*.dls)|*.dls";
 			saveFileDialog1.ShowDialog();
+			var filePath = saveFileDialog1.FileName;
+			if (!Directory.Exists(Path.GetDirectoryName(filePath))) {
+				return;
+			}
+
+			mDLS.Save(filePath);
 		}
 		#endregion
 
@@ -228,7 +234,7 @@ namespace DLSeditor {
 			tb.Columns.Add("Control", typeof(DLS.Connection.SRC_TYPE));
 			tb.Columns.Add("Value", typeof(double));
 
-			if (null != inst.Articulations) {
+			if (null != inst.Articulations && null != inst.Articulations.ART) {
 				foreach (var conn in inst.Articulations.ART.List.Values) {
 					var row = tb.NewRow();
 					row["Destination"] = conn.Destination;

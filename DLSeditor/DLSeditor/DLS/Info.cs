@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Runtime.InteropServices;
 
@@ -27,8 +28,8 @@ namespace DLS {
 
 		public INFO() { }
 
-		public INFO(byte* ptr, UInt32 endAddr) {
-			while ((UInt32)ptr < endAddr) {
+		public INFO(byte* ptr, byte* endPtr) {
+			while (ptr < endPtr) {
 				mInfo = (CK_INFO)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_INFO));
 				ptr += sizeof(CK_INFO);
 
@@ -95,6 +96,56 @@ namespace DLS {
 					Technician = text;
 					break;
 				}
+			}
+		}
+
+		public byte[] Bytes {
+			get {
+				var ms = new MemoryStream();
+				var bw = new BinaryWriter(ms);
+
+				WriteText(bw, CK_INFO.TYPE.IARL, ArchivalLocation);
+				WriteText(bw, CK_INFO.TYPE.IART, Artists);
+				WriteText(bw, CK_INFO.TYPE.ICMS, Commissioned);
+				WriteText(bw, CK_INFO.TYPE.ICMT, Comments);
+				WriteText(bw, CK_INFO.TYPE.ICOP, Copyright);
+				WriteText(bw, CK_INFO.TYPE.ICRD, CreationDate);
+				WriteText(bw, CK_INFO.TYPE.IENG, Engineer);
+				WriteText(bw, CK_INFO.TYPE.IGNR, Genre);
+				WriteText(bw, CK_INFO.TYPE.IKEY, Keywords);
+				WriteText(bw, CK_INFO.TYPE.IMED, Medium);
+				WriteText(bw, CK_INFO.TYPE.INAM, Name);
+				WriteText(bw, CK_INFO.TYPE.IPRD, Product);
+				WriteText(bw, CK_INFO.TYPE.ISFT, Software);
+				WriteText(bw, CK_INFO.TYPE.ISRC, Source);
+				WriteText(bw, CK_INFO.TYPE.ISRF, SourceForm);
+				WriteText(bw, CK_INFO.TYPE.ISBJ, Subject);
+				WriteText(bw, CK_INFO.TYPE.ITCH, Technician);
+
+				var ms2 = new MemoryStream();
+				var bw2 = new BinaryWriter(ms2);
+				if (0 < ms.Length) {
+					bw2.Write((uint)CK_CHUNK.TYPE.LIST);
+					bw2.Write((uint)(ms.Length + 4));
+					bw2.Write((uint)CK_LIST.TYPE.INFO);
+					bw2.Write(ms.ToArray());
+				}
+
+				return ms2.ToArray();
+			}
+		}
+
+		private void WriteText(BinaryWriter bw, CK_INFO.TYPE type, string text) {
+			if (!string.IsNullOrWhiteSpace(text)) {
+				var pad = 2 - (mEnc.GetBytes(text).Length % 2);
+				for (int i = 0; i < pad; ++i) {
+					text += "\0";
+				}
+
+				var data = mEnc.GetBytes(text);
+				bw.Write((uint)type);
+				bw.Write((uint)data.Length);
+				bw.Write(data);
 			}
 		}
 	}

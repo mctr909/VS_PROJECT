@@ -9,21 +9,50 @@ namespace DLS {
 
 		public WVPL() { }
 
-		public WVPL(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
+		public WVPL(byte* ptr, byte* endPtr) : base(ptr, endPtr) { }
 
-		protected override void LoadList(byte* ptr, UInt32 endAddr) {
+		protected override void LoadList(byte* ptr, byte* endPtr) {
 			switch (mList.Type) {
 			case CK_LIST.TYPE.WAVE:
-				List.Add(List.Count, new WAVE(ptr, endAddr));
+				List.Add(List.Count, new WAVE(ptr, endPtr));
 				break;
 			default:
 				throw new Exception();
 			}
 		}
+
+		public new byte[] Bytes {
+			get {
+				var msPtbl = new MemoryStream();
+				var bwPtbl = new BinaryWriter(msPtbl);
+				bwPtbl.Write((uint)CK_CHUNK.TYPE.PTBL);
+				bwPtbl.Write((uint)(sizeof(CK_PTBL) + List.Count * sizeof(uint)));
+				bwPtbl.Write((uint)8);
+				bwPtbl.Write((uint)List.Count);
+
+				var msWave = new MemoryStream();
+				var bwWave = new BinaryWriter(msWave);
+				foreach (var wav in List) {
+					bwPtbl.Write((uint)msWave.Position);
+					bwWave.Write(wav.Value.Bytes);
+				}
+
+				var ms = new MemoryStream();
+				var bw = new BinaryWriter(ms);
+				if (0 < msWave.Length) {
+					bw.Write(msPtbl.ToArray());
+					bw.Write((uint)CK_CHUNK.TYPE.LIST);
+					bw.Write((uint)(msWave.Length + 4));
+					bw.Write((uint)CK_LIST.TYPE.WVPL);
+					bw.Write(msWave.ToArray());
+				}
+
+				return ms.ToArray();
+			}
+		}
 	}
 
 	unsafe public class WAVE : Chunk {
-		public CK_DLID DlId;
 		public CK_FMT Format;
 		public CK_WSMP Sampler;
 		public Dictionary<int, WaveLoop> Loops = new Dictionary<int, WaveLoop>();
@@ -42,17 +71,12 @@ namespace DLS {
 				var chunkType = (CK_CHUNK.TYPE)br.ReadUInt32();
 				var chunkSize = br.ReadUInt32();
 				var chunkData = br.ReadBytes((int)chunkSize);
-				byte* ptr;
-				fixed (byte* p = &chunkData[0]) ptr = p;
 
 				switch (chunkType) {
 				case CK_CHUNK.TYPE.FMT_:
-					Format.Tag			= *(UInt16*)ptr; ptr += 2;
-					Format.Channels		= *(UInt16*)ptr; ptr += 2;
-					Format.SampleRate	= *(UInt32*)ptr; ptr += 4;
-					Format.BytesPerSec	= *(UInt32*)ptr; ptr += 4;
-					Format.BlockAlign	= *(UInt16*)ptr; ptr += 2;
-					Format.Bits			= *(UInt16*)ptr;
+					fixed (byte* ptr = &chunkData[0]) {
+						Marshal.PtrToStructure((IntPtr)ptr, Format);
+					}
 					break;
 				case CK_CHUNK.TYPE.DATA:
 					Data = chunkData;
@@ -65,13 +89,12 @@ namespace DLS {
 			fs.Dispose();
 		}
 
-		public WAVE(byte* ptr, UInt32 endAddr) : base(ptr, endAddr) { }
+		public WAVE(byte* ptr, byte* endPtr) : base(ptr, endPtr) { }
 
-		protected override unsafe void LoadChunk(Byte* ptr) {
+		protected override void LoadChunk(byte* ptr) {
 			switch (mChunk.Type) {
 			case CK_CHUNK.TYPE.DLID:
 			case CK_CHUNK.TYPE.GUID:
-				DlId = (CK_DLID)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_DLID));
 				break;
 			case CK_CHUNK.TYPE.FMT_:
 				Format = (CK_FMT)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_FMT));
@@ -91,12 +114,37 @@ namespace DLS {
 			}
 		}
 
-		protected override unsafe void LoadList(byte* ptr, UInt32 endAddr) {
+		protected override void LoadList(byte* ptr, byte* endPtr) {
 			switch (mList.Type) {
 			case CK_LIST.TYPE.INFO:
-				Text = new INFO(ptr, endAddr);
+				Text = new INFO(ptr, endPtr);
 				break;
 			}
+		}
+
+		protected override void WriteChunk(BinaryWriter bw) {
+			mList.Type = CK_LIST.TYPE.WAVE;
+
+			var data = Sampler.Bytes;
+			bw.Write((uint)CK_CHUNK.TYPE.WSMP);
+			bw.Write((uint)(data.Length + Sampler.LoopCount * sizeof(WaveLoop)));
+			bw.Write(data);
+			foreach (var loop in Loops.Values) {
+				bw.Write(loop.Bytes);
+			}
+
+			data = Format.Bytes;
+			bw.Write((uint)CK_CHUNK.TYPE.FMT_);
+			bw.Write(data.Length);
+			bw.Write(data);
+
+			bw.Write((uint)CK_CHUNK.TYPE.DATA);
+			bw.Write(Data.Length);
+			bw.Write(Data);
+		}
+
+		protected override void WriteList(BinaryWriter bw) {
+			bw.Write(Text.Bytes);
 		}
 
 		public void ToFile(string filePath) {

@@ -251,6 +251,7 @@ namespace DLS {
 
 		public byte[] Bytes {
 			get {
+				
 				var buff = new byte[12];
 				BitConverter.GetBytes(Source).CopyTo(buff, 0);
 				BitConverter.GetBytes(Control).CopyTo(buff, 2);
@@ -293,7 +294,7 @@ namespace DLS {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
 		public UInt32 Size;
 
-		public enum TYPE : UInt32 {
+		public enum TYPE : uint {
 			COLH = 0x686C6F63,
 			VERS = 0x73726576,
 			MSYN = 0x6E79736D,
@@ -351,6 +352,10 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_DLID {
 		DLSID DlsId;
+
+		public byte[] Bytes {
+			get { return DlsId.Bytes; }
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
