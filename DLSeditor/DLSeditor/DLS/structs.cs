@@ -3,46 +3,23 @@ using System.Runtime.InteropServices;
 
 namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
-	public struct DLSID {
-		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Data1;
-		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Data2;
-		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Data3;
-		[MarshalAs(UnmanagedType.U8, SizeConst = 8)]
-		public UInt64 Data4;
-
-		public byte[] Bytes {
-			get {
-				var buff = new byte[16];
-				BitConverter.GetBytes(Data1).CopyTo(buff, 0);
-				BitConverter.GetBytes(Data2).CopyTo(buff, 4);
-				BitConverter.GetBytes(Data3).CopyTo(buff, 6);
-				BitConverter.GetBytes(Data4).CopyTo(buff, 8);
-				return buff;
-			}
-		}
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
-	public struct MIDILOCALE {
+	public struct MidiLocale {
 		[MarshalAs(UnmanagedType.U1, SizeConst = 1)]
 		public byte BankLSB;
 		[MarshalAs(UnmanagedType.U1, SizeConst = 1)]
 		public byte BankMSB;
 		[MarshalAs(UnmanagedType.U1, SizeConst = 1)]
-		public byte Reserve1;
+		private byte Reserve1;
 		[MarshalAs(UnmanagedType.U1, SizeConst = 1)]
 		public byte BankFlags;
 		[MarshalAs(UnmanagedType.U1, SizeConst = 1)]
 		public byte ProgramNo;
 		[MarshalAs(UnmanagedType.U1, SizeConst = 1)]
-		public byte Reserve2;
+		private byte Reserve2;
 		[MarshalAs(UnmanagedType.U1, SizeConst = 1)]
-		public byte Reserve3;
+		private byte Reserve3;
 		[MarshalAs(UnmanagedType.U1, SizeConst = 1)]
-		public byte Reserve4;
+		private byte Reserve4;
 
 		public byte[] Bytes {
 			get {
@@ -61,11 +38,11 @@ namespace DLS {
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct RANGE {
+	public struct Range {
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Low;
+		public ushort Low;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 High;
+		public ushort High;
 
 		public byte[] Bytes {
 			get {
@@ -80,17 +57,17 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct Connection {
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Source;
+		public ushort Source;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Control;
+		public ushort Control;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Destination;
+		public ushort Destination;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Transform;
+		public ushort Transform;
 		[MarshalAs(UnmanagedType.I4, SizeConst = 4)]
-		public Int32 Scale;
+		public int Scale;
 
-		public enum SRC_TYPE : UInt16 {
+		public enum SRC_TYPE : ushort {
 			// MODULATOR SOURCES
 			NONE = 0x0000,
 			LFO = 0x0001,
@@ -117,7 +94,7 @@ namespace DLS {
 			RPN2 = 0x0102
 		}
 
-		public enum DST_TYPE : UInt16 {
+		public enum DST_TYPE : ushort {
 			// GENERIC DESTINATIONS
 			NONE = 0x0000,
 			ATTENUATION = 0x0001,
@@ -166,7 +143,7 @@ namespace DLS {
 			FILTER_Q = 0x0501
 		}
 
-		public enum TRN_TYPE : UInt16 {
+		public enum TRN_TYPE : ushort {
 			NONE = 0x0000,
 			CONCAVE = 0x0001,
 			CONVEX = 0x0002,
@@ -212,10 +189,10 @@ namespace DLS {
 				switch ((DST_TYPE)Destination) {
 				case DST_TYPE.ATTENUATION:
 				case DST_TYPE.FILTER_Q:
-					Scale = (Int32)(Math.Log10(value) * 200 * 65536);
+					Scale = (int)(Math.Log10(value) * 200 * 65536);
 					break;
 				case DST_TYPE.PAN:
-					Scale = (Int32)((value + 0.5) * 655360);
+					Scale = (int)((value + 0.5) * 655360);
 					break;
 				case DST_TYPE.LFO_START_DELAY:
 				case DST_TYPE.VIB_START_DELAY:
@@ -230,17 +207,17 @@ namespace DLS {
 				case DST_TYPE.EG2_RELEASE_TIME:
 				case DST_TYPE.EG2_DELAY_TIME:
 				case DST_TYPE.EG2_HOLD_TIME:
-					Scale = (Int32)(Math.Log(value, 2.0) * 1200 * 65536);
+					Scale = (int)(Math.Log(value, 2.0) * 1200 * 65536);
 					break;
 				case DST_TYPE.EG1_SUSTAIN_LEVEL:
 				case DST_TYPE.EG2_SUSTAIN_LEVEL:
-					Scale = (Int32)(value * 655360);
+					Scale = (int)(value * 655360);
 					break;
 				case DST_TYPE.PITCH:
 				case DST_TYPE.LFO_FREQUENCY:
 				case DST_TYPE.VIB_FREQUENCY:
 				case DST_TYPE.FILTER_CUTOFF:
-					Scale = (Int32)(((Math.Log(value / 440, 2.0) * 1200) + 6900) * 65536);
+					Scale = (int)(((Math.Log(value / 440, 2.0) * 1200) + 6900) * 65536);
 					break;
 				default:
 					Scale = 0;
@@ -266,13 +243,13 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct WaveLoop {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Size;
+		public uint Size;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Type;
+		public uint Type;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Start;
+		public uint Start;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Length;
+		public uint Length;
 
 		public byte[] Bytes {
 			get {
@@ -292,7 +269,7 @@ namespace DLS {
 		public TYPE Type;
 
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Size;
+		public uint Size;
 
 		public enum TYPE : uint {
 			COLH = 0x686C6F63,
@@ -318,7 +295,7 @@ namespace DLS {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
 		public TYPE Type;
 
-		public enum TYPE : UInt32 {
+		public enum TYPE : uint {
 			LINS = 0x736E696C,
 			WVPL = 0x6C707677,
 			INFO = 0x4F464E49,
@@ -335,9 +312,9 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_VERS {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 MSB;
+		public uint MSB;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 LSB;
+		public uint LSB;
 
 		public byte[] Bytes {
 			get {
@@ -350,18 +327,9 @@ namespace DLS {
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct CK_DLID {
-		DLSID DlsId;
-
-		public byte[] Bytes {
-			get { return DlsId.Bytes; }
-		}
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_COLH {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Instruments;
+		public uint Instruments;
 
 		public byte[] Bytes {
 			get {
@@ -375,8 +343,8 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_INSH {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Regions;
-		public MIDILOCALE Locale;
+		public uint Regions;
+		public MidiLocale Locale;
 
 		public byte[] Bytes {
 			get {
@@ -390,14 +358,14 @@ namespace DLS {
 
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_RGNH {
-		public RANGE Key;
-		public RANGE Velocity;
+		public Range Key;
+		public Range Velocity;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Options;
+		public ushort Options;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 KeyGroup;
+		public ushort KeyGroup;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Layer;
+		public ushort Layer;
 
 		public byte[] Bytes {
 			get {
@@ -417,9 +385,9 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_ART1 {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Size;
+		public uint Size;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Count;
+		public uint Count;
 
 		public byte[] Bytes {
 			get {
@@ -434,13 +402,13 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_WLNK {
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Options;
+		public ushort Options;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 PhaseGroup;
+		public ushort PhaseGroup;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Channel;
+		public uint Channel;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 TableIndex;
+		public uint TableIndex;
 
 		public byte[] Bytes {
 			get {
@@ -457,24 +425,24 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_WSMP {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Size;
+		public uint Size;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 UnityNote;
+		public ushort UnityNote;
 		[MarshalAs(UnmanagedType.I2, SizeConst = 2)]
-		public Int16 FineTune;
+		public short FineTune;
 		[MarshalAs(UnmanagedType.I4, SizeConst = 4)]
-		public Int32 GainInt;
+		public int GainInt;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Options;
+		public uint Options;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 LoopCount;
+		public uint LoopCount;
 
 		public double Gain {
 			get {
 				return Math.Pow(10.0, GainInt / (200 * 65536.0));
 			}
 			set {
-				GainInt = (Int32)(Math.Log10(value) * 200 * 65536);
+				GainInt = (int)(Math.Log10(value) * 200 * 65536);
 			}
 		}
 
@@ -495,9 +463,9 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_PTBL {
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Size;
+		public uint Size;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Count;
+		public uint Count;
 
 		public byte[] Bytes {
 			get {
@@ -512,17 +480,17 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct CK_FMT {
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Tag;
+		public ushort Tag;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Channels;
+		public ushort Channels;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 SampleRate;
+		public uint SampleRate;
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 BytesPerSec;
+		public uint BytesPerSec;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 BlockAlign;
+		public ushort BlockAlign;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public UInt16 Bits;
+		public ushort Bits;
 
 		public byte[] Bytes {
 			get {
@@ -544,9 +512,9 @@ namespace DLS {
 		public TYPE Type;
 
 		[MarshalAs(UnmanagedType.U4, SizeConst = 4)]
-		public UInt32 Size;
+		public uint Size;
 
-		public enum TYPE : UInt32 {
+		public enum TYPE : uint {
 			IARL = 0x4C524149, // ArchivalLocation
 			IART = 0x54524149, // Artists
 			ICMS = 0x534D4349, // Commissioned

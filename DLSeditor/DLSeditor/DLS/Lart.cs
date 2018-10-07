@@ -12,14 +12,14 @@ namespace DLS {
 
 		public LART(byte* ptr, byte* endPtr) : base(ptr, endPtr) { }
 
-		protected override unsafe void LoadChunk(Byte* ptr) {
+		protected override unsafe void LoadChunk(byte* ptr) {
 			switch (mChunk.Type) {
 			case CK_CHUNK.TYPE.ART1:
 			case CK_CHUNK.TYPE.ART2:
 				ART = new ART(ptr);
 				break;
 			default:
-				throw new Exception(string.Format("Unknown ChunkType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((UInt32)mChunk.Type))));
+				throw new Exception(string.Format("Unknown ChunkType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((uint)mChunk.Type))));
 			}
 		}
 

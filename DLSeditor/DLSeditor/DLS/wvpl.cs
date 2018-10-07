@@ -181,13 +181,13 @@ namespace DLS {
 			}
 
 			// RIFF
-			bw.Write((UInt32)0x46464952);
-			bw.Write((UInt32)0);
-			bw.Write((UInt32)0x45564157);
+			bw.Write((uint)0x46464952);
+			bw.Write((uint)0);
+			bw.Write((uint)0x45564157);
 
 			// fmt
-			bw.Write((UInt32)CK_CHUNK.TYPE.FMT_);
-			bw.Write((UInt32)16);
+			bw.Write((uint)CK_CHUNK.TYPE.FMT_);
+			bw.Write((uint)16);
 			bw.Write(Format.Tag);
 			bw.Write(Format.Channels);
 			bw.Write(Format.SampleRate);
@@ -196,12 +196,12 @@ namespace DLS {
 			bw.Write(Format.Bits);
 
 			// data
-			bw.Write((UInt32)CK_CHUNK.TYPE.DATA);
-			bw.Write((UInt32)msw.Length);
+			bw.Write((uint)CK_CHUNK.TYPE.DATA);
+			bw.Write((uint)msw.Length);
 			bw.Write(msw.ToArray());
 
 			fs.Seek(4, SeekOrigin.Begin);
-			bw.Write((UInt32)(fs.Length - 8));
+			bw.Write((uint)(fs.Length - 8));
 
 			bw.Dispose();
 			fs.Close();

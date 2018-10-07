@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
 
-namespace DLSeditor
-{
-	public class WavePlayback : WaveOutLib
-	{
+namespace DLSeditor {
+	public class WavePlayback : WaveOutLib {
 		private short[] mWave;
 		private uint mLoopBegin;
 		private uint mLoopEnd;
@@ -13,21 +11,12 @@ namespace DLSeditor
 
 		public Spectrum Spectrum;
 
-		public WavePlayback()
-		{
+		public WavePlayback() {
 			mWave = new short[1];
 			Stop();
 		}
 
-		//public int Position
-		//{
-		//	get {
-		//		return (int)mTime;
-		//	}
-		//}
-
-		public void SetValue(DLS.WAVE wave)
-		{
+		public void SetValue(DLS.WAVE wave) {
 			mWave = new short[8 * wave.Data.Length / wave.Format.Bits];
 			mLoopBegin = 0;
 			mLoopEnd = (uint)mWave.Length;
@@ -58,8 +47,7 @@ namespace DLSeditor
 			mTime = 0.0;
 		}
 
-		public void Stop()
-		{
+		public void Stop() {
 			mWave = new short[1];
 			mLoopBegin = 0;
 			mLoopEnd = 0;
@@ -68,14 +56,13 @@ namespace DLSeditor
 			Spectrum = new Spectrum((uint)SampleRate, 27.5, 12, 112);
 		}
 
-		protected override void SetData()
-		{
+		protected override void SetData() {
 			for (var i = 0; i < BufferSize; i += 2) {
 				var wave = ((int)mTime < mWave.Length) ? (mWave[(int)mTime] / 32768.0) : 0.0;
 				WaveBuffer[i] = (short)(32767 * wave);
 				WaveBuffer[i + 1] = (short)(32767 * wave);
 
-				for (UInt32 b = 0; b < Spectrum.Banks; ++b) {
+				for (uint b = 0; b < Spectrum.Banks; ++b) {
 					Spectrum.Filtering(b, wave);
 				}
 

@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 
 namespace DLSeditor
@@ -14,11 +13,15 @@ namespace DLSeditor
 		private WavePlayback mWaveOut;
 
 		private byte[][] mSpectrogram;
-		private UInt32[] mColors;
+		private uint[] mColors;
 		private short[] mWave;
 		private double mScale;
 		private double mTimeDiv;
 		private double mDelta;
+		private Point mCursolPos;
+		private bool onLoopDrag;
+		private int mLoopBegin;
+		private int mLoopEnd;
 
 		public WaveInfoForm(WavePlayback waveOut, DLS.DLS dls, int index)
 		{
@@ -28,22 +31,7 @@ namespace DLSeditor
 			mFile = dls;
 			mIndex = index;
 
-			chart1.BackColor = Color.Black;
-			chart1.ChartAreas[0].BackColor = Color.Black;
-			chart1.ChartAreas[0].Axes[0].LabelStyle.Interval = 12;
-			chart1.ChartAreas[0].Axes[0].LabelStyle.Enabled = false;
-			chart1.ChartAreas[0].Axes[1].LabelStyle.Enabled = false;
-			chart1.ChartAreas[0].AxisX.LineColor = Color.FromArgb(255, 0, 0);
-			chart1.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.FromArgb(128, 0, 0);
-			chart1.ChartAreas[0].AxisX.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
-			chart1.ChartAreas[0].AxisX.MajorGrid.Interval = 12;
-			chart1.ChartAreas[0].AxisY.LineColor = Color.FromArgb(255, 0, 0);
-			chart1.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.FromArgb(128, 0, 0);
-			chart1.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
-			chart1.ChartAreas[0].AxisY.MajorGrid.Interval = 0.125;
-			chart1.Legends.Clear();
-
-			mColors = new UInt32[256];
+			mColors = new uint[256];
 			var dColor = 1280.0 / mColors.Length;
 			var vColor = 0.0;
 			for (int i = 0; i < mColors.Length; ++i) {
@@ -70,23 +58,19 @@ namespace DLSeditor
 					g = 255 - (int)(vColor - 1024);
 					r = 255;
 				}
-				mColors[i] = (UInt32)((r << 16) | (g << 8) | b);
+				mColors[i] = (uint)((r << 16) | (g << 8) | b);
 				vColor += dColor;
 			}
 
 			timer1.Interval = 20;
 			timer1.Enabled = true;
 			timer1.Start();
-
-			timer2.Interval = 100;
-			timer2.Enabled = true;
-			timer2.Start();
 		}
 
 		private void WaveInfoForm_Load(object sender, EventArgs e)
 		{
 			InitWave();
-			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 16.0);
+			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
 		}
 
 		private void btnPlay_Click(object sender, EventArgs e)
@@ -113,6 +97,16 @@ namespace DLSeditor
 			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
 		}
 
+		private void picWave_MouseUp(object sender, MouseEventArgs e) {
+			if (onLoopDrag) {
+				onLoopDrag = false;
+			}
+		}
+
+		private void picWave_MouseMove(object sender, MouseEventArgs e) {
+			mCursolPos = picWave.PointToClient(Cursor.Position);
+		}
+
 		private void timer1_Tick(object sender, EventArgs e)
 		{
 			hsbTime.Width = Width - hsbTime.Left - 24;
@@ -120,27 +114,6 @@ namespace DLSeditor
 			picSpectrum.Width = Width - picSpectrum.Left - 24;
 			DrawWave();
 			DrawSpec();
-		}
-
-		private void timer2_Tick(object sender, EventArgs e)
-		{
-			Series t = new Series();
-			t.Label = "";
-			t.ChartType = SeriesChartType.Line;
-			t.Points.AddXY(mWaveOut.Spectrum.Banks, 0.95);
-
-			Series s = new Series("amp");
-			s.Label = "";
-			s.ChartType = SeriesChartType.Spline;
-			s.Color = Color.FromArgb(0, 255, 0);
-			for (int i = 0; i < mWaveOut.Spectrum.Banks; i++) {
-				var temp = mWaveOut.Spectrum.Level[i] / mWaveOut.Spectrum.Max;
-				s.Points.AddXY(i, temp);
-			}
-
-			chart1.Series.Clear();
-			chart1.Series.Add(t);
-			chart1.Series.Add(s);
 		}
 
 		private void InitWave()
@@ -153,7 +126,7 @@ namespace DLSeditor
 			var ms = new MemoryStream(wave.Data);
 			var br = new BinaryReader(ms);
 			var samples = 8 * wave.Data.Length / wave.Format.Bits;
-			var packSize = 128;
+			var packSize = 32;
 			samples += packSize - (samples % packSize);
 
 			mWave = new short[samples];
@@ -180,7 +153,7 @@ namespace DLSeditor
 			mTimeDiv = 1.0 / mDelta / packSize;
 			mSpectrogram = new byte[(int)(mWave.Length * mTimeDiv)][];
 
-			var sp = new Spectrum(44100, 27.5, 16, 132);
+			var sp = new Spectrum(wave.Format.SampleRate, 27.5, 12, 112);
 			var time = 0.0;
 			for (var s = 0; s < mSpectrogram.Length; ++s) {
 				for (var i = 0; i < packSize && time < mWave.Length; ++i) {
@@ -210,19 +183,31 @@ namespace DLSeditor
 			var amp = bmp.Height - 1;
 
 			var green = new Pen(Color.FromArgb(0, 168, 0), 1.0f);
-			var blue = new Pen(Color.FromArgb(0, 0, 255), 1.0f);
+
+			var begin = hsbTime.Value;
+			var end = hsbTime.Value + bmp.Width / mScale + 1;
 
 			var wave = mFile.WavePool.List[mIndex];
-			var loopBegin = -1;
-			var loopEnd = -1;
+
+			//
 			if (0 < wave.Sampler.LoopCount) {
-				loopBegin = (int)wave.Loops[0].Start;
-				loopEnd = loopBegin + (int)wave.Loops[0].Length - 1;
+				var loopBegin = (float)(mScale * (wave.Loops[0].Start - begin));
+				var loopLength = (float)(mScale * wave.Loops[0].Length);
+				var loopEnd = loopBegin + loopLength - 1;
+				gM.FillRectangle(Brushes.WhiteSmoke, loopBegin, 0, loopLength, bmp.Height);
+
+				if (!onLoopDrag && Math.Abs(mCursolPos.X - loopBegin) <= 4) {
+					Cursor = Cursors.SizeWE;
+				}
+				else if (!onLoopDrag && Math.Abs(mCursolPos.X - loopEnd) <= 4) {
+					Cursor = Cursors.SizeWE;
+				}
+				else {
+					Cursor = Cursors.Default;
+				}
 			}
 
 			//
-			var begin = hsbTime.Value;
-			var end = hsbTime.Value + bmp.Width / mScale + 1;
 			for (int t1 = begin, t2 = begin + 1; t2 < end; ++t1, ++t2) {
 				if (t1 < 0) {
 					continue;
@@ -235,13 +220,7 @@ namespace DLSeditor
 				var y2 = (float)(amp * (0.5 - 0.5 * mWave[t2] / 32768.0));
 				var x1 = (float)(mScale * (t1 - begin));
 				var x2 = (float)(mScale * (t2 - begin));
-
-				if (loopBegin <= t1 && t2 <= loopEnd) {
-					gM.DrawLine(blue, x1, y1, x2, y2);
-				}
-				else {
-					gM.DrawLine(green, x1, y1, x2, y2);
-				}
+				gM.DrawLine(green, x1, y1, x2, y2);
 			}
 
 			//
@@ -264,7 +243,7 @@ namespace DLSeditor
 				ImageLockMode.WriteOnly,
 				bmp.PixelFormat
 			);
-			var pix = (UInt32*)bmpData.Scan0.ToPointer();
+			var pix = (uint*)bmpData.Scan0.ToPointer();
 
 			int y, x;
 			double begin = hsbTime.Value * mTimeDiv;
@@ -272,7 +251,7 @@ namespace DLSeditor
 			for (y = bmp.Height - 1; 0 <= y; --y) {
 				for (x = 0; x < bmp.Width; ++x) {
 					var sx = (int)(begin + scale * x);
-					if (sx < mSpectrogram.Length) {
+					if (sx < mSpectrogram.Length && y < mSpectrogram[sx].Length) {
 						*pix = mColors[mSpectrogram[sx][y]];
 					}
 					++pix;
