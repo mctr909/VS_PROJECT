@@ -254,8 +254,8 @@ namespace DLS {
 		public byte[] Bytes {
 			get {
 				var buff = new byte[16];
-				BitConverter.GetBytes(Size).CopyTo(buff, 0);
-				BitConverter.GetBytes(Type).CopyTo(buff, 4);
+				BitConverter.GetBytes(16).CopyTo(buff, 0);
+				BitConverter.GetBytes(0).CopyTo(buff, 4);
 				BitConverter.GetBytes(Start).CopyTo(buff, 8);
 				BitConverter.GetBytes(Length).CopyTo(buff, 12);
 				return buff;

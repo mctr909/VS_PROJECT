@@ -2,10 +2,10 @@
 using System.IO;
 
 namespace DLSeditor {
-	public class WavePlayback : WaveOutLib {
+	unsafe public class WavePlayback : WaveOutLib {
+		public int mLoopBegin;
+		public int mLoopEnd;
 		private short[] mWave;
-		private uint mLoopBegin;
-		private uint mLoopEnd;
 		private double mDelta;
 		private double mTime;
 
@@ -18,8 +18,6 @@ namespace DLSeditor {
 
 		public void SetValue(DLS.WAVE wave) {
 			mWave = new short[8 * wave.Data.Length / wave.Format.Bits];
-			mLoopBegin = 0;
-			mLoopEnd = (uint)mWave.Length;
 
 			var br = new BinaryReader(new MemoryStream(wave.Data));
 
@@ -36,11 +34,6 @@ namespace DLSeditor {
 				break;
 			default:
 				return;
-			}
-
-			if (0 < wave.Sampler.LoopCount) {
-				mLoopBegin = wave.Loops[0].Start;
-				mLoopEnd = mLoopBegin + wave.Loops[0].Length;
 			}
 
 			mDelta = (double)wave.Format.SampleRate / SampleRate;

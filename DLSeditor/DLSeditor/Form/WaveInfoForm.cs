@@ -4,10 +4,8 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.IO;
 
-namespace DLSeditor
-{
-	public partial class WaveInfoForm : Form
-	{
+namespace DLSeditor {
+	unsafe public partial class WaveInfoForm : Form {
 		private DLS.DLS mFile;
 		private int mIndex;
 		private WavePlayback mWaveOut;
@@ -16,15 +14,17 @@ namespace DLSeditor
 		private uint[] mColors;
 		private short[] mWave;
 		private double mScale;
+		private double mScaleLoop;
 		private double mTimeDiv;
 		private double mDelta;
 		private Point mCursolPos;
-		private bool onLoopDrag;
-		private int mLoopBegin;
-		private int mLoopEnd;
+		private bool mOnWaveDisp;
+		private bool onDragWave;
+		private bool onDragLoopBegin;
+		private bool onDragLoopEnd;
+		private DLS.WaveLoop mLoop;
 
-		public WaveInfoForm(WavePlayback waveOut, DLS.DLS dls, int index)
-		{
+		public WaveInfoForm(WavePlayback waveOut, DLS.DLS dls, int index) {
 			InitializeComponent();
 			StartPosition = FormStartPosition.CenterParent;
 			mWaveOut = waveOut;
@@ -62,20 +62,27 @@ namespace DLSeditor
 				vColor += dColor;
 			}
 
-			timer1.Interval = 20;
+			timer1.Interval = 30;
 			timer1.Enabled = true;
 			timer1.Start();
 		}
 
-		private void WaveInfoForm_Load(object sender, EventArgs e)
-		{
+		private void WaveInfoForm_Load(object sender, EventArgs e) {
 			InitWave();
 			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
+			mScaleLoop = Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
 		}
 
-		private void btnPlay_Click(object sender, EventArgs e)
-		{
+		private void btnPlay_Click(object sender, EventArgs e) {
 			if ("再生" == btnPlay.Text) {
+				if (0 < mFile.WavePool.List[mIndex].Loops.Count) {
+					mWaveOut.mLoopBegin = (int)mLoop.Start;
+					mWaveOut.mLoopEnd = mWaveOut.mLoopBegin + (int)mLoop.Length;
+				}
+				else {
+					mWaveOut.mLoopBegin = 0;
+					mWaveOut.mLoopEnd = mWave.Length;
+				}
 				mWaveOut.SetValue(mFile.WavePool.List[mIndex]);
 				btnPlay.Text = "停止";
 			}
@@ -85,39 +92,81 @@ namespace DLSeditor
 			}
 		}
 
-		private void WaveInfoForm_FormClosing(object sender, FormClosingEventArgs e)
-		{
+		private void btnUpdate_Click(object sender, EventArgs e) {
+			if (0 < mFile.WavePool.List[mIndex].Sampler.LoopCount) {
+				mFile.WavePool.List[mIndex].Loops[0] = mLoop;
+			}
+		}
+
+		private void WaveInfoForm_FormClosing(object sender, FormClosingEventArgs e) {
 			if (null != mWaveOut) {
 				mWaveOut.Stop();
 			}
 		}
 
-		private void numScale_ValueChanged(object sender, EventArgs e)
-		{
+		private void numScale_ValueChanged(object sender, EventArgs e) {
 			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
 		}
 
+		private void numScaleLoop_ValueChanged(object sender, EventArgs e) {
+			mScaleLoop = Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
+		}
+
+		private void picWave_MouseDown(object sender, MouseEventArgs e) {
+			onDragWave = true;
+		}
+
 		private void picWave_MouseUp(object sender, MouseEventArgs e) {
-			if (onLoopDrag) {
-				onLoopDrag = false;
-			}
+			onDragWave = false;
+			onDragLoopBegin = false;
+			onDragLoopEnd = false;
 		}
 
 		private void picWave_MouseMove(object sender, MouseEventArgs e) {
 			mCursolPos = picWave.PointToClient(Cursor.Position);
+			var pos = hsbTime.Value + mCursolPos.X / mScale;
+			if(pos < 0) {
+				pos = 0;
+			}
+
+			if (onDragLoopBegin) {
+				mLoop.Start = (uint)pos;
+			}
+
+			if (onDragLoopEnd) {
+				if ((pos - 16) < mLoop.Start) {
+					mLoop.Length = 16;
+				}
+				else {
+					mLoop.Length = (uint)pos - mLoop.Start;
+				}
+			}
+
+			mWaveOut.mLoopBegin = (int)mLoop.Start;
+			mWaveOut.mLoopEnd = (int)mLoop.Start + (int)mLoop.Length;
 		}
 
-		private void timer1_Tick(object sender, EventArgs e)
-		{
-			hsbTime.Width = Width - hsbTime.Left - 24;
-			picWave.Width = Width - picWave.Left - 24;
-			picSpectrum.Width = Width - picSpectrum.Left - 24;
-			DrawWave();
+		private void picWave_MouseEnter(object sender, EventArgs e) {
+			mOnWaveDisp = true;
+		}
+
+		private void picWave_MouseLeave(object sender, EventArgs e) {
+			mOnWaveDisp = false;
+		}
+
+		private void timer1_Tick(object sender, EventArgs e) {
+			grbMain.Width = Width - grbMain.Left - 22;
+			grbLoop.Width = Width - grbLoop.Left - 22;
+			picSpectrum.Width = Width - picSpectrum.Left - grbMain.Left - 26;
+			picWave.Width = Width - picWave.Left - grbMain.Left - 26;
+			hsbTime.Width = Width - hsbTime.Left - grbMain.Left - 26;
+			picLoop.Width = Width - picWave.Left - grbLoop.Left - 26;
 			DrawSpec();
+			DrawWave();
+			DrawLoop();
 		}
 
-		private void InitWave()
-		{
+		private void InitWave() {
 			var wave = mFile.WavePool.List[mIndex];
 			if (null != wave.Text && !string.IsNullOrWhiteSpace(wave.Text.Name)) {
 				Text = wave.Text.Name;
@@ -173,12 +222,17 @@ namespace DLSeditor
 					mSpectrogram[s][b] = (byte)(1.0 < lv ? amp : (amp * lv));
 				}
 			}
+
+			if (0 < wave.Loops.Count) {
+				var loop = wave.Loops[0];
+				mLoop.Start = loop.Start;
+				mLoop.Length = loop.Length;
+			}
 		}
 
-		private void DrawWave()
-		{
+		private void DrawWave() {
 			var bmp = new Bitmap(picWave.Width, picWave.Height, PixelFormat.Format16bppRgb555);
-			var gM = Graphics.FromImage(bmp);
+			var graph = Graphics.FromImage(bmp);
 
 			var amp = bmp.Height - 1;
 
@@ -191,16 +245,22 @@ namespace DLSeditor
 
 			//
 			if (0 < wave.Sampler.LoopCount) {
-				var loopBegin = (float)(mScale * (wave.Loops[0].Start - begin));
-				var loopLength = (float)(mScale * wave.Loops[0].Length);
-				var loopEnd = loopBegin + loopLength - 1;
-				gM.FillRectangle(Brushes.WhiteSmoke, loopBegin, 0, loopLength, bmp.Height);
+				var loopBegin = (float)(mScale * (mLoop.Start - begin));
+				var loopLength = (float)(mScale * mLoop.Length);
+				var loopEnd = loopBegin + loopLength;
+				graph.FillRectangle(Brushes.WhiteSmoke, loopBegin, 0, loopLength, bmp.Height);
 
-				if (!onLoopDrag && Math.Abs(mCursolPos.X - loopBegin) <= 4) {
+				if (mOnWaveDisp && Math.Abs(mCursolPos.X - loopBegin) <= 7) {
 					Cursor = Cursors.SizeWE;
+					if(onDragWave && !onDragLoopEnd) {
+						onDragLoopBegin = true;
+					}
 				}
-				else if (!onLoopDrag && Math.Abs(mCursolPos.X - loopEnd) <= 4) {
+				else if (mOnWaveDisp && Math.Abs(mCursolPos.X - loopEnd) <= 7) {
 					Cursor = Cursors.SizeWE;
+					if (onDragWave && !onDragLoopBegin) {
+						onDragLoopEnd = true;
+					}
 				}
 				else {
 					Cursor = Cursors.Default;
@@ -220,11 +280,11 @@ namespace DLSeditor
 				var y2 = (float)(amp * (0.5 - 0.5 * mWave[t2] / 32768.0));
 				var x1 = (float)(mScale * (t1 - begin));
 				var x2 = (float)(mScale * (t2 - begin));
-				gM.DrawLine(green, x1, y1, x2, y2);
+				graph.DrawLine(green, x1, y1, x2, y2);
 			}
 
 			//
-			gM.DrawLine(Pens.Red, 0, picWave.Height / 2.0f - 1, picWave.Width - 1, picWave.Height / 2.0f - 1);
+			graph.DrawLine(Pens.Red, 0, picWave.Height / 2.0f - 1, picWave.Width - 1, picWave.Height / 2.0f - 1);
 
 			if (null != picWave.Image) {
 				picWave.Image.Dispose();
@@ -232,11 +292,10 @@ namespace DLSeditor
 			}
 			picWave.BackColor = Color.Black;
 			picWave.Image = bmp;
-			gM.Dispose();
+			graph.Dispose();
 		}
 
-		unsafe private void DrawSpec()
-		{
+		private void DrawSpec() {
 			var bmp = new Bitmap(picSpectrum.Width, picSpectrum.Height, PixelFormat.Format32bppRgb);
 			BitmapData bmpData = bmp.LockBits(
 				new Rectangle(0, 0, bmp.Width, bmp.Height),
@@ -265,6 +324,53 @@ namespace DLSeditor
 			}
 			picSpectrum.BackColor = Color.Black;
 			picSpectrum.Image = bmp;
+		}
+
+		private void DrawLoop() {
+			var bmp = new Bitmap(picLoop.Width, picLoop.Height, PixelFormat.Format16bppRgb555);
+			var g = Graphics.FromImage(bmp);
+
+			var amp = bmp.Height - 1;
+			var halfWidth = (int)(picLoop.Width / 2.0f - 1);
+
+			var wave = mFile.WavePool.List[mIndex];
+
+			var loopBegin = (int)mLoop.Start;
+			var loopEnd = (int)mLoop.Start + (int)mLoop.Length;
+			if(mWave.Length <= loopEnd) {
+				loopEnd = mWave.Length - 1;
+			}
+
+			var green = new Pen(Color.FromArgb(0, 168, 0), 1.0f);
+
+			g.DrawLine(Pens.Red, 0, picLoop.Height / 2.0f - 1, picLoop.Width - 1, picLoop.Height / 2.0f - 1);
+			g.DrawLine(Pens.Red, halfWidth, 0, halfWidth, picLoop.Height);
+
+			//
+			for (int t1 = loopBegin, t2 = loopBegin + 1, px1 = 0, px2 = 1; t2 <= loopEnd; ++t1, ++t2, ++px1, ++px2) {
+				var y1 = (float)(amp * (0.5 - 0.5 * mWave[t1] / 32768.0));
+				var y2 = (float)(amp * (0.5 - 0.5 * mWave[t2] / 32768.0));
+				var x1 = (float)(halfWidth + mScaleLoop * px1);
+				var x2 = (float)(halfWidth + mScaleLoop * px2);
+				g.DrawLine(green, x1, y1, x2, y2);
+			}
+
+			//
+			for (int t1 = loopEnd, t2 = loopEnd - 1, px1 = 0, px2 = 1; loopBegin <= t2; --t1, --t2, ++px1, ++px2) {
+				var y1 = (float)(amp * (0.5 - 0.5 * mWave[t1] / 32768.0));
+				var y2 = (float)(amp * (0.5 - 0.5 * mWave[t2] / 32768.0));
+				var x1 = (float)(halfWidth - mScaleLoop * px1);
+				var x2 = (float)(halfWidth - mScaleLoop * px2);
+				g.DrawLine(green, x1, y1, x2, y2);
+			}
+
+			if (null != picLoop.Image) {
+				picLoop.Image.Dispose();
+				picLoop.Image = null;
+			}
+			picLoop.BackColor = Color.Black;
+			picLoop.Image = bmp;
+			g.Dispose();
 		}
 	}
 }
