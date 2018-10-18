@@ -5,14 +5,17 @@ namespace DLSeditor {
 	unsafe public class WavePlayback : WaveOutLib {
 		public int mLoopBegin;
 		public int mLoopEnd;
+		public double mPitch;
+
 		private short[] mWave;
 		private double mDelta;
 		private double mTime;
-
-		public Spectrum Spectrum;
+		private int mFftIndex;
+		private FFT mFft;
 
 		public WavePlayback() {
 			mWave = new short[1];
+			mFft = new FFT(8192, SampleRate);
 			Stop();
 		}
 
@@ -46,7 +49,6 @@ namespace DLSeditor {
 			mLoopEnd = 0;
 			mDelta = 0.0;
 			mTime = 0.0;
-			Spectrum = new Spectrum((uint)SampleRate, 27.5, 12, 112);
 		}
 
 		protected override void SetData() {
@@ -55,8 +57,12 @@ namespace DLSeditor {
 				WaveBuffer[i] = (short)(32767 * wave);
 				WaveBuffer[i + 1] = (short)(32767 * wave);
 
-				for (uint b = 0; b < Spectrum.Banks; ++b) {
-					Spectrum.Filtering(b, wave);
+				mFft.Re[mFftIndex] = wave;
+				mFft.Im[mFftIndex] = 0.0;
+				++mFftIndex;
+				if(8192 <= mFftIndex) {
+					mFftIndex = 0;
+					mPitch = mFft.Pitch();
 				}
 
 				mTime += mDelta;
@@ -64,8 +70,6 @@ namespace DLSeditor {
 					mTime = mLoopBegin + mTime - mLoopEnd;
 				}
 			}
-
-			Spectrum.SetLevel();
 		}
 	}
 }

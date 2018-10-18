@@ -106,10 +106,23 @@ namespace DLSeditor {
 		}
 
 		private void tsbAddWave_Click(object sender, EventArgs e) {
+			openFileDialog1.Filter = "wavファイル(*.wav)|*.wav";
+			openFileDialog1.ShowDialog();
+			var filePath = openFileDialog1.FileName;
+			if(!File.Exists(filePath)) {
+				return;
+			}
 
 		}
 
 		private void tsbDeleteWave_Click(object sender, EventArgs e) {
+			foreach (var inst in mDLS.Instruments.List.Values) {
+				foreach (var rgn in inst.Regions.List.Values) {
+					if (lstWave.SelectedIndex == rgn.WaveLink.TableIndex) {
+						return;
+					}
+				}
+			}
 
 		}
 

@@ -23,6 +23,12 @@ namespace DLSeditor {
 		private bool onDragLoopBegin;
 		private bool onDragLoopEnd;
 		private DLS.WaveLoop mLoop;
+		private int mDetectNote;
+		private int mDetectTune;
+
+		private readonly string[] NoteName = new string[] {
+			"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"
+		};
 
 		public WaveInfoForm(WavePlayback waveOut, DLS.DLS dls, int index) {
 			InitializeComponent();
@@ -62,7 +68,11 @@ namespace DLSeditor {
 				vColor += dColor;
 			}
 
-			timer1.Interval = 30;
+			lblPitch.Text = "";
+			mDetectNote = -1;
+			mDetectTune = 0;
+
+			timer1.Interval = 100;
 			timer1.Enabled = true;
 			timer1.Start();
 		}
@@ -98,6 +108,15 @@ namespace DLSeditor {
 			}
 		}
 
+		private void btnUpdateTone_Click(object sender, EventArgs e) {
+			if (0 <= mDetectNote) {
+				numUnityNote.Value = mDetectNote;
+				numFineTune.Value = mDetectTune;
+				mFile.WavePool.List[mIndex].Sampler.UnityNote = (ushort)mDetectNote;
+				mFile.WavePool.List[mIndex].Sampler.FineTune = (short)mDetectTune;
+			}
+		}
+
 		private void WaveInfoForm_FormClosing(object sender, FormClosingEventArgs e) {
 			if (null != mWaveOut) {
 				mWaveOut.Stop();
@@ -110,6 +129,12 @@ namespace DLSeditor {
 
 		private void numScaleLoop_ValueChanged(object sender, EventArgs e) {
 			mScaleLoop = Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
+		}
+
+		private void numUnityNote_ValueChanged(object sender, EventArgs e) {
+			var oct = (int)numUnityNote.Value / 12 - 2;
+			var note = (int)numUnityNote.Value % 12;
+			lblUnityNote.Text = string.Format("{0}{1}", NoteName[note], oct);
 		}
 
 		private void picWave_MouseDown(object sender, MouseEventArgs e) {
@@ -157,10 +182,25 @@ namespace DLSeditor {
 		private void timer1_Tick(object sender, EventArgs e) {
 			grbMain.Width = Width - grbMain.Left - 22;
 			grbLoop.Width = Width - grbLoop.Left - 22;
-			picSpectrum.Width = Width - picSpectrum.Left - grbMain.Left - 26;
-			picWave.Width = Width - picWave.Left - grbMain.Left - 26;
-			hsbTime.Width = Width - hsbTime.Left - grbMain.Left - 26;
-			picLoop.Width = Width - picWave.Left - grbLoop.Left - 26;
+
+			picSpectrum.Width = Width - (picSpectrum.Left + grbMain.Left) * 2 - 16;
+			picWave.Width = Width - (picWave.Left + grbMain.Left) * 2 - 16;
+			hsbTime.Width = Width - (hsbTime.Left + grbMain.Left) * 2 - 16;
+			picLoop.Width = Width - (picLoop.Left + grbLoop.Left) * 2 - 16;
+
+			if (0.0 < mWaveOut.mPitch) {
+				var x = 12.0 * Math.Log(mWaveOut.mPitch / 8.1757989, 2.0);
+				mDetectNote = (int)(x + 0.5);
+				mDetectTune = (int)((mDetectNote - x) * 100);
+
+				var oct = mDetectNote / 12;
+				var note = mDetectNote % 12;
+				if (note < 0) {
+					note += -(note / 12 - 1) * 12;
+				}
+				lblPitch.Text = string.Format("{0}{1}\n{2}cent", NoteName[note], oct - 2, mDetectTune);
+			}
+
 			DrawSpec();
 			DrawWave();
 			DrawLoop();
@@ -228,6 +268,9 @@ namespace DLSeditor {
 				mLoop.Start = loop.Start;
 				mLoop.Length = loop.Length;
 			}
+
+			numUnityNote.Value = wave.Sampler.UnityNote;
+			numFineTune.Value = wave.Sampler.FineTune;
 		}
 
 		private void DrawWave() {
@@ -337,7 +380,7 @@ namespace DLSeditor {
 
 			var loopBegin = (int)mLoop.Start;
 			var loopEnd = (int)mLoop.Start + (int)mLoop.Length;
-			if(mWave.Length <= loopEnd) {
+			if (mWave.Length <= loopEnd) {
 				loopEnd = mWave.Length - 1;
 			}
 
