@@ -117,6 +117,25 @@ namespace DLSeditor {
 			}
 		}
 
+		private void btnLoopCreate_Click(object sender, EventArgs e) {
+			if(0 < mFile.WavePool.List[mIndex].Sampler.LoopCount) {
+				mWaveOut.mLoopBegin = 0;
+				mWaveOut.mLoopEnd = mWave.Length;
+				mFile.WavePool.List[mIndex].Loops.Clear();
+				mFile.WavePool.List[mIndex].Sampler.LoopCount = 0;
+				btnLoopCreate.Text = "ループ作成";
+			}
+			else {
+				mLoop.Start = 0;
+				mLoop.Length = 32;
+				mWaveOut.mLoopBegin = (int)mLoop.Start;
+				mWaveOut.mLoopEnd = (int)mLoop.Start + (int)mLoop.Length;
+				mFile.WavePool.List[mIndex].Loops.Add(0, mLoop);
+				mFile.WavePool.List[mIndex].Sampler.LoopCount = 1;
+				btnLoopCreate.Text = "ループ削除";
+			}
+		}
+
 		private void WaveInfoForm_FormClosing(object sender, FormClosingEventArgs e) {
 			if (null != mWaveOut) {
 				mWaveOut.Stop();
@@ -267,6 +286,10 @@ namespace DLSeditor {
 				var loop = wave.Loops[0];
 				mLoop.Start = loop.Start;
 				mLoop.Length = loop.Length;
+				btnLoopCreate.Text = "ループ削除";
+			}
+			else {
+				btnLoopCreate.Text = "ループ作成";
 			}
 
 			numUnityNote.Value = wave.Sampler.UnityNote;

@@ -36,9 +36,9 @@
 			this.numScale = new System.Windows.Forms.NumericUpDown();
 			this.picLoop = new System.Windows.Forms.PictureBox();
 			this.grbMain = new System.Windows.Forms.GroupBox();
+			this.btnUpdate = new System.Windows.Forms.Button();
 			this.grbLoop = new System.Windows.Forms.GroupBox();
 			this.numScaleLoop = new System.Windows.Forms.NumericUpDown();
-			this.btnUpdate = new System.Windows.Forms.Button();
 			this.numUnityNote = new System.Windows.Forms.NumericUpDown();
 			this.numFineTune = new System.Windows.Forms.NumericUpDown();
 			this.lblUnityNote = new System.Windows.Forms.Label();
@@ -47,6 +47,7 @@
 			this.lblPitch = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.btnUpdateTone = new System.Windows.Forms.Button();
+			this.btnLoopCreate = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.picSpectrum)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picWave)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numScale)).BeginInit();
@@ -146,6 +147,7 @@
 			// grbMain
 			// 
 			this.grbMain.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.grbMain.Controls.Add(this.btnLoopCreate);
 			this.grbMain.Controls.Add(this.picSpectrum);
 			this.grbMain.Controls.Add(this.picWave);
 			this.grbMain.Controls.Add(this.numScale);
@@ -157,6 +159,17 @@
 			this.grbMain.TabIndex = 7;
 			this.grbMain.TabStop = false;
 			this.grbMain.Text = "ループ範囲選択";
+			// 
+			// btnUpdate
+			// 
+			this.btnUpdate.BackColor = System.Drawing.SystemColors.Control;
+			this.btnUpdate.Location = new System.Drawing.Point(358, 0);
+			this.btnUpdate.Name = "btnUpdate";
+			this.btnUpdate.Size = new System.Drawing.Size(199, 42);
+			this.btnUpdate.TabIndex = 10;
+			this.btnUpdate.Text = "ループ範囲反映";
+			this.btnUpdate.UseVisualStyleBackColor = true;
+			this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
 			// 
 			// grbLoop
 			// 
@@ -195,17 +208,6 @@
             0,
             0});
 			this.numScaleLoop.ValueChanged += new System.EventHandler(this.numScaleLoop_ValueChanged);
-			// 
-			// btnUpdate
-			// 
-			this.btnUpdate.BackColor = System.Drawing.SystemColors.Control;
-			this.btnUpdate.Location = new System.Drawing.Point(358, 0);
-			this.btnUpdate.Name = "btnUpdate";
-			this.btnUpdate.Size = new System.Drawing.Size(199, 42);
-			this.btnUpdate.TabIndex = 10;
-			this.btnUpdate.Text = "ループ範囲反映";
-			this.btnUpdate.UseVisualStyleBackColor = true;
-			this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
 			// 
 			// numUnityNote
 			// 
@@ -303,6 +305,17 @@
 			this.btnUpdateTone.UseVisualStyleBackColor = true;
 			this.btnUpdateTone.Click += new System.EventHandler(this.btnUpdateTone_Click);
 			// 
+			// btnLoopCreate
+			// 
+			this.btnLoopCreate.BackColor = System.Drawing.SystemColors.Control;
+			this.btnLoopCreate.Location = new System.Drawing.Point(563, 0);
+			this.btnLoopCreate.Name = "btnLoopCreate";
+			this.btnLoopCreate.Size = new System.Drawing.Size(161, 42);
+			this.btnLoopCreate.TabIndex = 11;
+			this.btnLoopCreate.Text = "ループ作成";
+			this.btnLoopCreate.UseVisualStyleBackColor = true;
+			this.btnLoopCreate.Click += new System.EventHandler(this.btnLoopCreate_Click);
+			// 
 			// WaveInfoForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
@@ -360,5 +373,6 @@
 		private System.Windows.Forms.Label lblPitch;
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.Button btnUpdateTone;
+		private System.Windows.Forms.Button btnLoopCreate;
 	}
 }
