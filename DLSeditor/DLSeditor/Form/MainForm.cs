@@ -62,7 +62,7 @@ namespace DLSeditor {
 		}
 
 		private void 上書き保存ToolStripMenuItem_Click(object sender, EventArgs e) {
-			if(string.IsNullOrWhiteSpace(mFilePath) || !File.Exists(mFilePath)) {
+			if (string.IsNullOrWhiteSpace(mFilePath) || !File.Exists(mFilePath)) {
 				名前を付けて保存ToolStripMenuItem_Click(sender, e);
 			}
 			mDLS.Save(mFilePath);
@@ -206,45 +206,29 @@ namespace DLSeditor {
 			DispInstInfo();
 		}
 
-		private void pictRange_DoubleClick(object sender, EventArgs e) {
-			var cp = pictRange.PointToClient(Cursor.Position);
-			cp.X = (int)(cp.X / 6 + 0.5);
-			cp.Y = (int)((pictRange.Height - cp.Y) / 6 + 0.5);
-
-			DLS.RGN rgn;
-			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
-			foreach (var region in inst.Regions.List.Values) {
-				var key = region.Header.Key;
-				var vel = region.Header.Velocity;
-				if (key.Low <= cp.X && cp.X <= key.High
-				&& vel.Low <= cp.Y && cp.Y <= vel.High) {
-					rgn = region;
-					break;
-				}
-			}
-
-			tslPos.Text = string.Format("X:{0} Y:{1}", cp.X, cp.Y);
-		}
-
 		private void DispInstList() {
 			lstInst.Items.Clear();
 			lstInst.Font = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular);
 			foreach (var inst in mDLS.Instruments.List.Values) {
 				lstInst.Items.Add(string.Format(
-					"{0} {1} {2} {3} {4}",
+					"{0}\t{1}\t{2}\t{3}\t{4}",
 					(inst.Header.Locale.BankFlags & 0x80) == 0x80 ? "Drum" : "Note",
 					inst.Header.Locale.ProgramNo.ToString("000"),
 					inst.Header.Locale.BankMSB.ToString("000"),
 					inst.Header.Locale.BankLSB.ToString("000"),
-					inst.Text.Name
+					inst.Info.Name
 				));
 			}
 		}
 
 		private void DispInstInfo() {
-			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
+			if (0 == lstInst.Items.Count) {
+				return;
+			}
 
-			tbpInstAttribute.Text = string.Format("音色設定[{0}]", inst.Text.Name);
+			var inst = mDLS.Instruments.List[GetLocale()];
+
+			tbpInstAttribute.Text = string.Format("音色設定[{0}]", inst.Info.Name);
 
 			DataTable tb = new DataTable();
 			tb.Columns.Add("Destination", typeof(DLS.Connection.DST_TYPE));
@@ -272,21 +256,89 @@ namespace DLSeditor {
 			DispRegionInfo();
 		}
 
-		private void DispRegionInfo() {
-			var inst = mDLS.Instruments.List[lstInst.SelectedIndex];
+		private void AddInst() {
+			InstForm fm = new InstForm(mDLS);
+			fm.ShowDialog();
+			DispInstList();
+		}
 
-			tbpLayerAttribute.Text = string.Format("レイヤー設定[{0}]", inst.Text.Name);
+		private void DeleteInst() {
+			if (0 == lstInst.Items.Count) {
+				return;
+			}
+
+			var index = lstInst.SelectedIndex;
+			mDLS.Instruments.List.Remove(GetLocale());
+			DispInstList();
+			if (index < lstInst.Items.Count) {
+				lstInst.SelectedIndex = index;
+			}
+			else {
+				lstInst.SelectedIndex = lstInst.Items.Count - 1;
+			}
+		}
+
+		private void CopyInst() {
+		}
+
+		private void PasteInst() {
+			DispInstList();
+		}
+
+		private DLS.MidiLocale GetLocale() {
+			var index = lstInst.SelectedIndex;
+			var cols = lstInst.Items[index].ToString().Split('\t');
+
+			var locale = new DLS.MidiLocale();
+			locale.BankFlags = (byte)("Drum" == cols[0] ? 0x80 : 0x00);
+			locale.ProgramNo = byte.Parse(cols[1]);
+			locale.BankMSB = byte.Parse(cols[2]);
+			locale.BankLSB = byte.Parse(cols[3]);
+
+			return locale;
+		}
+		#endregion
+
+		#region レイヤー設定
+		private void pictRange_DoubleClick(object sender, EventArgs e) {
+			if(0 == lstInst.Items.Count) {
+				return;
+			}
+
+			var cp = pictRange.PointToClient(Cursor.Position);
+			cp.X = (int)(cp.X / 6 + 0.5);
+			cp.Y = (int)((pictRange.Height - cp.Y) / 6 + 0.5);
+
+			DLS.RGN rgn;
+			var inst = mDLS.Instruments.List[GetLocale()];
+			foreach (var region in inst.Regions.List.Values) {
+				var key = region.Header.Key;
+				var vel = region.Header.Velocity;
+				if (key.Low <= cp.X && cp.X <= key.High
+				&& vel.Low <= cp.Y && cp.Y <= vel.High) {
+					rgn = region;
+					break;
+				}
+			}
+
+			tslPos.Text = string.Format("X:{0} Y:{1}", cp.X, cp.Y);
+		}
+
+		private void DispRegionInfo() {
+			var inst = mDLS.Instruments.List[GetLocale()];
+
+			tbpLayerAttribute.Text = string.Format("レイヤー設定[{0}]", inst.Info.Name);
 
 			var bmp = new Bitmap(pictRange.Width, pictRange.Height);
 			var g = Graphics.FromImage(bmp);
-			var redLine = new Pen(Color.FromArgb(255, 255, 0, 0), 2.0f);
+			var blueLine = new Pen(Color.FromArgb(255, 0, 0, 255), 2.0f);
 			var greenFill = new Pen(Color.FromArgb(64, 0, 255, 0), 1.0f).Brush;
 
 			foreach (var region in inst.Regions.List.Values) {
 				var key = region.Header.Key;
 				var vel = region.Header.Velocity;
 				g.DrawRectangle(
-					redLine,
+					blueLine,
 					key.Low * 6,
 					vel.Low * 6,
 					(key.High - key.Low + 1) * 6,
@@ -304,21 +356,8 @@ namespace DLSeditor {
 			pictRange.Image = bmp;
 		}
 
-		private void AddInst() {
-			InstForm fm = new InstForm(mDLS);
-			fm.ShowDialog();
-			DispInstList();
-		}
+		private void tsbAddRange_Click(object sender, EventArgs e) {
 
-		private void DeleteInst() {
-			DispInstList();
-		}
-
-		private void CopyInst() {
-		}
-
-		private void PasteInst() {
-			DispInstList();
 		}
 		#endregion
 

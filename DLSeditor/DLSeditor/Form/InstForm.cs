@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace DLSeditor
-{
-	public partial class InstForm : Form
-	{
+namespace DLSeditor {
+	public partial class InstForm : Form {
 		private DLS.DLS mDLS;
 
 		private readonly string[] GM_INST_NAME = new string[] {
@@ -138,43 +136,80 @@ namespace DLSeditor
 			"Gunshot"
 		};
 
-		public InstForm(DLS.DLS dls)
-		{
+		public InstForm(DLS.DLS dls) {
 			InitializeComponent();
 			StartPosition = FormStartPosition.CenterParent;
 			mDLS = dls;
 		}
 
-		private void InstAddForm_Load(object sender, EventArgs e)
-		{
+		private void InstAddForm_Load(object sender, EventArgs e) {
 			setList();
 		}
 
-		private void lstPrgNo_SelectedIndexChanged(object sender, EventArgs e)
-		{
+		private void rbDrum_CheckedChanged(object sender, EventArgs e) {
+			var index = lstPrgNo.SelectedIndex;
+			if (rbDrum.Checked) {
+				lstPrgNo.Items.Clear();
+				for (byte i = 0; i < 128; ++i) {
+					lstPrgNo.Items.Add(string.Format("{0} {1}", i.ToString("000"), ""));
+				}
+			}
+			else {
+				lstPrgNo.Items.Clear();
+				for (byte i = 0; i < 128; ++i) {
+					lstPrgNo.Items.Add(string.Format("{0} {1}", i.ToString("000"), GM_INST_NAME[i]));
+				}
+			}
+			lstPrgNo.SelectedIndex = index;
 		}
 
-		private void lstBankMSB_SelectedIndexChanged(object sender, EventArgs e)
-		{
+		private void lstPrgNo_SelectedIndexChanged(object sender, EventArgs e) {
+			if (!string.IsNullOrWhiteSpace(txtInstName.Text)) {
+				return;
+			}
+			if (rbDrum.Checked) {
+
+			}
+			else {
+				txtInstName.Text = GM_INST_NAME[lstPrgNo.SelectedIndex];
+			}
+		}
+
+		private void lstBankMSB_SelectedIndexChanged(object sender, EventArgs e) {
 
 		}
 
-		private void lstBankLSB_SelectedIndexChanged(object sender, EventArgs e)
-		{
+		private void lstBankLSB_SelectedIndexChanged(object sender, EventArgs e) {
 
 		}
 
-		private void btnAdd_Click(object sender, EventArgs e)
-		{
+		private void btnAdd_Click(object sender, EventArgs e) {
+			var inst = new DLS.INS(
+				(byte)lstPrgNo.SelectedIndex,
+				(byte)lstBankMSB.SelectedIndex,
+				(byte)lstBankLSB.SelectedIndex,
+				rbDrum.Checked
+			);
+			inst.Info.Name = txtInstName.Text;
+
+			if (mDLS.Instruments.List.ContainsKey(inst.Header.Locale)) {
+				return;
+			}
+
+			mDLS.Instruments.List.Add(inst.Header.Locale, inst);
+			Close();
 		}
 
-		private void setList()
-		{
+		private void setList() {
 			for (byte i = 0; i < 128; ++i) {
 				lstPrgNo.Items.Add(string.Format("{0} {1}", i.ToString("000"), GM_INST_NAME[i]));
 				lstBankMSB.Items.Add(i.ToString("000"));
 				lstBankLSB.Items.Add(i.ToString("000"));
 			}
+			lstPrgNo.SelectedIndex = 0;
+			lstBankMSB.SelectedIndex = 0;
+			lstBankLSB.SelectedIndex = 0;
+			txtInstName.Text = "";
 		}
 	}
 }

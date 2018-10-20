@@ -46,18 +46,20 @@
 			// txtInstName
 			// 
 			this.txtInstName.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.txtInstName.Location = new System.Drawing.Point(12, 95);
+			this.txtInstName.Location = new System.Drawing.Point(26, 190);
+			this.txtInstName.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.txtInstName.Name = "txtInstName";
-			this.txtInstName.Size = new System.Drawing.Size(406, 22);
+			this.txtInstName.Size = new System.Drawing.Size(875, 37);
 			this.txtInstName.TabIndex = 1;
 			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
 			this.label1.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.label1.Location = new System.Drawing.Point(9, 77);
+			this.label1.Location = new System.Drawing.Point(20, 154);
+			this.label1.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(52, 15);
+			this.label1.Size = new System.Drawing.Size(103, 30);
 			this.label1.TabIndex = 1;
 			this.label1.Text = "音色名";
 			// 
@@ -65,9 +67,10 @@
 			// 
 			this.label2.AutoSize = true;
 			this.label2.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.label2.Location = new System.Drawing.Point(9, 132);
+			this.label2.Location = new System.Drawing.Point(20, 264);
+			this.label2.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(128, 15);
+			this.label2.Size = new System.Drawing.Size(259, 30);
 			this.label2.TabIndex = 2;
 			this.label2.Text = "プログラムナンバー";
 			// 
@@ -75,9 +78,10 @@
 			// 
 			this.label3.AutoSize = true;
 			this.label3.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.label3.Location = new System.Drawing.Point(260, 132);
+			this.label3.Location = new System.Drawing.Point(563, 264);
+			this.label3.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(77, 15);
+			this.label3.Size = new System.Drawing.Size(152, 30);
 			this.label3.TabIndex = 3;
 			this.label3.Text = "バンクMSB";
 			// 
@@ -85,9 +89,10 @@
 			// 
 			this.label4.AutoSize = true;
 			this.label4.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.label4.Location = new System.Drawing.Point(340, 132);
+			this.label4.Location = new System.Drawing.Point(737, 264);
+			this.label4.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(74, 15);
+			this.label4.Size = new System.Drawing.Size(146, 30);
 			this.label4.TabIndex = 4;
 			this.label4.Text = "バンクLSB";
 			// 
@@ -95,10 +100,11 @@
 			// 
 			this.lstPrgNo.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.lstPrgNo.FormattingEnabled = true;
-			this.lstPrgNo.ItemHeight = 15;
-			this.lstPrgNo.Location = new System.Drawing.Point(12, 150);
+			this.lstPrgNo.ItemHeight = 30;
+			this.lstPrgNo.Location = new System.Drawing.Point(26, 300);
+			this.lstPrgNo.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.lstPrgNo.Name = "lstPrgNo";
-			this.lstPrgNo.Size = new System.Drawing.Size(245, 184);
+			this.lstPrgNo.Size = new System.Drawing.Size(526, 364);
 			this.lstPrgNo.TabIndex = 2;
 			this.lstPrgNo.SelectedIndexChanged += new System.EventHandler(this.lstPrgNo_SelectedIndexChanged);
 			// 
@@ -106,10 +112,11 @@
 			// 
 			this.lstBankMSB.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.lstBankMSB.FormattingEnabled = true;
-			this.lstBankMSB.ItemHeight = 15;
-			this.lstBankMSB.Location = new System.Drawing.Point(263, 150);
+			this.lstBankMSB.ItemHeight = 30;
+			this.lstBankMSB.Location = new System.Drawing.Point(570, 300);
+			this.lstBankMSB.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.lstBankMSB.Name = "lstBankMSB";
-			this.lstBankMSB.Size = new System.Drawing.Size(74, 184);
+			this.lstBankMSB.Size = new System.Drawing.Size(156, 364);
 			this.lstBankMSB.TabIndex = 3;
 			this.lstBankMSB.SelectedIndexChanged += new System.EventHandler(this.lstBankMSB_SelectedIndexChanged);
 			// 
@@ -117,19 +124,21 @@
 			// 
 			this.lstBankLSB.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.lstBankLSB.FormattingEnabled = true;
-			this.lstBankLSB.ItemHeight = 15;
-			this.lstBankLSB.Location = new System.Drawing.Point(343, 150);
+			this.lstBankLSB.ItemHeight = 30;
+			this.lstBankLSB.Location = new System.Drawing.Point(743, 300);
+			this.lstBankLSB.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.lstBankLSB.Name = "lstBankLSB";
-			this.lstBankLSB.Size = new System.Drawing.Size(74, 184);
+			this.lstBankLSB.Size = new System.Drawing.Size(156, 364);
 			this.lstBankLSB.TabIndex = 4;
 			this.lstBankLSB.SelectedIndexChanged += new System.EventHandler(this.lstBankLSB_SelectedIndexChanged);
 			// 
 			// btnAdd
 			// 
 			this.btnAdd.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.btnAdd.Location = new System.Drawing.Point(343, 341);
+			this.btnAdd.Location = new System.Drawing.Point(743, 682);
+			this.btnAdd.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.btnAdd.Name = "btnAdd";
-			this.btnAdd.Size = new System.Drawing.Size(75, 33);
+			this.btnAdd.Size = new System.Drawing.Size(163, 66);
 			this.btnAdd.TabIndex = 5;
 			this.btnAdd.Text = "追加";
 			this.btnAdd.UseVisualStyleBackColor = true;
@@ -139,22 +148,25 @@
 			// 
 			this.rbDrum.AutoSize = true;
 			this.rbDrum.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.rbDrum.Location = new System.Drawing.Point(78, 21);
+			this.rbDrum.Location = new System.Drawing.Point(169, 42);
+			this.rbDrum.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.rbDrum.Name = "rbDrum";
-			this.rbDrum.Size = new System.Drawing.Size(62, 19);
+			this.rbDrum.Size = new System.Drawing.Size(118, 34);
 			this.rbDrum.TabIndex = 1;
 			this.rbDrum.TabStop = true;
 			this.rbDrum.Text = "ドラム";
 			this.rbDrum.UseVisualStyleBackColor = true;
+			this.rbDrum.CheckedChanged += new System.EventHandler(this.rbDrum_CheckedChanged);
 			// 
 			// rbNote
 			// 
 			this.rbNote.AutoSize = true;
 			this.rbNote.Checked = true;
 			this.rbNote.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.rbNote.Location = new System.Drawing.Point(15, 21);
+			this.rbNote.Location = new System.Drawing.Point(33, 42);
+			this.rbNote.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.rbNote.Name = "rbNote";
-			this.rbNote.Size = new System.Drawing.Size(55, 19);
+			this.rbNote.Size = new System.Drawing.Size(104, 34);
 			this.rbNote.TabIndex = 0;
 			this.rbNote.TabStop = true;
 			this.rbNote.Text = "音階";
@@ -165,18 +177,20 @@
 			this.groupBox1.Controls.Add(this.rbNote);
 			this.groupBox1.Controls.Add(this.rbDrum);
 			this.groupBox1.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.groupBox1.Location = new System.Drawing.Point(12, 12);
+			this.groupBox1.Location = new System.Drawing.Point(26, 24);
+			this.groupBox1.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(150, 53);
+			this.groupBox1.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.groupBox1.Size = new System.Drawing.Size(325, 106);
 			this.groupBox1.TabIndex = 0;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "音色の種類";
 			// 
-			// InstAddForm
+			// InstForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(430, 386);
+			this.ClientSize = new System.Drawing.Size(932, 772);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.btnAdd);
 			this.Controls.Add(this.lstBankLSB);
@@ -188,7 +202,8 @@
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.txtInstName);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Name = "InstAddForm";
+			this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.Name = "InstForm";
 			this.Text = "音色追加";
 			this.Load += new System.EventHandler(this.InstAddForm_Load);
 			this.groupBox1.ResumeLayout(false);

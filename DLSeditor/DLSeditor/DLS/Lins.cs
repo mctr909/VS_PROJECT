@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace DLS {
 	unsafe public class LINS : Chunk {
-		public Dictionary<int, INS> List = new Dictionary<int, INS>();
+		public Dictionary<MidiLocale, INS> List = new Dictionary<MidiLocale, INS>();
 
 		public LINS() { }
 
@@ -15,7 +15,8 @@ namespace DLS {
 		protected override void LoadList(byte* ptr, byte* endPtr) {
 			switch (mList.Type) {
 			case CK_LIST.TYPE.INS_:
-				List.Add(List.Count, new INS(ptr, endPtr));
+				var inst = new INS(ptr, endPtr);
+				List.Add(inst.Header.Locale, inst);
 				break;
 			default:
 				throw new Exception(string.Format("Unknown ListId [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((uint)mList.Type))));
@@ -48,10 +49,10 @@ namespace DLS {
 		public CK_INSH Header;
 		public LRGN Regions = new LRGN();
 		public LART Articulations = new LART();
-		public INFO Text = new INFO();
+		public INFO Info = new INFO();
 
 		public INS(byte programNo, byte bankMSB = 0, byte bankLSB = 0, bool isDrum = false) {
-			Header.Locale.BankFlags = (byte)(isDrum ? 0x00 : 0x80);
+			Header.Locale.BankFlags = (byte)(isDrum ? 0x80 : 0x00);
 			Header.Locale.ProgramNo = programNo;
 			Header.Locale.BankMSB = bankMSB;
 			Header.Locale.BankLSB = bankLSB;
@@ -79,7 +80,7 @@ namespace DLS {
 				Articulations = new LART(ptr, endPtr);
 				break;
 			case CK_LIST.TYPE.INFO:
-				Text = new INFO(ptr, endPtr);
+				Info = new INFO(ptr, endPtr);
 				break;
 			default:
 				throw new Exception(string.Format("Unknown ListType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((uint)mList.Type))));
@@ -98,7 +99,7 @@ namespace DLS {
 		protected override void WriteList(BinaryWriter bw) {
 			bw.Write(Regions.Bytes);
 			bw.Write(Articulations.Bytes);
-			bw.Write(Text.Bytes);
+			bw.Write(Info.Bytes);
 		}
 	}
 }
