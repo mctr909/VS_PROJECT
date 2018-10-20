@@ -8,6 +8,7 @@ namespace DLSeditor {
 	public partial class MainForm : Form {
 		private WavePlayback mWaveOut;
 		private DLS.DLS mDLS;
+		private string mFilePath;
 
 		public MainForm() {
 			InitializeComponent();
@@ -22,7 +23,11 @@ namespace DLSeditor {
 
 		#region メニューバー[ファイル]
 		private void 新規作成NToolStripMenuItem_Click(object sender, EventArgs e) {
-
+			mDLS = new DLS.DLS();
+			DispInstList();
+			DispPcmList();
+			tabControl.SelectedIndex = 0;
+			mFilePath = "";
 		}
 
 		unsafe private void 開くOToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -30,8 +35,9 @@ namespace DLSeditor {
 			openFileDialog1.Filter = "DLSファイル(*.dls)|*.dls";
 			openFileDialog1.ShowDialog();
 			var filePath = openFileDialog1.FileName;
-			if (!File.Exists(filePath))
+			if (!File.Exists(filePath)) {
 				return;
+			}
 
 			using (var fs = new FileStream(filePath, FileMode.Open))
 			using (var br = new BinaryReader(fs)) {
@@ -52,9 +58,14 @@ namespace DLSeditor {
 			DispInstList();
 			DispPcmList();
 			tabControl.SelectedIndex = 0;
+			mFilePath = filePath;
 		}
 
 		private void 上書き保存ToolStripMenuItem_Click(object sender, EventArgs e) {
+			if(string.IsNullOrWhiteSpace(mFilePath) || !File.Exists(mFilePath)) {
+				名前を付けて保存ToolStripMenuItem_Click(sender, e);
+			}
+			mDLS.Save(mFilePath);
 		}
 
 		private void 名前を付けて保存ToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -67,6 +78,7 @@ namespace DLSeditor {
 			}
 
 			mDLS.Save(filePath);
+			mFilePath = filePath;
 		}
 		#endregion
 
@@ -106,13 +118,7 @@ namespace DLSeditor {
 		}
 
 		private void tsbAddWave_Click(object sender, EventArgs e) {
-			openFileDialog1.Filter = "wavファイル(*.wav)|*.wav";
-			openFileDialog1.ShowDialog();
-			var filePath = openFileDialog1.FileName;
-			if(!File.Exists(filePath)) {
-				return;
-			}
-
+			WaveFileAdd();
 		}
 
 		private void tsbDeleteWave_Click(object sender, EventArgs e) {
@@ -123,7 +129,6 @@ namespace DLSeditor {
 					}
 				}
 			}
-
 		}
 
 		private void tsbOutputWave_Click(object sender, EventArgs e) {
@@ -319,21 +324,28 @@ namespace DLSeditor {
 
 		#region 波形一覧
 		private void lstWave_DoubleClick(object sender, EventArgs e) {
+			if (0 == lstWave.Items.Count) {
+				return;
+			}
+
 			var idx = lstWave.SelectedIndex;
 			var fm = new WaveInfoForm(mWaveOut, mDLS, idx);
+			var index = lstWave.SelectedIndex;
 			fm.ShowDialog();
+			DispPcmList();
+			lstWave.SelectedIndex = index;
 		}
 
 		private void DispPcmList() {
 			lstWave.Items.Clear();
 			int count = 0;
-			foreach (var wave in mDLS.WavePool.List.Values) {
+			foreach (var wave in mDLS.WavePool.List) {
 				var name = "";
-				if (null == wave.Text || string.IsNullOrWhiteSpace(wave.Text.Name)) {
+				if (null == wave.Value.Info || string.IsNullOrWhiteSpace(wave.Value.Info.Name)) {
 					name = string.Format("Wave[{0}]", count);
 				}
 				else {
-					name = wave.Text.Name;
+					name = wave.Value.Info.Name;
 				}
 
 				var use = false;
@@ -347,9 +359,10 @@ namespace DLSeditor {
 				}
 
 				lstWave.Items.Add(string.Format(
-					"{0}{1}{2}",
-					(use ? "[use]" : "     "),
-					(0 < wave.Sampler.LoopCount ? "[loop]" : "      "),
+					"{0}\t{1}\t{2}\t{3}",
+					wave.Key.ToString("0000"),
+					(use ? "use" : "   "),
+					(0 < wave.Value.Sampler.LoopCount ? "loop" : "    "),
 					name
 				));
 				++count;
@@ -366,14 +379,34 @@ namespace DLSeditor {
 			var indices = lstWave.SelectedIndices;
 			foreach (var idx in indices) {
 				var wave = mDLS.WavePool.List[(int)idx];
-				if (null == wave.Text || string.IsNullOrWhiteSpace(wave.Text.Name)) {
+				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
 					wave.ToFile(Path.Combine(folderPath, string.Format("Wave{0}.wav", idx)));
 				}
 				else {
-					wave.ToFile(Path.Combine(folderPath, wave.Text.Name + ".wav"));
+					wave.ToFile(Path.Combine(folderPath, wave.Info.Name + ".wav"));
 				}
 			}
 		}
+
+		private void WaveFileAdd() {
+			openFileDialog1.FileName = "";
+			openFileDialog1.Filter = "wavファイル(*.wav)|*.wav";
+			openFileDialog1.Multiselect = true;
+			openFileDialog1.ShowDialog();
+			var filePaths = openFileDialog1.FileNames;
+
+			foreach (var filePath in filePaths) {
+				if (!File.Exists(filePath)) {
+					continue;
+				}
+
+				var wave = new DLS.WAVE(filePath);
+				mDLS.WavePool.List.Add(mDLS.WavePool.List.Count, wave);
+			}
+
+			DispPcmList();
+		}
+
 		#endregion
 	}
 }

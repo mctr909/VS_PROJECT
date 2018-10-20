@@ -8,6 +8,7 @@ namespace DLSeditor {
 		public double mPitch;
 
 		private short[] mWave;
+		private int mSampleRate;
 		private double mDelta;
 		private double mTime;
 		private int mFftIndex;
@@ -15,13 +16,13 @@ namespace DLSeditor {
 
 		public WavePlayback() {
 			mWave = new short[1];
-			mFft = new FFT(8192, SampleRate);
+			mFft = new FFT(16384, SampleRate);
 			Stop();
 		}
 
 		public void SetValue(DLS.WAVE wave) {
 			mWave = new short[8 * wave.Data.Length / wave.Format.Bits];
-
+			mSampleRate = (int)wave.Format.SampleRate;
 			var br = new BinaryReader(new MemoryStream(wave.Data));
 
 			switch (wave.Format.Bits) {
@@ -38,13 +39,14 @@ namespace DLSeditor {
 			default:
 				return;
 			}
+		}
 
-			mDelta = (double)wave.Format.SampleRate / SampleRate;
+		public void Play() {
+			mDelta = (double)mSampleRate / SampleRate;
 			mTime = 0.0;
 		}
 
 		public void Stop() {
-			mWave = new short[1];
 			mLoopBegin = 0;
 			mLoopEnd = 0;
 			mDelta = 0.0;
@@ -60,7 +62,7 @@ namespace DLSeditor {
 				mFft.Re[mFftIndex] = wave;
 				mFft.Im[mFftIndex] = 0.0;
 				++mFftIndex;
-				if(8192 <= mFftIndex) {
+				if(16384 <= mFftIndex) {
 					mFftIndex = 0;
 					mPitch = mFft.Pitch();
 				}

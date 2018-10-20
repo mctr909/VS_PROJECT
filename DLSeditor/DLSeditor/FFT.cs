@@ -221,7 +221,7 @@ public class FFT {
 		var N = Re.Length;
 
 		for (int i = 0; i < N; ++i) {
-			Re[i] *= Math.Sin(Math.PI * i / N);
+			Re[i] *= 0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / N);
 		}
 
 		Nsdf();
@@ -244,7 +244,7 @@ public class FFT {
 		}
 
 		if (0.0 == clipIndexList.Count) {
-			return 1.0;
+			return 0.0;
 		}
 
 		var clipIndexBase = clipIndexList[0] / clipIndexList[clipIndexList.Count - 1];

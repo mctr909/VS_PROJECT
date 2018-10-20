@@ -57,7 +57,7 @@ namespace DLS {
 		public CK_WSMP Sampler;
 		public Dictionary<int, WaveLoop> Loops = new Dictionary<int, WaveLoop>();
 		public byte[] Data;
-		public INFO Text = new INFO();
+		public INFO Info = new INFO();
 
 		public WAVE(string filePath) {
 			FileStream fs = new FileStream(filePath, FileMode.Open);
@@ -67,7 +67,7 @@ namespace DLS {
 			var riffSize = br.ReadUInt32();
 			var riffType = br.ReadUInt32();
 
-			while (fs.CanRead) {
+			while (fs.Position < fs.Length) {
 				var chunkType = (CK_CHUNK.TYPE)br.ReadUInt32();
 				var chunkSize = br.ReadUInt32();
 				var chunkData = br.ReadBytes((int)chunkSize);
@@ -75,11 +75,31 @@ namespace DLS {
 				switch (chunkType) {
 				case CK_CHUNK.TYPE.FMT_:
 					fixed (byte* ptr = &chunkData[0]) {
-						Marshal.PtrToStructure((IntPtr)ptr, Format);
+						Format = (CK_FMT)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_FMT));
 					}
 					break;
 				case CK_CHUNK.TYPE.DATA:
 					Data = chunkData;
+					break;
+				case CK_CHUNK.TYPE.WSMP:
+					fixed (byte* ptr = &chunkData[0]) {
+						Sampler = (CK_WSMP)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_WSMP));
+						var pLoop = ptr + sizeof(CK_WSMP);
+						for (var i = 0; i < Sampler.LoopCount; ++i) {
+							Loops.Add(Loops.Count, (WaveLoop)Marshal.PtrToStructure((IntPtr)pLoop, typeof(WaveLoop)));
+							pLoop += sizeof(WaveLoop);
+						}
+					}
+					break;
+				case CK_CHUNK.TYPE.LIST:
+					fixed (byte* ptr = &chunkData[0]) {
+						var list = (CK_LIST)Marshal.PtrToStructure((IntPtr)ptr, typeof(CK_LIST));
+						switch (list.Type) {
+						case CK_LIST.TYPE.INFO:
+							Info = new INFO(ptr + sizeof(CK_LIST), ptr + chunkSize);
+							break;
+						}
+					}
 					break;
 				}
 			}
@@ -117,7 +137,7 @@ namespace DLS {
 		protected override void LoadList(byte* ptr, byte* endPtr) {
 			switch (mList.Type) {
 			case CK_LIST.TYPE.INFO:
-				Text = new INFO(ptr, endPtr);
+				Info = new INFO(ptr, endPtr);
 				break;
 			}
 		}
@@ -144,7 +164,7 @@ namespace DLS {
 		}
 
 		protected override void WriteList(BinaryWriter bw) {
-			bw.Write(Text.Bytes);
+			bw.Write(Info.Bytes);
 		}
 
 		public void ToFile(string filePath) {
@@ -160,24 +180,8 @@ namespace DLS {
 			var msw = new MemoryStream();
 			var bmw = new BinaryWriter(msw);
 
-			if (0 < Sampler.LoopCount) {
-				for (var i = 0; i < Loops[0].Start; ++i) {
-					bmw.Write(bmr.ReadInt16());
-				}
-				for (int j = 0; j < 100; ++j) {
-					msr.Seek(2 * Loops[0].Start, SeekOrigin.Begin);
-					for (var i = 0; i < Loops[0].Length; ++i) {
-						bmw.Write(bmr.ReadInt16());
-					}
-				}
-				while (msr.Position < msr.Length) {
-					bmw.Write(bmr.ReadInt16());
-				}
-			}
-			else {
-				while (msr.Position < msr.Length) {
-					bmw.Write(bmr.ReadInt16());
-				}
+			while (msr.Position < msr.Length) {
+				bmw.Write(bmr.ReadInt16());
 			}
 
 			// RIFF
@@ -199,6 +203,18 @@ namespace DLS {
 			bw.Write((uint)CK_CHUNK.TYPE.DATA);
 			bw.Write((uint)msw.Length);
 			bw.Write(msw.ToArray());
+
+			// sampler
+			var data = Sampler.Bytes;
+			bw.Write((uint)CK_CHUNK.TYPE.WSMP);
+			bw.Write((uint)(data.Length + Sampler.LoopCount * sizeof(WaveLoop)));
+			bw.Write(data);
+			foreach (var loop in Loops.Values) {
+				bw.Write(loop.Bytes);
+			}
+
+			// info
+			bw.Write(Info.Bytes);
 
 			fs.Seek(4, SeekOrigin.Begin);
 			bw.Write((uint)(fs.Length - 8));

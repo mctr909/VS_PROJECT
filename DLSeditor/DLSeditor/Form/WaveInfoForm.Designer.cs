@@ -36,6 +36,7 @@
 			this.numScale = new System.Windows.Forms.NumericUpDown();
 			this.picLoop = new System.Windows.Forms.PictureBox();
 			this.grbMain = new System.Windows.Forms.GroupBox();
+			this.btnLoopCreate = new System.Windows.Forms.Button();
 			this.btnUpdate = new System.Windows.Forms.Button();
 			this.grbLoop = new System.Windows.Forms.GroupBox();
 			this.numScaleLoop = new System.Windows.Forms.NumericUpDown();
@@ -46,8 +47,10 @@
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.lblPitch = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
-			this.btnUpdateTone = new System.Windows.Forms.Button();
-			this.btnLoopCreate = new System.Windows.Forms.Button();
+			this.lblPitchCent = new System.Windows.Forms.Label();
+			this.btnUpdateAutoTune = new System.Windows.Forms.Button();
+			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.txtName = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this.picSpectrum)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picWave)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numScale)).BeginInit();
@@ -60,6 +63,7 @@
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
+			this.groupBox4.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btnPlay
@@ -160,6 +164,17 @@
 			this.grbMain.TabStop = false;
 			this.grbMain.Text = "ループ範囲選択";
 			// 
+			// btnLoopCreate
+			// 
+			this.btnLoopCreate.BackColor = System.Drawing.SystemColors.Control;
+			this.btnLoopCreate.Location = new System.Drawing.Point(563, 0);
+			this.btnLoopCreate.Name = "btnLoopCreate";
+			this.btnLoopCreate.Size = new System.Drawing.Size(161, 42);
+			this.btnLoopCreate.TabIndex = 11;
+			this.btnLoopCreate.Text = "ループ作成";
+			this.btnLoopCreate.UseVisualStyleBackColor = true;
+			this.btnLoopCreate.Click += new System.EventHandler(this.btnLoopCreate_Click);
+			// 
 			// btnUpdate
 			// 
 			this.btnUpdate.BackColor = System.Drawing.SystemColors.Control;
@@ -240,6 +255,7 @@
 			this.numFineTune.Name = "numFineTune";
 			this.numFineTune.Size = new System.Drawing.Size(120, 36);
 			this.numFineTune.TabIndex = 2;
+			this.numFineTune.ValueChanged += new System.EventHandler(this.numFineTune_ValueChanged);
 			// 
 			// lblUnityNote
 			// 
@@ -256,7 +272,7 @@
 			this.groupBox1.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.groupBox1.Controls.Add(this.numUnityNote);
 			this.groupBox1.Controls.Add(this.lblUnityNote);
-			this.groupBox1.Location = new System.Drawing.Point(158, 12);
+			this.groupBox1.Location = new System.Drawing.Point(575, 12);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(224, 74);
 			this.groupBox1.TabIndex = 14;
@@ -267,7 +283,7 @@
 			// 
 			this.groupBox2.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.groupBox2.Controls.Add(this.numFineTune);
-			this.groupBox2.Location = new System.Drawing.Point(388, 12);
+			this.groupBox2.Location = new System.Drawing.Point(805, 12);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(162, 74);
 			this.groupBox2.TabIndex = 15;
@@ -277,44 +293,65 @@
 			// lblPitch
 			// 
 			this.lblPitch.AutoSize = true;
-			this.lblPitch.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.lblPitch.Location = new System.Drawing.Point(6, 22);
+			this.lblPitch.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.lblPitch.Location = new System.Drawing.Point(6, 28);
 			this.lblPitch.Name = "lblPitch";
-			this.lblPitch.Size = new System.Drawing.Size(67, 24);
+			this.lblPitch.Size = new System.Drawing.Size(77, 29);
 			this.lblPitch.TabIndex = 16;
-			this.lblPitch.Text = "label1";
+			this.lblPitch.Text = "Gb-2";
 			// 
 			// groupBox3
 			// 
 			this.groupBox3.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.groupBox3.Controls.Add(this.lblPitchCent);
 			this.groupBox3.Controls.Add(this.lblPitch);
-			this.groupBox3.Location = new System.Drawing.Point(556, 12);
+			this.groupBox3.Location = new System.Drawing.Point(973, 12);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(162, 74);
+			this.groupBox3.Size = new System.Drawing.Size(234, 74);
 			this.groupBox3.TabIndex = 17;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "音程検出";
 			// 
-			// btnUpdateTone
+			// lblPitchCent
 			// 
-			this.btnUpdateTone.Location = new System.Drawing.Point(724, 26);
-			this.btnUpdateTone.Name = "btnUpdateTone";
-			this.btnUpdateTone.Size = new System.Drawing.Size(252, 46);
-			this.btnUpdateTone.TabIndex = 18;
-			this.btnUpdateTone.Text = "検出した音程を反映";
-			this.btnUpdateTone.UseVisualStyleBackColor = true;
-			this.btnUpdateTone.Click += new System.EventHandler(this.btnUpdateTone_Click);
+			this.lblPitchCent.BackColor = System.Drawing.Color.Transparent;
+			this.lblPitchCent.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.lblPitchCent.Location = new System.Drawing.Point(89, 28);
+			this.lblPitchCent.Name = "lblPitchCent";
+			this.lblPitchCent.Size = new System.Drawing.Size(130, 33);
+			this.lblPitchCent.TabIndex = 17;
+			this.lblPitchCent.Text = "-50cent";
+			this.lblPitchCent.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// btnLoopCreate
+			// btnUpdateAutoTune
 			// 
-			this.btnLoopCreate.BackColor = System.Drawing.SystemColors.Control;
-			this.btnLoopCreate.Location = new System.Drawing.Point(563, 0);
-			this.btnLoopCreate.Name = "btnLoopCreate";
-			this.btnLoopCreate.Size = new System.Drawing.Size(161, 42);
-			this.btnLoopCreate.TabIndex = 11;
-			this.btnLoopCreate.Text = "ループ作成";
-			this.btnLoopCreate.UseVisualStyleBackColor = true;
-			this.btnLoopCreate.Click += new System.EventHandler(this.btnLoopCreate_Click);
+			this.btnUpdateAutoTune.Location = new System.Drawing.Point(1213, 12);
+			this.btnUpdateAutoTune.Name = "btnUpdateAutoTune";
+			this.btnUpdateAutoTune.Size = new System.Drawing.Size(252, 74);
+			this.btnUpdateAutoTune.TabIndex = 18;
+			this.btnUpdateAutoTune.Text = "検出した音程を反映";
+			this.btnUpdateAutoTune.UseVisualStyleBackColor = true;
+			this.btnUpdateAutoTune.Click += new System.EventHandler(this.btnUpdateAutoTune_Click);
+			// 
+			// groupBox4
+			// 
+			this.groupBox4.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.groupBox4.Controls.Add(this.txtName);
+			this.groupBox4.Location = new System.Drawing.Point(154, 12);
+			this.groupBox4.Name = "groupBox4";
+			this.groupBox4.Size = new System.Drawing.Size(415, 74);
+			this.groupBox4.TabIndex = 20;
+			this.groupBox4.TabStop = false;
+			this.groupBox4.Text = "名称";
+			// 
+			// txtName
+			// 
+			this.txtName.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.txtName.Location = new System.Drawing.Point(6, 25);
+			this.txtName.Name = "txtName";
+			this.txtName.Size = new System.Drawing.Size(388, 36);
+			this.txtName.TabIndex = 0;
+			this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
 			// 
 			// WaveInfoForm
 			// 
@@ -322,7 +359,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(1730, 942);
-			this.Controls.Add(this.btnUpdateTone);
+			this.Controls.Add(this.groupBox4);
+			this.Controls.Add(this.btnUpdateAutoTune);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
@@ -348,6 +386,8 @@
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox3.ResumeLayout(false);
 			this.groupBox3.PerformLayout();
+			this.groupBox4.ResumeLayout(false);
+			this.groupBox4.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -372,7 +412,10 @@
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Label lblPitch;
 		private System.Windows.Forms.GroupBox groupBox3;
-		private System.Windows.Forms.Button btnUpdateTone;
+		private System.Windows.Forms.Button btnUpdateAutoTune;
 		private System.Windows.Forms.Button btnLoopCreate;
+		private System.Windows.Forms.GroupBox groupBox4;
+		private System.Windows.Forms.TextBox txtName;
+		private System.Windows.Forms.Label lblPitchCent;
 	}
 }

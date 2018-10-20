@@ -69,8 +69,11 @@ namespace DLSeditor {
 			}
 
 			lblPitch.Text = "";
+			lblPitchCent.Text = "";
 			mDetectNote = -1;
 			mDetectTune = 0;
+
+			mWaveOut.SetValue(mFile.WavePool.List[mIndex]);
 
 			timer1.Interval = 100;
 			timer1.Enabled = true;
@@ -83,6 +86,13 @@ namespace DLSeditor {
 			mScaleLoop = Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
 		}
 
+		private void WaveInfoForm_FormClosing(object sender, FormClosingEventArgs e) {
+			if (null != mWaveOut) {
+				mWaveOut.Stop();
+			}
+		}
+
+		#region クリックイベント
 		private void btnPlay_Click(object sender, EventArgs e) {
 			if ("再生" == btnPlay.Text) {
 				if (0 < mFile.WavePool.List[mIndex].Loops.Count) {
@@ -93,7 +103,7 @@ namespace DLSeditor {
 					mWaveOut.mLoopBegin = 0;
 					mWaveOut.mLoopEnd = mWave.Length;
 				}
-				mWaveOut.SetValue(mFile.WavePool.List[mIndex]);
+				mWaveOut.Play();
 				btnPlay.Text = "停止";
 			}
 			else {
@@ -108,7 +118,7 @@ namespace DLSeditor {
 			}
 		}
 
-		private void btnUpdateTone_Click(object sender, EventArgs e) {
+		private void btnUpdateAutoTune_Click(object sender, EventArgs e) {
 			if (0 <= mDetectNote) {
 				numUnityNote.Value = mDetectNote;
 				numFineTune.Value = mDetectTune;
@@ -126,7 +136,7 @@ namespace DLSeditor {
 				btnLoopCreate.Text = "ループ作成";
 			}
 			else {
-				mLoop.Start = 0;
+				mLoop.Start = (uint)hsbTime.Value;
 				mLoop.Length = 32;
 				mWaveOut.mLoopBegin = (int)mLoop.Start;
 				mWaveOut.mLoopEnd = (int)mLoop.Start + (int)mLoop.Length;
@@ -135,11 +145,11 @@ namespace DLSeditor {
 				btnLoopCreate.Text = "ループ削除";
 			}
 		}
+		#endregion
 
-		private void WaveInfoForm_FormClosing(object sender, FormClosingEventArgs e) {
-			if (null != mWaveOut) {
-				mWaveOut.Stop();
-			}
+		#region チェンジイベント
+		private void txtName_TextChanged(object sender, EventArgs e) {
+			mFile.WavePool.List[mIndex].Info.Name = txtName.Text;
 		}
 
 		private void numScale_ValueChanged(object sender, EventArgs e) {
@@ -154,8 +164,15 @@ namespace DLSeditor {
 			var oct = (int)numUnityNote.Value / 12 - 2;
 			var note = (int)numUnityNote.Value % 12;
 			lblUnityNote.Text = string.Format("{0}{1}", NoteName[note], oct);
+			mFile.WavePool.List[mIndex].Sampler.UnityNote = (ushort)numUnityNote.Value;
 		}
 
+		private void numFineTune_ValueChanged(object sender, EventArgs e) {
+			mFile.WavePool.List[mIndex].Sampler.FineTune = (short)numFineTune.Value;
+		}
+		#endregion
+
+		#region ループ範囲選択
 		private void picWave_MouseDown(object sender, MouseEventArgs e) {
 			onDragWave = true;
 		}
@@ -197,6 +214,7 @@ namespace DLSeditor {
 		private void picWave_MouseLeave(object sender, EventArgs e) {
 			mOnWaveDisp = false;
 		}
+		#endregion
 
 		private void timer1_Tick(object sender, EventArgs e) {
 			grbMain.Width = Width - grbMain.Left - 22;
@@ -217,7 +235,8 @@ namespace DLSeditor {
 				if (note < 0) {
 					note += -(note / 12 - 1) * 12;
 				}
-				lblPitch.Text = string.Format("{0}{1}\n{2}cent", NoteName[note], oct - 2, mDetectTune);
+				lblPitch.Text = string.Format("{0}{1}", NoteName[note], oct - 2);
+				lblPitchCent.Text = string.Format("{0}cent", mDetectTune);
 			}
 
 			DrawSpec();
@@ -227,8 +246,8 @@ namespace DLSeditor {
 
 		private void InitWave() {
 			var wave = mFile.WavePool.List[mIndex];
-			if (null != wave.Text && !string.IsNullOrWhiteSpace(wave.Text.Name)) {
-				Text = wave.Text.Name;
+			if (null != wave.Info && !string.IsNullOrWhiteSpace(wave.Info.Name)) {
+				Text = wave.Info.Name;
 			}
 
 			var ms = new MemoryStream(wave.Data);
@@ -294,6 +313,7 @@ namespace DLSeditor {
 
 			numUnityNote.Value = wave.Sampler.UnityNote;
 			numFineTune.Value = wave.Sampler.FineTune;
+			txtName.Text = wave.Info.Name;
 		}
 
 		private void DrawWave() {
