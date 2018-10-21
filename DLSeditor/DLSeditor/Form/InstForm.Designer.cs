@@ -95,10 +95,10 @@
 			// btnAdd
 			// 
 			this.btnAdd.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.btnAdd.Location = new System.Drawing.Point(669, 630);
+			this.btnAdd.Location = new System.Drawing.Point(666, 630);
 			this.btnAdd.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.btnAdd.Name = "btnAdd";
-			this.btnAdd.Size = new System.Drawing.Size(163, 66);
+			this.btnAdd.Size = new System.Drawing.Size(166, 48);
 			this.btnAdd.TabIndex = 5;
 			this.btnAdd.Text = "追加";
 			this.btnAdd.UseVisualStyleBackColor = true;
@@ -195,7 +195,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(846, 710);
+			this.ClientSize = new System.Drawing.Size(844, 693);
 			this.Controls.Add(this.groupBox5);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.groupBox3);

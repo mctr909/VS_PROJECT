@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.ファイルFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.新規作成NToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,37 +47,23 @@
 			this.tbpPcmList = new System.Windows.Forms.TabPage();
 			this.lstWave = new System.Windows.Forms.ListBox();
 			this.toolStrip3 = new System.Windows.Forms.ToolStrip();
-			this.tbpInstList = new System.Windows.Forms.TabPage();
-			this.lstInst = new System.Windows.Forms.ListBox();
-			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-			this.tbpInstAttribute = new System.Windows.Forms.TabPage();
-			this.grdArt = new System.Windows.Forms.DataGridView();
-			this.tbpLayerAttribute = new System.Windows.Forms.TabPage();
-			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-			this.tslPos = new System.Windows.Forms.ToolStripLabel();
-			this.pnlRegion = new System.Windows.Forms.Panel();
-			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
 			this.tsbAddWave = new System.Windows.Forms.ToolStripButton();
 			this.tsbDeleteWave = new System.Windows.Forms.ToolStripButton();
 			this.tsbOutputWave = new System.Windows.Forms.ToolStripButton();
+			this.tbpInstList = new System.Windows.Forms.TabPage();
+			this.lstInst = new System.Windows.Forms.ListBox();
+			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
 			this.tsbAddInst = new System.Windows.Forms.ToolStripButton();
 			this.tsbDeleteInst = new System.Windows.Forms.ToolStripButton();
 			this.tsbCopyInst = new System.Windows.Forms.ToolStripButton();
 			this.tsbPasteInst = new System.Windows.Forms.ToolStripButton();
-			this.tsbAddRange = new System.Windows.Forms.ToolStripButton();
-			this.pictRange = new System.Windows.Forms.PictureBox();
+			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
 			this.menuStrip1.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tbpPcmList.SuspendLayout();
 			this.toolStrip3.SuspendLayout();
 			this.tbpInstList.SuspendLayout();
 			this.toolStrip2.SuspendLayout();
-			this.tbpInstAttribute.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.grdArt)).BeginInit();
-			this.tbpLayerAttribute.SuspendLayout();
-			this.toolStrip1.SuspendLayout();
-			this.pnlRegion.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictRange)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// menuStrip1
@@ -90,7 +75,7 @@
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Padding = new System.Windows.Forms.Padding(13, 4, 0, 4);
-			this.menuStrip1.Size = new System.Drawing.Size(1803, 44);
+			this.menuStrip1.Size = new System.Drawing.Size(1686, 44);
 			this.menuStrip1.TabIndex = 0;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -199,9 +184,7 @@
 			// 
 			this.tabControl.Controls.Add(this.tbpPcmList);
 			this.tabControl.Controls.Add(this.tbpInstList);
-			this.tabControl.Controls.Add(this.tbpInstAttribute);
-			this.tabControl.Controls.Add(this.tbpLayerAttribute);
-			this.tabControl.Location = new System.Drawing.Point(26, 54);
+			this.tabControl.Location = new System.Drawing.Point(16, 50);
 			this.tabControl.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.tabControl.Name = "tabControl";
 			this.tabControl.SelectedIndex = 0;
@@ -250,6 +233,42 @@
 			this.toolStrip3.TabIndex = 0;
 			this.toolStrip3.Text = "toolStrip3";
 			// 
+			// tsbAddWave
+			// 
+			this.tsbAddWave.AutoSize = false;
+			this.tsbAddWave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbAddWave.Image = global::DLSeditor.Properties.Resources.plus;
+			this.tsbAddWave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsbAddWave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbAddWave.Name = "tsbAddWave";
+			this.tsbAddWave.Size = new System.Drawing.Size(32, 32);
+			this.tsbAddWave.Text = "波形追加";
+			this.tsbAddWave.Click += new System.EventHandler(this.tsbAddWave_Click);
+			// 
+			// tsbDeleteWave
+			// 
+			this.tsbDeleteWave.AutoSize = false;
+			this.tsbDeleteWave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbDeleteWave.Image = global::DLSeditor.Properties.Resources.minus;
+			this.tsbDeleteWave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsbDeleteWave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbDeleteWave.Name = "tsbDeleteWave";
+			this.tsbDeleteWave.Size = new System.Drawing.Size(32, 32);
+			this.tsbDeleteWave.Text = "波形削除";
+			this.tsbDeleteWave.Click += new System.EventHandler(this.tsbDeleteWave_Click);
+			// 
+			// tsbOutputWave
+			// 
+			this.tsbOutputWave.AutoSize = false;
+			this.tsbOutputWave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbOutputWave.Image = global::DLSeditor.Properties.Resources.waveout;
+			this.tsbOutputWave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsbOutputWave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbOutputWave.Name = "tsbOutputWave";
+			this.tsbOutputWave.Size = new System.Drawing.Size(32, 32);
+			this.tsbOutputWave.Text = "波形ファイル出力";
+			this.tsbOutputWave.Click += new System.EventHandler(this.tsbOutputWave_Click);
+			// 
 			// tbpInstList
 			// 
 			this.tbpInstList.Controls.Add(this.lstInst);
@@ -291,108 +310,6 @@
 			this.toolStrip2.Size = new System.Drawing.Size(141, 35);
 			this.toolStrip2.TabIndex = 2;
 			this.toolStrip2.Text = "toolStrip2";
-			// 
-			// tbpInstAttribute
-			// 
-			this.tbpInstAttribute.Controls.Add(this.grdArt);
-			this.tbpInstAttribute.Location = new System.Drawing.Point(8, 39);
-			this.tbpInstAttribute.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpInstAttribute.Name = "tbpInstAttribute";
-			this.tbpInstAttribute.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpInstAttribute.Size = new System.Drawing.Size(1624, 687);
-			this.tbpInstAttribute.TabIndex = 1;
-			this.tbpInstAttribute.Text = "音色設定";
-			this.tbpInstAttribute.UseVisualStyleBackColor = true;
-			// 
-			// grdArt
-			// 
-			this.grdArt.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.grdArt.Location = new System.Drawing.Point(9, 8);
-			this.grdArt.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.grdArt.Name = "grdArt";
-			this.grdArt.RowTemplate.Height = 21;
-			this.grdArt.Size = new System.Drawing.Size(774, 410);
-			this.grdArt.TabIndex = 0;
-			// 
-			// tbpLayerAttribute
-			// 
-			this.tbpLayerAttribute.Controls.Add(this.toolStrip1);
-			this.tbpLayerAttribute.Controls.Add(this.pnlRegion);
-			this.tbpLayerAttribute.Location = new System.Drawing.Point(8, 39);
-			this.tbpLayerAttribute.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpLayerAttribute.Name = "tbpLayerAttribute";
-			this.tbpLayerAttribute.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpLayerAttribute.Size = new System.Drawing.Size(1624, 687);
-			this.tbpLayerAttribute.TabIndex = 2;
-			this.tbpLayerAttribute.Text = "レイヤー設定";
-			this.tbpLayerAttribute.UseVisualStyleBackColor = true;
-			// 
-			// toolStrip1
-			// 
-			this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
-			this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
-			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbAddRange,
-            this.tslPos});
-			this.toolStrip1.Location = new System.Drawing.Point(7, 6);
-			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-			this.toolStrip1.Size = new System.Drawing.Size(211, 35);
-			this.toolStrip1.TabIndex = 2;
-			this.toolStrip1.Text = "toolStrip1";
-			// 
-			// tslPos
-			// 
-			this.tslPos.Name = "tslPos";
-			this.tslPos.Size = new System.Drawing.Size(175, 32);
-			this.tslPos.Text = "toolStripLabel1";
-			// 
-			// pnlRegion
-			// 
-			this.pnlRegion.AutoScroll = true;
-			this.pnlRegion.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.pnlRegion.Controls.Add(this.pictRange);
-			this.pnlRegion.Location = new System.Drawing.Point(9, 62);
-			this.pnlRegion.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.pnlRegion.Name = "pnlRegion";
-			this.pnlRegion.Size = new System.Drawing.Size(1408, 550);
-			this.pnlRegion.TabIndex = 1;
-			// 
-			// tsbAddWave
-			// 
-			this.tsbAddWave.AutoSize = false;
-			this.tsbAddWave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbAddWave.Image = global::DLSeditor.Properties.Resources.plus;
-			this.tsbAddWave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.tsbAddWave.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbAddWave.Name = "tsbAddWave";
-			this.tsbAddWave.Size = new System.Drawing.Size(32, 32);
-			this.tsbAddWave.Text = "波形追加";
-			this.tsbAddWave.Click += new System.EventHandler(this.tsbAddWave_Click);
-			// 
-			// tsbDeleteWave
-			// 
-			this.tsbDeleteWave.AutoSize = false;
-			this.tsbDeleteWave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbDeleteWave.Image = global::DLSeditor.Properties.Resources.minus;
-			this.tsbDeleteWave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.tsbDeleteWave.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbDeleteWave.Name = "tsbDeleteWave";
-			this.tsbDeleteWave.Size = new System.Drawing.Size(32, 32);
-			this.tsbDeleteWave.Text = "波形削除";
-			this.tsbDeleteWave.Click += new System.EventHandler(this.tsbDeleteWave_Click);
-			// 
-			// tsbOutputWave
-			// 
-			this.tsbOutputWave.AutoSize = false;
-			this.tsbOutputWave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbOutputWave.Image = global::DLSeditor.Properties.Resources.waveout;
-			this.tsbOutputWave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.tsbOutputWave.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbOutputWave.Name = "tsbOutputWave";
-			this.tsbOutputWave.Size = new System.Drawing.Size(32, 32);
-			this.tsbOutputWave.Text = "波形ファイル出力";
-			this.tsbOutputWave.Click += new System.EventHandler(this.tsbOutputWave_Click);
 			// 
 			// tsbAddInst
 			// 
@@ -446,34 +363,11 @@
 			this.tsbPasteInst.ToolTipText = "音色貼り付け";
 			this.tsbPasteInst.Click += new System.EventHandler(this.tsbPasteInst_Click);
 			// 
-			// tsbAddRange
-			// 
-			this.tsbAddRange.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbAddRange.Image = global::DLSeditor.Properties.Resources.plus;
-			this.tsbAddRange.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.tsbAddRange.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbAddRange.Name = "tsbAddRange";
-			this.tsbAddRange.Size = new System.Drawing.Size(23, 32);
-			this.tsbAddRange.Text = "toolStripButton1";
-			this.tsbAddRange.Click += new System.EventHandler(this.tsbAddRange_Click);
-			// 
-			// pictRange
-			// 
-			this.pictRange.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictRange.BackgroundImage")));
-			this.pictRange.InitialImage = null;
-			this.pictRange.Location = new System.Drawing.Point(0, 0);
-			this.pictRange.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.pictRange.Name = "pictRange";
-			this.pictRange.Size = new System.Drawing.Size(1664, 768);
-			this.pictRange.TabIndex = 0;
-			this.pictRange.TabStop = false;
-			this.pictRange.DoubleClick += new System.EventHandler(this.pictRange_DoubleClick);
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1803, 814);
+			this.ClientSize = new System.Drawing.Size(1686, 814);
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.menuStrip1);
 			this.MainMenuStrip = this.menuStrip1;
@@ -492,14 +386,6 @@
 			this.tbpInstList.PerformLayout();
 			this.toolStrip2.ResumeLayout(false);
 			this.toolStrip2.PerformLayout();
-			this.tbpInstAttribute.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.grdArt)).EndInit();
-			this.tbpLayerAttribute.ResumeLayout(false);
-			this.tbpLayerAttribute.PerformLayout();
-			this.toolStrip1.ResumeLayout(false);
-			this.toolStrip1.PerformLayout();
-			this.pnlRegion.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.pictRange)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -529,13 +415,7 @@
 		private System.Windows.Forms.ToolStripButton tsbDeleteInst;
 		private System.Windows.Forms.ToolStripButton tsbCopyInst;
 		private System.Windows.Forms.ToolStripButton tsbPasteInst;
-		private System.Windows.Forms.TabPage tbpInstAttribute;
 		private System.Windows.Forms.ListBox lstInst;
-		private System.Windows.Forms.TabPage tbpLayerAttribute;
-		private System.Windows.Forms.PictureBox pictRange;
-		private System.Windows.Forms.Panel pnlRegion;
-		private System.Windows.Forms.ToolStrip toolStrip1;
-		private System.Windows.Forms.ToolStripLabel tslPos;
 		private System.Windows.Forms.TabPage tbpPcmList;
 		private System.Windows.Forms.ListBox lstWave;
 		private System.Windows.Forms.ToolStrip toolStrip3;
@@ -543,8 +423,6 @@
 		private System.Windows.Forms.ToolStripButton tsbDeleteWave;
 		private System.Windows.Forms.ToolStripButton tsbOutputWave;
 		private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-		private System.Windows.Forms.DataGridView grdArt;
-		private System.Windows.Forms.ToolStripButton tsbAddRange;
 	}
 }
 
