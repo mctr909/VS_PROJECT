@@ -25,7 +25,7 @@ namespace DLSeditor {
 		private void 新規作成NToolStripMenuItem_Click(object sender, EventArgs e) {
 			mDLS = new DLS.DLS();
 			DispInstList();
-			DispPcmList();
+			DispWaveList();
 			tabControl.SelectedIndex = 0;
 			mFilePath = "";
 		}
@@ -56,7 +56,7 @@ namespace DLSeditor {
 			}
 
 			DispInstList();
-			DispPcmList();
+			DispWaveList();
 			tabControl.SelectedIndex = 0;
 			mFilePath = filePath;
 		}
@@ -226,7 +226,7 @@ namespace DLSeditor {
 				return;
 			}
 
-			var inst = mDLS.Instruments.List[GetLocale()];
+			var inst = mDLS.Instruments.List[GetLocale(lstInst.SelectedIndex)];
 
 			tbpInstAttribute.Text = string.Format("音色設定[{0}]", inst.Info.Name);
 
@@ -268,8 +268,13 @@ namespace DLSeditor {
 			}
 
 			var index = lstInst.SelectedIndex;
-			mDLS.Instruments.List.Remove(GetLocale());
+			var indices = lstInst.SelectedIndices;
+			foreach (int idx in indices) {
+				mDLS.Instruments.List.Remove(GetLocale(idx));
+			}
+
 			DispInstList();
+			DispWaveList();
 			if (index < lstInst.Items.Count) {
 				lstInst.SelectedIndex = index;
 			}
@@ -285,8 +290,7 @@ namespace DLSeditor {
 			DispInstList();
 		}
 
-		private DLS.MidiLocale GetLocale() {
-			var index = lstInst.SelectedIndex;
+		private DLS.MidiLocale GetLocale(int index) {
 			var cols = lstInst.Items[index].ToString().Split('\t');
 
 			var locale = new DLS.MidiLocale();
@@ -301,16 +305,16 @@ namespace DLSeditor {
 
 		#region レイヤー設定
 		private void pictRange_DoubleClick(object sender, EventArgs e) {
-			if(0 == lstInst.Items.Count) {
+			if(lstInst.SelectedIndex < 0) {
 				return;
 			}
 
 			var cp = pictRange.PointToClient(Cursor.Position);
 			cp.X = (int)(cp.X / 6 + 0.5);
-			cp.Y = (int)((pictRange.Height - cp.Y) / 6 + 0.5);
+			cp.Y = (int)((pictRange.Height - cp.Y) / 3 + 0.5);
 
 			DLS.RGN rgn;
-			var inst = mDLS.Instruments.List[GetLocale()];
+			var inst = mDLS.Instruments.List[GetLocale(lstInst.SelectedIndex)];
 			foreach (var region in inst.Regions.List.Values) {
 				var key = region.Header.Key;
 				var vel = region.Header.Velocity;
@@ -325,7 +329,7 @@ namespace DLSeditor {
 		}
 
 		private void DispRegionInfo() {
-			var inst = mDLS.Instruments.List[GetLocale()];
+			var inst = mDLS.Instruments.List[GetLocale(lstInst.SelectedIndex)];
 
 			tbpLayerAttribute.Text = string.Format("レイヤー設定[{0}]", inst.Info.Name);
 
@@ -340,16 +344,16 @@ namespace DLSeditor {
 				g.DrawRectangle(
 					blueLine,
 					key.Low * 6,
-					vel.Low * 6,
+					vel.Low * 3,
 					(key.High - key.Low + 1) * 6,
-					(vel.High - vel.Low + 1) * 6
+					(vel.High - vel.Low + 1) * 3
 				);
 				g.FillRectangle(
 					greenFill,
 					key.Low * 6,
-					vel.Low * 6,
+					vel.Low * 3,
 					(key.High - key.Low + 1) * 6,
-					(vel.High - vel.Low + 1) * 6
+					(vel.High - vel.Low + 1) * 3
 				);
 			}
 
@@ -371,11 +375,11 @@ namespace DLSeditor {
 			var fm = new WaveInfoForm(mWaveOut, mDLS, idx);
 			var index = lstWave.SelectedIndex;
 			fm.ShowDialog();
-			DispPcmList();
+			DispWaveList();
 			lstWave.SelectedIndex = index;
 		}
 
-		private void DispPcmList() {
+		private void DispWaveList() {
 			lstWave.Items.Clear();
 			int count = 0;
 			foreach (var wave in mDLS.WavePool.List) {
@@ -443,9 +447,8 @@ namespace DLSeditor {
 				mDLS.WavePool.List.Add(mDLS.WavePool.List.Count, wave);
 			}
 
-			DispPcmList();
+			DispWaveList();
 		}
-
 		#endregion
 	}
 }

@@ -48,25 +48,25 @@
 			this.tbpPcmList = new System.Windows.Forms.TabPage();
 			this.lstWave = new System.Windows.Forms.ListBox();
 			this.toolStrip3 = new System.Windows.Forms.ToolStrip();
-			this.tsbAddWave = new System.Windows.Forms.ToolStripButton();
-			this.tsbDeleteWave = new System.Windows.Forms.ToolStripButton();
-			this.tsbOutputWave = new System.Windows.Forms.ToolStripButton();
 			this.tbpInstList = new System.Windows.Forms.TabPage();
 			this.lstInst = new System.Windows.Forms.ListBox();
 			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-			this.tsbAddInst = new System.Windows.Forms.ToolStripButton();
-			this.tsbDeleteInst = new System.Windows.Forms.ToolStripButton();
-			this.tsbCopyInst = new System.Windows.Forms.ToolStripButton();
-			this.tsbPasteInst = new System.Windows.Forms.ToolStripButton();
 			this.tbpInstAttribute = new System.Windows.Forms.TabPage();
+			this.grdArt = new System.Windows.Forms.DataGridView();
 			this.tbpLayerAttribute = new System.Windows.Forms.TabPage();
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.tslPos = new System.Windows.Forms.ToolStripLabel();
 			this.pnlRegion = new System.Windows.Forms.Panel();
-			this.pictRange = new System.Windows.Forms.PictureBox();
 			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-			this.grdArt = new System.Windows.Forms.DataGridView();
+			this.tsbAddWave = new System.Windows.Forms.ToolStripButton();
+			this.tsbDeleteWave = new System.Windows.Forms.ToolStripButton();
+			this.tsbOutputWave = new System.Windows.Forms.ToolStripButton();
+			this.tsbAddInst = new System.Windows.Forms.ToolStripButton();
+			this.tsbDeleteInst = new System.Windows.Forms.ToolStripButton();
+			this.tsbCopyInst = new System.Windows.Forms.ToolStripButton();
+			this.tsbPasteInst = new System.Windows.Forms.ToolStripButton();
 			this.tsbAddRange = new System.Windows.Forms.ToolStripButton();
+			this.pictRange = new System.Windows.Forms.PictureBox();
 			this.menuStrip1.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tbpPcmList.SuspendLayout();
@@ -74,11 +74,11 @@
 			this.tbpInstList.SuspendLayout();
 			this.toolStrip2.SuspendLayout();
 			this.tbpInstAttribute.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.grdArt)).BeginInit();
 			this.tbpLayerAttribute.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
 			this.pnlRegion.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictRange)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.grdArt)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// menuStrip1
@@ -250,6 +250,114 @@
 			this.toolStrip3.TabIndex = 0;
 			this.toolStrip3.Text = "toolStrip3";
 			// 
+			// tbpInstList
+			// 
+			this.tbpInstList.Controls.Add(this.lstInst);
+			this.tbpInstList.Controls.Add(this.toolStrip2);
+			this.tbpInstList.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.tbpInstList.Location = new System.Drawing.Point(8, 39);
+			this.tbpInstList.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.tbpInstList.Name = "tbpInstList";
+			this.tbpInstList.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.tbpInstList.Size = new System.Drawing.Size(1624, 687);
+			this.tbpInstList.TabIndex = 0;
+			this.tbpInstList.Text = "音色一覧";
+			this.tbpInstList.UseVisualStyleBackColor = true;
+			// 
+			// lstInst
+			// 
+			this.lstInst.FormattingEnabled = true;
+			this.lstInst.ItemHeight = 38;
+			this.lstInst.Location = new System.Drawing.Point(7, 62);
+			this.lstInst.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.lstInst.Name = "lstInst";
+			this.lstInst.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.lstInst.Size = new System.Drawing.Size(255, 156);
+			this.lstInst.TabIndex = 3;
+			this.lstInst.DoubleClick += new System.EventHandler(this.lstInst_DoubleClick);
+			// 
+			// toolStrip2
+			// 
+			this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
+			this.toolStrip2.ImageScalingSize = new System.Drawing.Size(32, 32);
+			this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsbAddInst,
+            this.tsbDeleteInst,
+            this.tsbCopyInst,
+            this.tsbPasteInst});
+			this.toolStrip2.Location = new System.Drawing.Point(0, 0);
+			this.toolStrip2.Name = "toolStrip2";
+			this.toolStrip2.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+			this.toolStrip2.Size = new System.Drawing.Size(141, 35);
+			this.toolStrip2.TabIndex = 2;
+			this.toolStrip2.Text = "toolStrip2";
+			// 
+			// tbpInstAttribute
+			// 
+			this.tbpInstAttribute.Controls.Add(this.grdArt);
+			this.tbpInstAttribute.Location = new System.Drawing.Point(8, 39);
+			this.tbpInstAttribute.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.tbpInstAttribute.Name = "tbpInstAttribute";
+			this.tbpInstAttribute.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.tbpInstAttribute.Size = new System.Drawing.Size(1624, 687);
+			this.tbpInstAttribute.TabIndex = 1;
+			this.tbpInstAttribute.Text = "音色設定";
+			this.tbpInstAttribute.UseVisualStyleBackColor = true;
+			// 
+			// grdArt
+			// 
+			this.grdArt.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.grdArt.Location = new System.Drawing.Point(9, 8);
+			this.grdArt.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.grdArt.Name = "grdArt";
+			this.grdArt.RowTemplate.Height = 21;
+			this.grdArt.Size = new System.Drawing.Size(774, 410);
+			this.grdArt.TabIndex = 0;
+			// 
+			// tbpLayerAttribute
+			// 
+			this.tbpLayerAttribute.Controls.Add(this.toolStrip1);
+			this.tbpLayerAttribute.Controls.Add(this.pnlRegion);
+			this.tbpLayerAttribute.Location = new System.Drawing.Point(8, 39);
+			this.tbpLayerAttribute.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.tbpLayerAttribute.Name = "tbpLayerAttribute";
+			this.tbpLayerAttribute.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.tbpLayerAttribute.Size = new System.Drawing.Size(1624, 687);
+			this.tbpLayerAttribute.TabIndex = 2;
+			this.tbpLayerAttribute.Text = "レイヤー設定";
+			this.tbpLayerAttribute.UseVisualStyleBackColor = true;
+			// 
+			// toolStrip1
+			// 
+			this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+			this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsbAddRange,
+            this.tslPos});
+			this.toolStrip1.Location = new System.Drawing.Point(7, 6);
+			this.toolStrip1.Name = "toolStrip1";
+			this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+			this.toolStrip1.Size = new System.Drawing.Size(211, 35);
+			this.toolStrip1.TabIndex = 2;
+			this.toolStrip1.Text = "toolStrip1";
+			// 
+			// tslPos
+			// 
+			this.tslPos.Name = "tslPos";
+			this.tslPos.Size = new System.Drawing.Size(175, 32);
+			this.tslPos.Text = "toolStripLabel1";
+			// 
+			// pnlRegion
+			// 
+			this.pnlRegion.AutoScroll = true;
+			this.pnlRegion.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.pnlRegion.Controls.Add(this.pictRange);
+			this.pnlRegion.Location = new System.Drawing.Point(9, 62);
+			this.pnlRegion.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.pnlRegion.Name = "pnlRegion";
+			this.pnlRegion.Size = new System.Drawing.Size(1408, 550);
+			this.pnlRegion.TabIndex = 1;
+			// 
 			// tsbAddWave
 			// 
 			this.tsbAddWave.AutoSize = false;
@@ -285,47 +393,6 @@
 			this.tsbOutputWave.Size = new System.Drawing.Size(32, 32);
 			this.tsbOutputWave.Text = "波形ファイル出力";
 			this.tsbOutputWave.Click += new System.EventHandler(this.tsbOutputWave_Click);
-			// 
-			// tbpInstList
-			// 
-			this.tbpInstList.Controls.Add(this.lstInst);
-			this.tbpInstList.Controls.Add(this.toolStrip2);
-			this.tbpInstList.Font = new System.Drawing.Font("Meiryo UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.tbpInstList.Location = new System.Drawing.Point(8, 39);
-			this.tbpInstList.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpInstList.Name = "tbpInstList";
-			this.tbpInstList.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpInstList.Size = new System.Drawing.Size(1624, 687);
-			this.tbpInstList.TabIndex = 0;
-			this.tbpInstList.Text = "音色一覧";
-			this.tbpInstList.UseVisualStyleBackColor = true;
-			// 
-			// lstInst
-			// 
-			this.lstInst.FormattingEnabled = true;
-			this.lstInst.ItemHeight = 38;
-			this.lstInst.Location = new System.Drawing.Point(7, 62);
-			this.lstInst.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.lstInst.Name = "lstInst";
-			this.lstInst.Size = new System.Drawing.Size(255, 156);
-			this.lstInst.TabIndex = 3;
-			this.lstInst.DoubleClick += new System.EventHandler(this.lstInst_DoubleClick);
-			// 
-			// toolStrip2
-			// 
-			this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
-			this.toolStrip2.ImageScalingSize = new System.Drawing.Size(32, 32);
-			this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbAddInst,
-            this.tsbDeleteInst,
-            this.tsbCopyInst,
-            this.tsbPasteInst});
-			this.toolStrip2.Location = new System.Drawing.Point(0, 0);
-			this.toolStrip2.Name = "toolStrip2";
-			this.toolStrip2.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-			this.toolStrip2.Size = new System.Drawing.Size(141, 35);
-			this.toolStrip2.TabIndex = 2;
-			this.toolStrip2.Text = "toolStrip2";
 			// 
 			// tsbAddInst
 			// 
@@ -379,84 +446,6 @@
 			this.tsbPasteInst.ToolTipText = "音色貼り付け";
 			this.tsbPasteInst.Click += new System.EventHandler(this.tsbPasteInst_Click);
 			// 
-			// tbpInstAttribute
-			// 
-			this.tbpInstAttribute.Controls.Add(this.grdArt);
-			this.tbpInstAttribute.Location = new System.Drawing.Point(8, 39);
-			this.tbpInstAttribute.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpInstAttribute.Name = "tbpInstAttribute";
-			this.tbpInstAttribute.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpInstAttribute.Size = new System.Drawing.Size(1624, 687);
-			this.tbpInstAttribute.TabIndex = 1;
-			this.tbpInstAttribute.Text = "音色設定";
-			this.tbpInstAttribute.UseVisualStyleBackColor = true;
-			// 
-			// tbpLayerAttribute
-			// 
-			this.tbpLayerAttribute.Controls.Add(this.toolStrip1);
-			this.tbpLayerAttribute.Controls.Add(this.pnlRegion);
-			this.tbpLayerAttribute.Location = new System.Drawing.Point(8, 39);
-			this.tbpLayerAttribute.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpLayerAttribute.Name = "tbpLayerAttribute";
-			this.tbpLayerAttribute.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tbpLayerAttribute.Size = new System.Drawing.Size(1624, 687);
-			this.tbpLayerAttribute.TabIndex = 2;
-			this.tbpLayerAttribute.Text = "レイヤー設定";
-			this.tbpLayerAttribute.UseVisualStyleBackColor = true;
-			// 
-			// toolStrip1
-			// 
-			this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
-			this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
-			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbAddRange,
-            this.tslPos});
-			this.toolStrip1.Location = new System.Drawing.Point(7, 6);
-			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-			this.toolStrip1.Size = new System.Drawing.Size(211, 35);
-			this.toolStrip1.TabIndex = 2;
-			this.toolStrip1.Text = "toolStrip1";
-			// 
-			// tslPos
-			// 
-			this.tslPos.Name = "tslPos";
-			this.tslPos.Size = new System.Drawing.Size(175, 36);
-			this.tslPos.Text = "toolStripLabel1";
-			// 
-			// pnlRegion
-			// 
-			this.pnlRegion.AutoScroll = true;
-			this.pnlRegion.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.pnlRegion.Controls.Add(this.pictRange);
-			this.pnlRegion.Location = new System.Drawing.Point(9, 62);
-			this.pnlRegion.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.pnlRegion.Name = "pnlRegion";
-			this.pnlRegion.Size = new System.Drawing.Size(1408, 550);
-			this.pnlRegion.TabIndex = 1;
-			// 
-			// pictRange
-			// 
-			this.pictRange.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictRange.BackgroundImage")));
-			this.pictRange.InitialImage = null;
-			this.pictRange.Location = new System.Drawing.Point(0, 0);
-			this.pictRange.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.pictRange.Name = "pictRange";
-			this.pictRange.Size = new System.Drawing.Size(1664, 1536);
-			this.pictRange.TabIndex = 0;
-			this.pictRange.TabStop = false;
-			this.pictRange.DoubleClick += new System.EventHandler(this.pictRange_DoubleClick);
-			// 
-			// grdArt
-			// 
-			this.grdArt.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.grdArt.Location = new System.Drawing.Point(9, 8);
-			this.grdArt.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.grdArt.Name = "grdArt";
-			this.grdArt.RowTemplate.Height = 21;
-			this.grdArt.Size = new System.Drawing.Size(774, 410);
-			this.grdArt.TabIndex = 0;
-			// 
 			// tsbAddRange
 			// 
 			this.tsbAddRange.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -467,6 +456,18 @@
 			this.tsbAddRange.Size = new System.Drawing.Size(23, 32);
 			this.tsbAddRange.Text = "toolStripButton1";
 			this.tsbAddRange.Click += new System.EventHandler(this.tsbAddRange_Click);
+			// 
+			// pictRange
+			// 
+			this.pictRange.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictRange.BackgroundImage")));
+			this.pictRange.InitialImage = null;
+			this.pictRange.Location = new System.Drawing.Point(0, 0);
+			this.pictRange.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.pictRange.Name = "pictRange";
+			this.pictRange.Size = new System.Drawing.Size(1664, 768);
+			this.pictRange.TabIndex = 0;
+			this.pictRange.TabStop = false;
+			this.pictRange.DoubleClick += new System.EventHandler(this.pictRange_DoubleClick);
 			// 
 			// MainForm
 			// 
@@ -492,13 +493,13 @@
 			this.toolStrip2.ResumeLayout(false);
 			this.toolStrip2.PerformLayout();
 			this.tbpInstAttribute.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.grdArt)).EndInit();
 			this.tbpLayerAttribute.ResumeLayout(false);
 			this.tbpLayerAttribute.PerformLayout();
 			this.toolStrip1.ResumeLayout(false);
 			this.toolStrip1.PerformLayout();
 			this.pnlRegion.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.pictRange)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.grdArt)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

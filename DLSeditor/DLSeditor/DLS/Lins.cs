@@ -5,8 +5,17 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace DLS {
+	public sealed class LINSSort : IComparer<MidiLocale> {
+		// IComparerの実装
+		public int Compare(MidiLocale x, MidiLocale y) {
+			var xKey = ((x.BankFlags & 0x80) << 17) | (x.ProgramNo << 16) | (x.BankMSB << 8) | x.BankLSB;
+			var yKey = ((y.BankFlags & 0x80) << 17) | (y.ProgramNo << 16) | (y.BankMSB << 8) | y.BankLSB;
+			return xKey - yKey;
+		}
+	}
+
 	unsafe public class LINS : Chunk {
-		public Dictionary<MidiLocale, INS> List = new Dictionary<MidiLocale, INS>();
+		public SortedDictionary<MidiLocale, INS> List = new SortedDictionary<MidiLocale, INS>(new LINSSort());
 
 		public LINS() { }
 

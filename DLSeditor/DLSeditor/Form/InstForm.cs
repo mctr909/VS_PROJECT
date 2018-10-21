@@ -30,17 +30,17 @@ namespace DLSeditor {
 			"Accordion",
 			"Harmonica",
 			"Tango Accordion",
-			"Acoustic Giutar (Nylon)",
-			"Acoustic Giutar (Steel)",
-			"Electoric Giutar (Jazz)",
-			"Electoric Giutar (Clean)",
-			"Electoric Giutar (Muted)",
+			"Acoustic Giutar(Nylon)",
+			"Acoustic Giutar(Steel)",
+			"Electoric Giutar(Jazz)",
+			"Electoric Giutar(Clean)",
+			"Electoric Giutar(Muted)",
 			"Overdriven Guitar",
 			"Distortion Guitar",
 			"Guitar Harmonics",
 			"Acoustic Bass",
-			"Electoric Bass (Fingar)",
-			"Electoric Bass (Pick)",
+			"Electoric Bass(Fingar)",
+			"Electoric Bass(Pick)",
 			"Fretless Bass",
 			"Slap Bass 1",
 			"Slap Bass 2",
@@ -143,40 +143,24 @@ namespace DLSeditor {
 		}
 
 		private void InstAddForm_Load(object sender, EventArgs e) {
-			setList();
+			setProgramList();
+			setBankMsbList();
+			setBankLsbList();
 		}
 
 		private void rbDrum_CheckedChanged(object sender, EventArgs e) {
-			var index = lstPrgNo.SelectedIndex;
-			if (rbDrum.Checked) {
-				lstPrgNo.Items.Clear();
-				for (byte i = 0; i < 128; ++i) {
-					lstPrgNo.Items.Add(string.Format("{0} {1}", i.ToString("000"), ""));
-				}
-			}
-			else {
-				lstPrgNo.Items.Clear();
-				for (byte i = 0; i < 128; ++i) {
-					lstPrgNo.Items.Add(string.Format("{0} {1}", i.ToString("000"), GM_INST_NAME[i]));
-				}
-			}
-			lstPrgNo.SelectedIndex = index;
+			setProgramList();
+			setBankMsbList();
+			setBankLsbList();
 		}
 
 		private void lstPrgNo_SelectedIndexChanged(object sender, EventArgs e) {
-			if (!string.IsNullOrWhiteSpace(txtInstName.Text)) {
-				return;
-			}
-			if (rbDrum.Checked) {
-
-			}
-			else {
-				txtInstName.Text = GM_INST_NAME[lstPrgNo.SelectedIndex];
-			}
+			setBankMsbList();
+			setBankLsbList();
 		}
 
 		private void lstBankMSB_SelectedIndexChanged(object sender, EventArgs e) {
-
+			setBankLsbList();
 		}
 
 		private void lstBankLSB_SelectedIndexChanged(object sender, EventArgs e) {
@@ -200,16 +184,115 @@ namespace DLSeditor {
 			Close();
 		}
 
-		private void setList() {
+		private void setProgramList() {
+			lstPrgNo.Items.Clear();
+
 			for (byte i = 0; i < 128; ++i) {
-				lstPrgNo.Items.Add(string.Format("{0} {1}", i.ToString("000"), GM_INST_NAME[i]));
-				lstBankMSB.Items.Add(i.ToString("000"));
-				lstBankLSB.Items.Add(i.ToString("000"));
+				var strUse = "   ";
+				foreach (var inst in mDLS.Instruments.List.Keys) {
+					if (rbDrum.Checked) {
+						if (0x80 == inst.BankFlags) {
+							if (i == inst.ProgramNo) {
+								strUse = "use";
+								break;
+							}
+						}
+					}
+					else {
+						if (0x00 == inst.BankFlags) {
+							if (i == inst.ProgramNo) {
+								strUse = "use";
+								break;
+							}
+						}
+					}
+				}
+
+				if (rbDrum.Checked) {
+					lstPrgNo.Items.Add(string.Format("{0} {1}", i.ToString("000"), strUse));
+				}
+				else {
+					lstPrgNo.Items.Add(string.Format("{0} {1} {2}", i.ToString("000"), strUse, GM_INST_NAME[i]));
+				}
 			}
-			lstPrgNo.SelectedIndex = 0;
-			lstBankMSB.SelectedIndex = 0;
-			lstBankLSB.SelectedIndex = 0;
-			txtInstName.Text = "";
+		}
+
+		private void setBankMsbList() {
+			var prgIndex = lstPrgNo.SelectedIndex;
+			if (prgIndex < 0) {
+				prgIndex = 0;
+			}
+
+			lstBankMSB.Items.Clear();
+
+			for (byte i = 0; i < 128; ++i) {
+				var strUse = "   ";
+				foreach (var inst in mDLS.Instruments.List.Keys) {
+					if (rbDrum.Checked) {
+						if (0x80 == inst.BankFlags) {
+							if (prgIndex == inst.ProgramNo &&
+								i == inst.BankMSB
+							) {
+								strUse = "use";
+								break;
+							}
+						}
+					}
+					else {
+						if (0x00 == inst.BankFlags) {
+							if (prgIndex == inst.ProgramNo &&
+								i == inst.BankMSB
+							) {
+								strUse = "use";
+								break;
+							}
+						}
+					}
+				}
+				lstBankMSB.Items.Add(string.Format("{0} {1}", i.ToString("000"), strUse));
+			}
+		}
+
+		private void setBankLsbList() {
+			var prgIndex = lstPrgNo.SelectedIndex;
+			var msbIndex = lstBankMSB.SelectedIndex;
+			if (prgIndex < 0) {
+				prgIndex = 0;
+			}
+			if (msbIndex < 0) {
+				msbIndex = 0;
+			}
+
+			lstBankLSB.Items.Clear();
+
+			for (byte i = 0; i < 128; ++i) {
+				var strUse = "   ";
+				foreach (var inst in mDLS.Instruments.List.Keys) {
+					if (rbDrum.Checked) {
+						if (0x80 == inst.BankFlags) {
+							if (prgIndex == inst.ProgramNo &&
+								msbIndex == inst.BankMSB &&
+								i == inst.BankLSB
+							) {
+								strUse = "use";
+								break;
+							}
+						}
+					}
+					else {
+						if (0x00 == inst.BankFlags) {
+							if (prgIndex == inst.ProgramNo &&
+								msbIndex == inst.BankMSB &&
+								i == inst.BankLSB
+							) {
+								strUse = "use";
+								break;
+							}
+						}
+					}
+				}
+				lstBankLSB.Items.Add(string.Format("{0} {1}", i.ToString("000"), strUse));
+			}
 		}
 	}
 }
