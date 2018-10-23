@@ -177,6 +177,7 @@ namespace DLSeditor {
 			inst.Info.Name = txtInstName.Text;
 
 			if (mDLS.Instruments.List.ContainsKey(inst.Header.Locale)) {
+				MessageBox.Show("既に同じ識別子の音色が存在します。");
 				return;
 			}
 

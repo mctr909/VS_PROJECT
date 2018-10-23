@@ -229,7 +229,7 @@
 			this.toolStrip3.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.toolStrip3.Name = "toolStrip3";
 			this.toolStrip3.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-			this.toolStrip3.Size = new System.Drawing.Size(109, 35);
+			this.toolStrip3.Size = new System.Drawing.Size(171, 38);
 			this.toolStrip3.TabIndex = 0;
 			this.toolStrip3.Text = "toolStrip3";
 			// 

@@ -145,5 +145,11 @@
   <ItemGroup>
     <None Include="Image\waveout.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\key.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -29,11 +29,15 @@ namespace DLSeditor {
 			this.tabControl = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
+			this.lstRegion = new System.Windows.Forms.ListBox();
 			this.pnlRegion = new System.Windows.Forms.Panel();
 			this.pictRange = new System.Windows.Forms.PictureBox();
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.tsbAddRange = new System.Windows.Forms.ToolStripButton();
-			this.tslPos = new System.Windows.Forms.ToolStripLabel();
+			this.tsbDeleteRange = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbRangeList = new System.Windows.Forms.ToolStripButton();
+			this.tsbRangeKey = new System.Windows.Forms.ToolStripButton();
 			this.tabControl.SuspendLayout();
 			this.tabPage2.SuspendLayout();
 			this.pnlRegion.SuspendLayout();
@@ -63,6 +67,7 @@ namespace DLSeditor {
 			// 
 			// tabPage2
 			// 
+			this.tabPage2.Controls.Add(this.lstRegion);
 			this.tabPage2.Controls.Add(this.pnlRegion);
 			this.tabPage2.Controls.Add(this.toolStrip1);
 			this.tabPage2.Location = new System.Drawing.Point(8, 39);
@@ -73,16 +78,28 @@ namespace DLSeditor {
 			this.tabPage2.Text = "レイヤー設定";
 			this.tabPage2.UseVisualStyleBackColor = true;
 			// 
+			// lstRegion
+			// 
+			this.lstRegion.FormattingEnabled = true;
+			this.lstRegion.ItemHeight = 24;
+			this.lstRegion.Location = new System.Drawing.Point(21, 47);
+			this.lstRegion.Name = "lstRegion";
+			this.lstRegion.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.lstRegion.Size = new System.Drawing.Size(120, 76);
+			this.lstRegion.TabIndex = 5;
+			this.lstRegion.DoubleClick += new System.EventHandler(this.lstRegion_DoubleClick);
+			// 
 			// pnlRegion
 			// 
 			this.pnlRegion.AutoScroll = true;
 			this.pnlRegion.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.pnlRegion.Controls.Add(this.pictRange);
-			this.pnlRegion.Location = new System.Drawing.Point(7, 44);
+			this.pnlRegion.Location = new System.Drawing.Point(22, 153);
 			this.pnlRegion.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.pnlRegion.Name = "pnlRegion";
-			this.pnlRegion.Size = new System.Drawing.Size(1408, 550);
+			this.pnlRegion.Size = new System.Drawing.Size(1439, 731);
 			this.pnlRegion.TabIndex = 4;
+			this.pnlRegion.Visible = false;
 			// 
 			// pictRange
 			// 
@@ -95,6 +112,7 @@ namespace DLSeditor {
 			this.pictRange.TabIndex = 0;
 			this.pictRange.TabStop = false;
 			this.pictRange.DoubleClick += new System.EventHandler(this.pictRange_DoubleClick);
+			this.pictRange.MouseHover += new System.EventHandler(this.pictRange_MouseHover);
 			// 
 			// toolStrip1
 			// 
@@ -102,11 +120,14 @@ namespace DLSeditor {
 			this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbAddRange,
-            this.tslPos});
+            this.tsbDeleteRange,
+            this.toolStripSeparator1,
+            this.tsbRangeList,
+            this.tsbRangeKey});
 			this.toolStrip1.Location = new System.Drawing.Point(3, 3);
 			this.toolStrip1.Name = "toolStrip1";
 			this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-			this.toolStrip1.Size = new System.Drawing.Size(211, 35);
+			this.toolStrip1.Size = new System.Drawing.Size(111, 25);
 			this.toolStrip1.TabIndex = 3;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
@@ -117,15 +138,49 @@ namespace DLSeditor {
 			this.tsbAddRange.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsbAddRange.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbAddRange.Name = "tsbAddRange";
-			this.tsbAddRange.Size = new System.Drawing.Size(23, 32);
+			this.tsbAddRange.Size = new System.Drawing.Size(23, 22);
 			this.tsbAddRange.Text = "toolStripButton1";
 			this.tsbAddRange.Click += new System.EventHandler(this.tsbAddRange_Click);
 			// 
-			// tslPos
+			// tsbDeleteRange
 			// 
-			this.tslPos.Name = "tslPos";
-			this.tslPos.Size = new System.Drawing.Size(175, 32);
-			this.tslPos.Text = "toolStripLabel1";
+			this.tsbDeleteRange.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbDeleteRange.Image = global::DLSeditor.Properties.Resources.minus;
+			this.tsbDeleteRange.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsbDeleteRange.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbDeleteRange.Name = "tsbDeleteRange";
+			this.tsbDeleteRange.Size = new System.Drawing.Size(23, 22);
+			this.tsbDeleteRange.Text = "toolStripButton1";
+			this.tsbDeleteRange.Click += new System.EventHandler(this.tsbDeleteRange_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbRangeList
+			// 
+			this.tsbRangeList.Checked = true;
+			this.tsbRangeList.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.tsbRangeList.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbRangeList.Image = global::DLSeditor.Properties.Resources.list;
+			this.tsbRangeList.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsbRangeList.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbRangeList.Name = "tsbRangeList";
+			this.tsbRangeList.Size = new System.Drawing.Size(23, 22);
+			this.tsbRangeList.Text = "リスト表示";
+			this.tsbRangeList.Click += new System.EventHandler(this.tsbRangeList_Click);
+			// 
+			// tsbRangeKey
+			// 
+			this.tsbRangeKey.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbRangeKey.Image = global::DLSeditor.Properties.Resources.key;
+			this.tsbRangeKey.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsbRangeKey.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbRangeKey.Name = "tsbRangeKey";
+			this.tsbRangeKey.Size = new System.Drawing.Size(23, 22);
+			this.tsbRangeKey.Text = "グラフィック表示";
+			this.tsbRangeKey.Click += new System.EventHandler(this.tsbRangeKey_Click);
 			// 
 			// InstInfoForm
 			// 
@@ -153,8 +208,12 @@ namespace DLSeditor {
 		private System.Windows.Forms.TabPage tabPage2;
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		private System.Windows.Forms.ToolStripButton tsbAddRange;
-		private System.Windows.Forms.ToolStripLabel tslPos;
 		private System.Windows.Forms.Panel pnlRegion;
 		private System.Windows.Forms.PictureBox pictRange;
+		private ToolStripButton tsbDeleteRange;
+		private ToolStripSeparator toolStripSeparator1;
+		private ToolStripButton tsbRangeList;
+		private ToolStripButton tsbRangeKey;
+		private ListBox lstRegion;
 	}
 }

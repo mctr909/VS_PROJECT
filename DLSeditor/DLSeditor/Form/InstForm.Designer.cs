@@ -54,7 +54,7 @@
 			this.txtInstName.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.txtInstName.Name = "txtInstName";
 			this.txtInstName.Size = new System.Drawing.Size(783, 37);
-			this.txtInstName.TabIndex = 1;
+			this.txtInstName.TabIndex = 0;
 			// 
 			// lstPrgNo
 			// 
@@ -65,7 +65,7 @@
 			this.lstPrgNo.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.lstPrgNo.Name = "lstPrgNo";
 			this.lstPrgNo.Size = new System.Drawing.Size(455, 364);
-			this.lstPrgNo.TabIndex = 2;
+			this.lstPrgNo.TabIndex = 0;
 			this.lstPrgNo.SelectedIndexChanged += new System.EventHandler(this.lstPrgNo_SelectedIndexChanged);
 			// 
 			// lstBankMSB
@@ -77,7 +77,7 @@
 			this.lstBankMSB.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.lstBankMSB.Name = "lstBankMSB";
 			this.lstBankMSB.Size = new System.Drawing.Size(144, 364);
-			this.lstBankMSB.TabIndex = 3;
+			this.lstBankMSB.TabIndex = 0;
 			this.lstBankMSB.SelectedIndexChanged += new System.EventHandler(this.lstBankMSB_SelectedIndexChanged);
 			// 
 			// lstBankLSB
@@ -89,7 +89,7 @@
 			this.lstBankLSB.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.lstBankLSB.Name = "lstBankLSB";
 			this.lstBankLSB.Size = new System.Drawing.Size(144, 364);
-			this.lstBankLSB.TabIndex = 4;
+			this.lstBankLSB.TabIndex = 0;
 			this.lstBankLSB.SelectedIndexChanged += new System.EventHandler(this.lstBankLSB_SelectedIndexChanged);
 			// 
 			// btnAdd
@@ -154,7 +154,7 @@
 			this.groupBox2.Location = new System.Drawing.Point(12, 211);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(476, 410);
-			this.groupBox2.TabIndex = 6;
+			this.groupBox2.TabIndex = 2;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "プログラムナンバー";
 			// 
@@ -165,7 +165,7 @@
 			this.groupBox3.Location = new System.Drawing.Point(494, 211);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(166, 410);
-			this.groupBox3.TabIndex = 7;
+			this.groupBox3.TabIndex = 3;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "バンクMSB";
 			// 
@@ -176,7 +176,7 @@
 			this.groupBox4.Location = new System.Drawing.Point(666, 211);
 			this.groupBox4.Name = "groupBox4";
 			this.groupBox4.Size = new System.Drawing.Size(166, 410);
-			this.groupBox4.TabIndex = 8;
+			this.groupBox4.TabIndex = 4;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "バンクLSB";
 			// 
@@ -187,7 +187,7 @@
 			this.groupBox5.Location = new System.Drawing.Point(12, 121);
 			this.groupBox5.Name = "groupBox5";
 			this.groupBox5.Size = new System.Drawing.Size(820, 81);
-			this.groupBox5.TabIndex = 9;
+			this.groupBox5.TabIndex = 1;
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "音色名";
 			// 

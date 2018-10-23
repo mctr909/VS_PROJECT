@@ -5,8 +5,17 @@ using System.Runtime.InteropServices;
 using System.IO;
 
 namespace DLS {
+	public sealed class LRGNSort : IComparer<CK_RGNH> {
+		// IComparerの実装
+		public int Compare(CK_RGNH x, CK_RGNH y) {
+			var xKey = (x.Key.Low << 24) | (x.Key.High << 16) | (x.Velocity.Low << 8) | x.Velocity.High;
+			var yKey = (y.Key.Low << 24) | (y.Key.High << 16) | (y.Velocity.Low << 8) | y.Velocity.High;
+			return xKey - yKey;
+		}
+	}
+
 	unsafe public class LRGN : Chunk {
-		public Dictionary<int, RGN> List = new Dictionary<int, RGN>();
+		public SortedDictionary<CK_RGNH, RGN> List = new SortedDictionary<CK_RGNH, RGN>(new LRGNSort());
 
 		public LRGN() { }
 
@@ -15,7 +24,8 @@ namespace DLS {
 		protected override void LoadList(byte* ptr, byte* endPtr) {
 			switch (mList.Type) {
 			case CK_LIST.TYPE.RGN_:
-				List.Add(List.Count, new RGN(ptr, endPtr));
+				var rgn = new RGN(ptr, endPtr);
+				List.Add(rgn.Header, rgn);
 				break;
 			default:
 				throw new Exception(string.Format("Unknown ListType [{0}]", Encoding.ASCII.GetString(BitConverter.GetBytes((uint)mList.Type))));

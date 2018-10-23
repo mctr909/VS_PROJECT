@@ -161,8 +161,10 @@ namespace DLSeditor {
 			var offsetX = 16;
 			var offsetY = 60;
 			var width = tabControl.Width - offsetX;
-			var height = tabControl.Height - offsetY;
+			var height = tabControl.Height - offsetY - 4;
 
+			lstInst.Left = 0;
+			lstInst.Top = toolStrip2.Height + 4;
 			lstInst.Width = width;
 			lstInst.Height = height;
 		}
@@ -171,8 +173,10 @@ namespace DLSeditor {
 			var offsetX = 16;
 			var offsetY = 60;
 			var width = tabControl.Width - offsetX;
-			var height = tabControl.Height - offsetY;
+			var height = tabControl.Height - offsetY - 4;
 
+			lstWave.Left = 0;
+			lstWave.Top = toolStrip3.Height + 4;
 			lstWave.Width = width;
 			lstWave.Height = height;
 		}
