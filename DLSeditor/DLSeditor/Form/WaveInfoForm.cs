@@ -81,6 +81,9 @@ namespace DLSeditor {
 		}
 
 		private void WaveInfoForm_Load(object sender, EventArgs e) {
+			SetPosition();
+			SizeChange();
+
 			InitWave();
 			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
 			mScaleLoop = Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
@@ -90,6 +93,10 @@ namespace DLSeditor {
 			if (null != mWaveOut) {
 				mWaveOut.Stop();
 			}
+		}
+
+		private void WaveInfoForm_SizeChanged(object sender, EventArgs e) {
+			SizeChange();
 		}
 
 		#region クリックイベント
@@ -217,14 +224,6 @@ namespace DLSeditor {
 		#endregion
 
 		private void timer1_Tick(object sender, EventArgs e) {
-			grbMain.Width = Width - grbMain.Left - 22;
-			grbLoop.Width = Width - grbLoop.Left - 22;
-
-			picSpectrum.Width = Width - (picSpectrum.Left + grbMain.Left) * 2 - 16;
-			picWave.Width = Width - (picWave.Left + grbMain.Left) * 2 - 16;
-			hsbTime.Width = Width - (hsbTime.Left + grbMain.Left) * 2 - 16;
-			picLoop.Width = Width - (picLoop.Left + grbLoop.Left) * 2 - 16;
-
 			if (0.0 < mWaveOut.mPitch) {
 				var x = 12.0 * Math.Log(mWaveOut.mPitch / 8.1757989, 2.0);
 				mDetectNote = (int)(x + 0.5);
@@ -242,6 +241,46 @@ namespace DLSeditor {
 			DrawSpec();
 			DrawWave();
 			DrawLoop();
+		}
+
+		private void SetPosition() {
+			//
+			picWave.Height = 168;
+			numScale.Top = 0;
+			picSpectrum.Top = numScale.Top + numScale.Height + 4;
+			picWave.Top = picSpectrum.Top + picSpectrum.Height + 4;
+			hsbTime.Top = picWave.Top + picWave.Height + 4;
+
+			// 
+			grbMain.Top = btnPlay.Top + btnPlay.Height + 4;
+			grbMain.Height
+				= numScale.Height + 4
+				+ picSpectrum.Height + 4
+				+ picWave.Height + 4
+				+ hsbTime.Height + 6
+			;
+
+			//
+			picLoop.Height = 168;
+			numScaleLoop.Top = 0;
+			picLoop.Top = numScaleLoop.Top + numScaleLoop.Height + 4;
+
+			//
+			grbLoop.Top = grbMain.Top + grbMain.Height + 4;
+			grbLoop.Height
+				= numScaleLoop.Height + 4
+				+ picLoop.Height + 6
+			;
+		}
+
+		private void SizeChange() {
+			grbMain.Width = Width - grbMain.Left - 22;
+			picSpectrum.Width = Width - (picSpectrum.Left + grbMain.Left) * 2 - 16;
+			picWave.Width = Width - (picWave.Left + grbMain.Left) * 2 - 16;
+			hsbTime.Width = Width - (hsbTime.Left + grbMain.Left) * 2 - 16;
+
+			grbLoop.Width = Width - grbLoop.Left - 22;
+			picLoop.Width = Width - (picLoop.Left + grbLoop.Left) * 2 - 16;
 		}
 
 		private void InitWave() {

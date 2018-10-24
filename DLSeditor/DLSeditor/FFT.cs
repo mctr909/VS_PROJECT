@@ -226,33 +226,39 @@ public class FFT {
 
 		Nsdf();
 
+		var clipLength = 0;
 		var clipCount = 0;
 		var clipIndexSum = 0;
-		var clipIndexList = new List<double>();
+		var clipIndexBegin = 1.0;
+		var clipIndexEnd = 1.0;
 		for (var i = (N >> 1) - 1; 0 <= i; --i) {
 			if (0.8 < Re[i]) {
-				++clipCount;
+				++clipLength;
 				clipIndexSum += i;
 			}
 			else {
-				if (0 < clipCount) {
-					clipIndexList.Add(clipIndexSum / clipCount);
-					clipCount = 0;
+				if (0 < clipLength) {
+					clipIndexBegin = clipIndexSum / clipLength;
+					if (0 == clipCount) {
+						clipIndexEnd = clipIndexBegin;
+					}
+					++clipCount;
+					clipLength = 0;
 					clipIndexSum = 0;
 				}
 			}
 		}
 
-		if (0.0 == clipIndexList.Count) {
+		if (0.0 == clipCount) {
 			return 0.0;
 		}
 
-		var clipIndexBase = clipIndexList[0] / clipIndexList[clipIndexList.Count - 1];
-		if (clipIndexList.Count < (int)clipIndexBase) {
-			return SampleRate * clipIndexBase / clipIndexList[0];
+		var clipIndexBase = clipIndexEnd / clipIndexBegin;
+		if (clipCount < (int)clipIndexBase) {
+			return SampleRate * clipIndexBase / clipIndexEnd;
 		}
 		else {
-			return SampleRate * clipIndexList.Count / clipIndexList[0];
+			return SampleRate * clipCount / clipIndexEnd;
 		}
 	}
 }

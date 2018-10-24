@@ -130,7 +130,7 @@
             0});
 			this.numScale.Name = "numScale";
 			this.numScale.Size = new System.Drawing.Size(125, 37);
-			this.numScale.TabIndex = 5;
+			this.numScale.TabIndex = 0;
 			this.numScale.Value = new decimal(new int[] {
             24,
             0,
@@ -160,7 +160,7 @@
 			this.grbMain.Location = new System.Drawing.Point(12, 96);
 			this.grbMain.Name = "grbMain";
 			this.grbMain.Size = new System.Drawing.Size(1706, 564);
-			this.grbMain.TabIndex = 7;
+			this.grbMain.TabIndex = 5;
 			this.grbMain.TabStop = false;
 			this.grbMain.Text = "ループ範囲選択";
 			// 
@@ -170,7 +170,7 @@
 			this.btnLoopCreate.Location = new System.Drawing.Point(563, 0);
 			this.btnLoopCreate.Name = "btnLoopCreate";
 			this.btnLoopCreate.Size = new System.Drawing.Size(161, 42);
-			this.btnLoopCreate.TabIndex = 11;
+			this.btnLoopCreate.TabIndex = 2;
 			this.btnLoopCreate.Text = "ループ作成";
 			this.btnLoopCreate.UseVisualStyleBackColor = true;
 			this.btnLoopCreate.Click += new System.EventHandler(this.btnLoopCreate_Click);
@@ -181,7 +181,7 @@
 			this.btnUpdate.Location = new System.Drawing.Point(358, 0);
 			this.btnUpdate.Name = "btnUpdate";
 			this.btnUpdate.Size = new System.Drawing.Size(199, 42);
-			this.btnUpdate.TabIndex = 10;
+			this.btnUpdate.TabIndex = 1;
 			this.btnUpdate.Text = "ループ範囲反映";
 			this.btnUpdate.UseVisualStyleBackColor = true;
 			this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
@@ -195,7 +195,7 @@
 			this.grbLoop.Location = new System.Drawing.Point(12, 670);
 			this.grbLoop.Name = "grbLoop";
 			this.grbLoop.Size = new System.Drawing.Size(1706, 261);
-			this.grbLoop.TabIndex = 8;
+			this.grbLoop.TabIndex = 6;
 			this.grbLoop.TabStop = false;
 			this.grbLoop.Text = "ループ範囲表示";
 			// 
@@ -216,7 +216,7 @@
             0});
 			this.numScaleLoop.Name = "numScaleLoop";
 			this.numScaleLoop.Size = new System.Drawing.Size(125, 37);
-			this.numScaleLoop.TabIndex = 7;
+			this.numScaleLoop.TabIndex = 0;
 			this.numScaleLoop.Value = new decimal(new int[] {
             40,
             0,
@@ -254,7 +254,7 @@
             -2147483648});
 			this.numFineTune.Name = "numFineTune";
 			this.numFineTune.Size = new System.Drawing.Size(120, 36);
-			this.numFineTune.TabIndex = 2;
+			this.numFineTune.TabIndex = 0;
 			this.numFineTune.ValueChanged += new System.EventHandler(this.numFineTune_ValueChanged);
 			// 
 			// lblUnityNote
@@ -275,7 +275,7 @@
 			this.groupBox1.Location = new System.Drawing.Point(575, 12);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(224, 74);
-			this.groupBox1.TabIndex = 14;
+			this.groupBox1.TabIndex = 2;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "基準音";
 			// 
@@ -286,7 +286,7 @@
 			this.groupBox2.Location = new System.Drawing.Point(805, 12);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(162, 74);
-			this.groupBox2.TabIndex = 15;
+			this.groupBox2.TabIndex = 3;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "ピッチ(cent)";
 			// 
@@ -328,7 +328,7 @@
 			this.btnUpdateAutoTune.Location = new System.Drawing.Point(1213, 12);
 			this.btnUpdateAutoTune.Name = "btnUpdateAutoTune";
 			this.btnUpdateAutoTune.Size = new System.Drawing.Size(252, 74);
-			this.btnUpdateAutoTune.TabIndex = 18;
+			this.btnUpdateAutoTune.TabIndex = 4;
 			this.btnUpdateAutoTune.Text = "検出した音程を反映";
 			this.btnUpdateAutoTune.UseVisualStyleBackColor = true;
 			this.btnUpdateAutoTune.Click += new System.EventHandler(this.btnUpdateAutoTune_Click);
@@ -340,7 +340,7 @@
 			this.groupBox4.Location = new System.Drawing.Point(154, 12);
 			this.groupBox4.Name = "groupBox4";
 			this.groupBox4.Size = new System.Drawing.Size(415, 74);
-			this.groupBox4.TabIndex = 20;
+			this.groupBox4.TabIndex = 1;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "名称";
 			// 
@@ -372,6 +372,7 @@
 			this.Text = "WaveInfoForm";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WaveInfoForm_FormClosing);
 			this.Load += new System.EventHandler(this.WaveInfoForm_Load);
+			this.SizeChanged += new System.EventHandler(this.WaveInfoForm_SizeChanged);
 			((System.ComponentModel.ISupportInitialize)(this.picSpectrum)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picWave)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numScale)).EndInit();

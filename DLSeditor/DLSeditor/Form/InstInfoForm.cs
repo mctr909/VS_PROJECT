@@ -118,7 +118,8 @@ namespace DLSeditor {
 		}
 
 		private void tsbAddRange_Click(object sender, EventArgs e) {
-
+			var fm = new RegionInfoForm();
+			fm.ShowDialog();
 		}
 
 		private void tsbDeleteRange_Click(object sender, EventArgs e) {
