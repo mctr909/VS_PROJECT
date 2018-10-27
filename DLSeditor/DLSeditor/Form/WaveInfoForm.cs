@@ -245,14 +245,14 @@ namespace DLSeditor {
 
 		private void SetPosition() {
 			//
-			picWave.Height = 168;
+			picWave.Height = 96;
 			numScale.Top = 0;
 			picSpectrum.Top = numScale.Top + numScale.Height + 4;
 			picWave.Top = picSpectrum.Top + picSpectrum.Height + 4;
 			hsbTime.Top = picWave.Top + picWave.Height + 4;
 
 			// 
-			grbMain.Top = btnPlay.Top + btnPlay.Height + 4;
+			grbMain.Top = btnPlay.Top + btnPlay.Height + 6;
 			grbMain.Height
 				= numScale.Height + 4
 				+ picSpectrum.Height + 4
@@ -261,12 +261,12 @@ namespace DLSeditor {
 			;
 
 			//
-			picLoop.Height = 168;
+			picLoop.Height = 192;
 			numScaleLoop.Top = 0;
 			picLoop.Top = numScaleLoop.Top + numScaleLoop.Height + 4;
 
 			//
-			grbLoop.Top = grbMain.Top + grbMain.Height + 4;
+			grbLoop.Top = grbMain.Top + grbMain.Height + 6;
 			grbLoop.Height
 				= numScaleLoop.Height + 4
 				+ picLoop.Height + 6

@@ -69,12 +69,6 @@
     <Compile Include="Form\InstForm.Designer.cs">
       <DependentUpon>InstForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\InstInfoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form\InstInfoForm.Designer.cs">
-      <DependentUpon>InstInfoForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form\RegionInfoForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -92,9 +86,6 @@
     </Compile>
     <Compile Include="WaveOutLib.cs" />
     <Compile Include="WavePlayback.cs" />
-    <EmbeddedResource Include="Form\InstInfoForm.resx">
-      <DependentUpon>InstInfoForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Form\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
