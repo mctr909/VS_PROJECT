@@ -221,7 +221,7 @@ public class FFT {
 		var N = Re.Length;
 
 		for (int i = 0; i < N; ++i) {
-			Re[i] *= 0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / N);
+			Re[i] *= 0.6 - 0.4 * Math.Cos(2.0 * Math.PI * i / N);
 		}
 
 		Nsdf();
@@ -231,8 +231,8 @@ public class FFT {
 		var clipIndexSum = 0;
 		var clipIndexBegin = 1.0;
 		var clipIndexEnd = 1.0;
-		for (var i = (N >> 1) - 1; 0 <= i; --i) {
-			if (0.8 < Re[i]) {
+		for (var i = (N >> 2) - 1; 0 <= i; --i) {
+			if (0.8 < Re[i] * (1.0 + (double)i / N)) {
 				++clipLength;
 				clipIndexSum += i;
 			}

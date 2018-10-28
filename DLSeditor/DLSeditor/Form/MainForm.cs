@@ -2,18 +2,21 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections.Generic;
 
 namespace DLSeditor {
 	public partial class MainForm : Form {
-		private WavePlayback mWaveOut;
 		private DLS.DLS mDLS;
 		private string mFilePath;
 		private bool onRange;
 
+		private readonly string[] NoteName = new string[] {
+			"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"
+		};
+
 		public MainForm() {
 			InitializeComponent();
 			SetTabSize();
-			mWaveOut = new WavePlayback();
 			mDLS = new DLS.DLS();
 
 			timer1.Interval = 50;
@@ -29,7 +32,13 @@ namespace DLSeditor {
 			tstRegion.Text = "";
 			if (onRange) {
 				var posRegion = PosToRegeon();
-				tstRegion.Text = string.Format("音程:{0} 強弱:{1}", posRegion.X.ToString("000"), posRegion.Y.ToString("000"));
+				tstRegion.Text = string.Format(
+					"音程:{0} 強弱:{1} ({2}{3})",
+					posRegion.X.ToString("000"),
+					posRegion.Y.ToString("000"),
+					NoteName[posRegion.X % 12],
+					(posRegion.X/12 - 2)
+				);
 			}
 		}
 
@@ -38,6 +47,7 @@ namespace DLSeditor {
 			mDLS = new DLS.DLS();
 			DispInstList();
 			DispWaveList();
+			DispRegionInfo();
 			tabControl.SelectedIndex = 0;
 			mFilePath = "";
 		}
@@ -69,6 +79,7 @@ namespace DLSeditor {
 
 			DispInstList();
 			DispWaveList();
+			DispRegionInfo();
 			tabControl.SelectedIndex = 0;
 			mFilePath = filePath;
 		}
@@ -96,19 +107,52 @@ namespace DLSeditor {
 
 		#region メニューバー[編集]
 		private void 追加AToolStripMenuItem_Click(object sender, EventArgs e) {
-			AddInst();
+			switch (tabControl.SelectedTab.Name) {
+			case "tbpWaveList":
+				AddWave();
+				break;
+			case "tbpInstList":
+				AddInst();
+				break;
+			case "tbpRegion":
+				AddRegion();
+				break;
+			}
 		}
 
 		private void 削除DToolStripMenuItem_Click(object sender, EventArgs e) {
-			DeleteInst();
+			switch (tabControl.SelectedTab.Name) {
+			case "tbpWaveList":
+				DeleteWave();
+				break;
+			case "tbpInstList":
+				DeleteInst();
+				break;
+			case "tbpRegion":
+				DeleteRegion();
+				break;
+			}
 		}
 
 		private void コピーCToolStripMenuItem_Click(object sender, EventArgs e) {
-			CopyInst();
+			switch (tabControl.SelectedTab.Name) {
+			case "tbpWaveList":
+				break;
+			case "tbpInstList":
+				CopyInst();
+				break;
+			}
 		}
 
+
 		private void 貼り付けPToolStripMenuItem_Click(object sender, EventArgs e) {
-			PasteInst();
+			switch (tabControl.SelectedTab.Name) {
+			case "tbpWaveList":
+				break;
+			case "tbpInstList":
+				PasteInst();
+				break;
+			}
 		}
 		#endregion
 
@@ -130,21 +174,43 @@ namespace DLSeditor {
 		}
 
 		private void tsbAddWave_Click(object sender, EventArgs e) {
-			WaveFileAdd();
+			AddWave();
 		}
 
 		private void tsbDeleteWave_Click(object sender, EventArgs e) {
-			foreach (var inst in mDLS.Instruments.List.Values) {
-				foreach (var rgn in inst.Regions.List.Values) {
-					if (lstWave.SelectedIndex == rgn.WaveLink.TableIndex) {
-						return;
-					}
-				}
-			}
+			DeleteWave();
 		}
 
 		private void tsbOutputWave_Click(object sender, EventArgs e) {
 			WaveFileOut();
+		}
+
+		private void tsbAddRange_Click(object sender, EventArgs e) {
+			AddRegion();
+		}
+
+		private void tsbDeleteRange_Click(object sender, EventArgs e) {
+			DeleteRegion();
+		}
+
+		private void tsbRangeList_Click(object sender, EventArgs e) {
+			tsbRangeKey.Checked = false;
+			tsbRangeList.Checked = true;
+			tsbAddRange.Enabled = true;
+			tsbDeleteRange.Enabled = true;
+
+			pnlRegion.Visible = false;
+			lstRegion.Visible = true;
+		}
+
+		private void tsbRangeKey_Click(object sender, EventArgs e) {
+			tsbAddRange.Enabled = false;
+			tsbDeleteRange.Enabled = false;
+			tsbRangeList.Checked = false;
+			tsbRangeKey.Checked = true;
+
+			lstRegion.Visible = false;
+			pnlRegion.Visible = true;
 		}
 		#endregion
 
@@ -175,7 +241,7 @@ namespace DLSeditor {
 		private void SetInstListSize() {
 			var offsetX = 16;
 			var offsetY = 60;
-			var width = tabControl.Width - offsetX;
+			var width = tabControl.Width - offsetX + 6;
 			var height = tabControl.Height - offsetY - 4;
 
 			lstInst.Left = 0;
@@ -187,7 +253,7 @@ namespace DLSeditor {
 		private void SetWaveListSize() {
 			var offsetX = 16;
 			var offsetY = 60;
-			var width = tabControl.Width - offsetX;
+			var width = tabControl.Width - offsetX + 6;
 			var height = tabControl.Height - offsetY - 4;
 
 			lstWave.Left = 0;
@@ -206,13 +272,17 @@ namespace DLSeditor {
 		private void SetInstRegionSize() {
 			var offsetX = 16;
 			var offsetY = 60;
-			var width = tabControl.Width - offsetX;
-			var height = tabControl.Height - offsetY;
+			var width = tabControl.Width - offsetX + 6;
+			var height = tabControl.Height - offsetY + 4;
+
+			picRegion.Width = picRegion.BackgroundImage.Width;
+			picRegion.Height = picRegion.BackgroundImage.Height;
 
 			pnlRegion.Left = 0;
 			pnlRegion.Top = toolStrip1.Height + 4;
 			pnlRegion.Width = width;
 			pnlRegion.Height = height;
+
 			lstRegion.Left = 0;
 			lstRegion.Top = toolStrip1.Height + 4;
 			lstRegion.Width = width;
@@ -223,21 +293,6 @@ namespace DLSeditor {
 		#region 音色一覧
 		private void lstInst_DoubleClick(object sender, EventArgs e) {
 			DispRegionInfo();
-		}
-
-		private void DispInstList() {
-			lstInst.Items.Clear();
-			lstInst.Font = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular);
-			foreach (var inst in mDLS.Instruments.List.Values) {
-				lstInst.Items.Add(string.Format(
-					"{0}\t{1}\t{2}\t{3}\t{4}",
-					(inst.Header.Locale.BankFlags & 0x80) == 0x80 ? "Drum" : "Note",
-					inst.Header.Locale.ProgramNo.ToString("000"),
-					inst.Header.Locale.BankMSB.ToString("000"),
-					inst.Header.Locale.BankLSB.ToString("000"),
-					inst.Info.Name
-				));
-			}
 		}
 
 		private void AddInst() {
@@ -259,6 +314,8 @@ namespace DLSeditor {
 
 			DispInstList();
 			DispWaveList();
+			DispRegionInfo();
+
 			if (index < lstInst.Items.Count) {
 				lstInst.SelectedIndex = index;
 			}
@@ -292,6 +349,28 @@ namespace DLSeditor {
 
 			return locale;
 		}
+
+		private void DispInstList() {
+			var idx = lstInst.SelectedIndex;
+
+			lstInst.Items.Clear();
+			lstInst.Font = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular);
+			foreach (var inst in mDLS.Instruments.List.Values) {
+				lstInst.Items.Add(string.Format(
+					"{0}\t{1}\t{2}\t{3}\t{4}",
+					(inst.Header.Locale.BankFlags & 0x80) == 0x80 ? "Drum" : "Note",
+					inst.Header.Locale.ProgramNo.ToString("000"),
+					inst.Header.Locale.BankMSB.ToString("000"),
+					inst.Header.Locale.BankLSB.ToString("000"),
+					inst.Info.Name
+				));
+			}
+
+			if (lstInst.Items.Count <= idx) {
+				idx = lstInst.Items.Count - 1;
+			}
+			lstInst.SelectedIndex = idx;
+		}
 		#endregion
 
 		#region 波形一覧
@@ -301,14 +380,109 @@ namespace DLSeditor {
 			}
 
 			var idx = lstWave.SelectedIndex;
-			var fm = new WaveInfoForm(mWaveOut, mDLS, idx);
+			var fm = new WaveInfoForm(new WavePlayback(), mDLS, idx);
 			var index = lstWave.SelectedIndex;
 			fm.ShowDialog();
 			DispWaveList();
 			lstWave.SelectedIndex = index;
 		}
 
+		private void WaveFileOut() {
+			folderBrowserDialog1.ShowDialog();
+			var folderPath = folderBrowserDialog1.SelectedPath;
+			if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath)) {
+				return;
+			}
+
+			var indices = lstWave.SelectedIndices;
+			foreach (var idx in indices) {
+				var wave = mDLS.WavePool.List[(int)idx];
+				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
+					wave.ToFile(Path.Combine(folderPath, string.Format("Wave{0}.wav", idx)));
+				}
+				else {
+					wave.ToFile(Path.Combine(folderPath, wave.Info.Name + ".wav"));
+				}
+			}
+		}
+
+		private void AddWave() {
+			openFileDialog1.FileName = "";
+			openFileDialog1.Filter = "wavファイル(*.wav)|*.wav";
+			openFileDialog1.Multiselect = true;
+			openFileDialog1.ShowDialog();
+			var filePaths = openFileDialog1.FileNames;
+
+			foreach (var filePath in filePaths) {
+				if (!File.Exists(filePath)) {
+					continue;
+				}
+
+				var wave = new DLS.WAVE(filePath);
+				mDLS.WavePool.List.Add(mDLS.WavePool.List.Count, wave);
+			}
+
+			DispWaveList();
+		}
+
+		private void DeleteWave() {
+			//
+			var deleteList = new Dictionary<int, bool>();
+			foreach (int selectedIndex in lstWave.SelectedIndices) {
+				var useFlag = false;
+				foreach (var inst in mDLS.Instruments.List.Values) {
+					foreach (var rgn in inst.Regions.List.Values) {
+						if (selectedIndex == rgn.WaveLink.TableIndex) {
+							useFlag = true;
+							break;
+						}
+					}
+				}
+
+				if (!useFlag) {
+					deleteList.Add(selectedIndex, useFlag);
+				}
+			}
+
+			//
+			var count = 0;
+			var renumberingList = new Dictionary<int, int>();
+			foreach (var wave in mDLS.WavePool.List) {
+				if (!deleteList.ContainsKey(wave.Key)) {
+					if (wave.Key != count) {
+						renumberingList.Add(wave.Key, count);
+					}
+					++count;
+				}
+			}
+
+			//
+			var waveList = new Dictionary<int, DLS.WAVE>();
+			foreach (var wave in mDLS.WavePool.List) {
+				if (!deleteList.ContainsKey(wave.Key)) {
+					waveList.Add(waveList.Count, wave.Value);
+				}
+			}
+			mDLS.WavePool.List.Clear();
+			mDLS.WavePool.List = waveList;
+
+			//
+			foreach (var inst in mDLS.Instruments.List.Values) {
+				foreach (var rgn in inst.Regions.List.Values) {
+					var index = (int)rgn.WaveLink.TableIndex;
+					if (renumberingList.ContainsKey(index)) {
+						mDLS.Instruments.List[inst.Header.Locale]
+							.Regions.List[rgn.Header].WaveLink.TableIndex = (uint)renumberingList[index];
+					}
+				}
+			}
+
+			DispWaveList();
+		}
+
 		private void DispWaveList() {
+			var idx = lstWave.SelectedIndex;
+
 			lstWave.Items.Clear();
 			int count = 0;
 			foreach (var wave in mDLS.WavePool.List) {
@@ -339,44 +513,11 @@ namespace DLSeditor {
 				));
 				++count;
 			}
-		}
 
-		private void WaveFileOut() {
-			folderBrowserDialog1.ShowDialog();
-			var folderPath = folderBrowserDialog1.SelectedPath;
-			if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath)) {
-				return;
+			if (lstWave.Items.Count <= idx) {
+				idx = lstWave.Items.Count - 1;
 			}
-
-			var indices = lstWave.SelectedIndices;
-			foreach (var idx in indices) {
-				var wave = mDLS.WavePool.List[(int)idx];
-				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
-					wave.ToFile(Path.Combine(folderPath, string.Format("Wave{0}.wav", idx)));
-				}
-				else {
-					wave.ToFile(Path.Combine(folderPath, wave.Info.Name + ".wav"));
-				}
-			}
-		}
-
-		private void WaveFileAdd() {
-			openFileDialog1.FileName = "";
-			openFileDialog1.Filter = "wavファイル(*.wav)|*.wav";
-			openFileDialog1.Multiselect = true;
-			openFileDialog1.ShowDialog();
-			var filePaths = openFileDialog1.FileNames;
-
-			foreach (var filePath in filePaths) {
-				if (!File.Exists(filePath)) {
-					continue;
-				}
-
-				var wave = new DLS.WAVE(filePath);
-				mDLS.WavePool.List.Add(mDLS.WavePool.List.Count, wave);
-			}
-
-			DispWaveList();
+			lstWave.SelectedIndex = idx;
 		}
 		#endregion
 
@@ -400,12 +541,16 @@ namespace DLSeditor {
 		}
 
 		private void lstRegion_DoubleClick(object sender, EventArgs e) {
+			if (lstInst.SelectedIndex < 0) {
+				return;
+			}
+
 			var fm = new RegionInfoForm(mDLS, GetLocale(lstInst.SelectedIndex), ListToRegeonId());
 			fm.ShowDialog();
 			DispRegionInfo();
 		}
 
-		private void tsbAddRange_Click(object sender, EventArgs e) {
+		private void AddRegion() {
 			var region = new DLS.CK_RGNH();
 			region.Key.Low = ushort.MaxValue;
 			region.Key.High = ushort.MaxValue;
@@ -416,7 +561,7 @@ namespace DLSeditor {
 			DispRegionInfo();
 		}
 
-		private void tsbDeleteRange_Click(object sender, EventArgs e) {
+		private void DeleteRegion() {
 			var inst = mDLS.Instruments.List[GetLocale(lstInst.SelectedIndex)];
 
 			var index = lstRegion.SelectedIndex;
@@ -445,42 +590,23 @@ namespace DLSeditor {
 			}
 		}
 
-		private void tsbRangeList_Click(object sender, EventArgs e) {
-			pnlRegion.Visible = false;
-			lstRegion.Visible = true;
-			tsbRangeKey.Checked = false;
-			tsbRangeList.Checked = true;
-			tsbAddRange.Enabled = true;
-			tsbDeleteRange.Enabled = true;
-		}
-
-		private void tsbRangeKey_Click(object sender, EventArgs e) {
-			tsbAddRange.Enabled = false;
-			tsbDeleteRange.Enabled = false;
-			tsbRangeList.Checked = false;
-			tsbRangeKey.Checked = true;
-
-			lstRegion.Visible = false;
-			pnlRegion.Visible = true;
-		}
-
 		private Point PosToRegeon() {
-			var posRegion = pictRange.PointToClient(Cursor.Position);
+			var posRegion = picRegion.PointToClient(Cursor.Position);
 			if (posRegion.X < 0) {
 				posRegion.X = 0;
 			}
 			if (posRegion.Y < 0) {
 				posRegion.Y = 0;
 			}
-			if (pictRange.Width <= posRegion.X) {
-				posRegion.X = pictRange.Width - 1;
+			if (picRegion.Width <= posRegion.X) {
+				posRegion.X = picRegion.Width - 1;
 			}
-			if (pictRange.Height <= posRegion.Y) {
-				posRegion.Y = pictRange.Height - 1;
+			if (picRegion.Height <= posRegion.Y) {
+				posRegion.Y = picRegion.Height - 1;
 			}
 
-			posRegion.Y = pictRange.Height - posRegion.Y - 1;
-			posRegion.X = (int)(posRegion.X / 6.0 + 0.1);
+			posRegion.Y = picRegion.Height - posRegion.Y - 1;
+			posRegion.X = (int)(posRegion.X / 7.0);
 			posRegion.Y = (int)(posRegion.Y / 3.0 + 0.1);
 
 			return posRegion;
@@ -521,9 +647,9 @@ namespace DLSeditor {
 		private void DispRegionInfo() {
 			if (!mDLS.Instruments.List.ContainsKey(GetLocale(lstInst.SelectedIndex))) {
 				lstRegion.Items.Clear();
-				if (null != pictRange.Image) {
-					pictRange.Image.Dispose();
-					pictRange.Image = null;
+				if (null != picRegion.Image) {
+					picRegion.Image.Dispose();
+					picRegion.Image = null;
 				}
 				tbpInstInfo.Text = "音色設定"; ;
 				tbpRegion.Text = "レイヤー設定";
@@ -535,12 +661,12 @@ namespace DLSeditor {
 			tbpInstInfo.Text = string.Format("音色設定[{0}]", inst.Info.Name.Trim());
 			tbpRegion.Text = string.Format("レイヤー設定[{0}]", inst.Info.Name.Trim());
 
-			var bmp = new Bitmap(pictRange.Width, pictRange.Height);
+			var bmp = new Bitmap(picRegion.Width, picRegion.Height);
 			var g = Graphics.FromImage(bmp);
 			var blueLine = new Pen(Color.FromArgb(255, 0, 0, 255), 2.0f);
-			var greenFill = new Pen(Color.FromArgb(64, 0, 255, 0), 1.0f).Brush;
+			var greenFill = new Pen(Color.FromArgb(48, 0, 255, 0), 1.0f).Brush;
 
-			var index = lstRegion.SelectedIndex;
+			var idx = lstRegion.SelectedIndex;
 			lstRegion.Items.Clear();
 
 			foreach (var region in inst.Regions.List.Values) {
@@ -548,16 +674,16 @@ namespace DLSeditor {
 				var vel = region.Header.Velocity;
 				g.DrawRectangle(
 					blueLine,
-					key.Low * 6,
+					key.Low * 7,
 					vel.Low * 3,
-					(key.High - key.Low + 1) * 6,
+					(key.High - key.Low + 1) * 7,
 					(vel.High - vel.Low + 1) * 3
 				);
 				g.FillRectangle(
 					greenFill,
-					key.Low * 6,
+					key.Low * 7,
 					vel.Low * 3,
-					(key.High - key.Low + 1) * 6,
+					(key.High - key.Low + 1) * 7,
 					(vel.High - vel.Low + 1) * 3
 				);
 
@@ -574,16 +700,16 @@ namespace DLSeditor {
 				));
 			}
 
-			if (null != pictRange.Image) {
-				pictRange.Image.Dispose();
-				pictRange.Image = null;
+			if (null != picRegion.Image) {
+				picRegion.Image.Dispose();
+				picRegion.Image = null;
 			}
-			pictRange.Image = bmp;
+			picRegion.Image = bmp;
 
-			if (lstRegion.Items.Count <= index) {
-				index = lstRegion.Items.Count - 1;
+			if (lstRegion.Items.Count <= idx) {
+				idx = lstRegion.Items.Count - 1;
 			}
-			lstRegion.SelectedIndex = index;
+			lstRegion.SelectedIndex = idx;
 		}
 		#endregion
 	}

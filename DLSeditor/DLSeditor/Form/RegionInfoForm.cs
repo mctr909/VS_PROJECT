@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DLSeditor {
@@ -20,13 +13,16 @@ namespace DLSeditor {
 
 		public RegionInfoForm(DLS.DLS dls, DLS.MidiLocale key, DLS.CK_RGNH regionId) {
 			InitializeComponent();
+
 			SetPosition();
 
 			mDLS = dls;
 			mKey = key;
 			mRegionId = regionId;
 
-			if (ushort.MaxValue != mRegionId.Key.Low) {
+			var inst = mDLS.Instruments.List[mKey];
+
+			if (ushort.MaxValue != mRegionId.Key.Low && inst.Regions.List.ContainsKey(mRegionId)) {
 				numKeyLow.Value = mRegionId.Key.Low;
 				numKeyHigh.Value = mRegionId.Key.High;
 				numVelocityLow.Value = mRegionId.Velocity.Low;
@@ -36,7 +32,6 @@ namespace DLSeditor {
 				numVelocityLow.Enabled = false;
 				numVelocityHigh.Enabled = false;
 
-				var inst = mDLS.Instruments.List[mKey];
 				var region = inst.Regions.List[mRegionId];
 				var wave = mDLS.WavePool.List[(int)region.WaveLink.TableIndex];
 
@@ -45,6 +40,13 @@ namespace DLSeditor {
 					region.WaveLink.TableIndex.ToString("0000"),
 					wave.Info.Name
 				);
+
+				numUnityNote.Value = region.Sampler.UnityNote;
+				numFineTune.Value = region.Sampler.FineTune;
+
+				btnAdd.Text = "反映";
+				SetKeyLowName();
+				SetKeyHighName();
 			}
 			else {
 				numKeyLow.Value = 63;
@@ -52,27 +54,18 @@ namespace DLSeditor {
 				numVelocityLow.Value = 63;
 				numVelocityHigh.Value = 63;
 				btnEditWave.Enabled = false;
+				btnAdd.Text = "追加";
+				SetKeyLowName();
+				SetKeyHighName();
 			}
 		}
 
 		private void numKeyLow_ValueChanged(object sender, EventArgs e) {
-			var oct = (int)numKeyLow.Value / 12 - 2;
-			var note = (int)numKeyLow.Value % 12;
-			lblKeyLow.Text = string.Format("{0}{1}", NoteName[note], oct);
-
-			if (numKeyHigh.Value < numKeyLow.Value) {
-				numKeyHigh.Value = numKeyLow.Value;
-			}
+			SetKeyLowName();
 		}
 
 		private void numKeyHigh_ValueChanged(object sender, EventArgs e) {
-			var oct = (int)numKeyHigh.Value / 12 - 2;
-			var note = (int)numKeyHigh.Value % 12;
-			lblKeyHigh.Text = string.Format("{0}{1}", NoteName[note], oct);
-
-			if (numKeyHigh.Value < numKeyLow.Value) {
-				numKeyLow.Value = numKeyHigh.Value;
-			}
+			SetKeyHighName();
 		}
 
 		private void numVelocityLow_ValueChanged(object sender, EventArgs e) {
@@ -87,12 +80,21 @@ namespace DLSeditor {
 			}
 		}
 
+		private void numUnityNote_ValueChanged(object sender, EventArgs e) {
+			var oct = (int)numUnityNote.Value / 12 - 2;
+			var note = (int)numUnityNote.Value % 12;
+			lblUnityNote.Text = string.Format("{0}{1}", NoteName[note], oct);
+		}
+
 		private void btnSelectWave_Click(object sender, EventArgs e) {
 
 		}
 
 		private void btnEditWave_Click(object sender, EventArgs e) {
-
+			var inst = mDLS.Instruments.List[mKey];
+			var region = inst.Regions.List[mRegionId];
+			var fm = new WaveInfoForm(new WavePlayback(), mDLS, (int)region.WaveLink.TableIndex);
+			fm.ShowDialog();
 		}
 
 		private void SetPosition() {
@@ -101,8 +103,8 @@ namespace DLSeditor {
 			lblKeyLow.Top = numKeyLow.Top + numKeyLow.Height + 2;
 			lblKeyHigh.Top = numKeyHigh.Top + numKeyHigh.Height + 2;
 			
-			glbKey.Top = 4;
-			glbKey.Height
+			grbKey.Top = 4;
+			grbKey.Height
 				= numKeyLow.Top
 				+ numKeyLow.Height + 2
 				+ lblKeyLow.Height + 4
@@ -110,18 +112,47 @@ namespace DLSeditor {
 
 			numVelocityLow.Top = numKeyLow.Top;
 			numVelocityHigh.Top = numKeyHigh.Top;
-			glbVelocity.Left = glbKey.Left + glbKey.Width + 36;
-			glbVelocity.Top = glbKey.Top;
-			glbVelocity.Height = glbKey.Height;
+			grbVelocity.Left = grbKey.Left + grbKey.Width + 36;
+			grbVelocity.Top = grbKey.Top;
+			grbVelocity.Height = grbKey.Height;
 
 			txtWave.Top = 12;
 			btnSelectWave.Top = 12;
 			btnEditWave.Top = 12;
 			btnSelectWave.Left = txtWave.Left + txtWave.Width + 4;
 			btnEditWave.Left = btnSelectWave.Left + btnSelectWave.Width + 4;
-			glbWave.Top = glbVelocity.Top + glbVelocity.Height + 6;
-			glbWave.Width = glbKey.Width + glbVelocity.Width + 36;
-			glbWave.Height = txtWave.Top + txtWave.Height + 6;
+			grbWave.Top = grbVelocity.Top + grbVelocity.Height + 6;
+			grbWave.Width = grbKey.Width + grbVelocity.Width + 36;
+			grbWave.Height = txtWave.Top + txtWave.Height + 6;
+
+			grbUnityNote.Top = grbWave.Top + grbWave.Height + 6;
+			grbFineTune.Top = grbUnityNote.Top;
+			grbFineTune.Left = grbUnityNote.Left + grbUnityNote.Width + 6;
+			btnAdd.Top = grbUnityNote.Top + 4;
+			btnAdd.Left = grbWave.Right - btnAdd.Width;
+
+			Width = grbWave.Left + grbWave.Width + 24;
+			Height = btnAdd.Top + grbUnityNote.Height + 48;
+		}
+
+		private void SetKeyLowName() {
+			var oct = (int)numKeyLow.Value / 12 - 2;
+			var note = (int)numKeyLow.Value % 12;
+			lblKeyLow.Text = string.Format("{0}{1}", NoteName[note], oct);
+
+			if (numKeyHigh.Value < numKeyLow.Value) {
+				numKeyHigh.Value = numKeyLow.Value;
+			}
+		}
+
+		private void SetKeyHighName() {
+			var oct = (int)numKeyHigh.Value / 12 - 2;
+			var note = (int)numKeyHigh.Value % 12;
+			lblKeyHigh.Text = string.Format("{0}{1}", NoteName[note], oct);
+
+			if (numKeyHigh.Value < numKeyLow.Value) {
+				numKeyLow.Value = numKeyHigh.Value;
+			}
 		}
 	}
 }

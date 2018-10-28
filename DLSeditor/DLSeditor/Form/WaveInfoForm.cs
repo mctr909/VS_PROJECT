@@ -271,6 +271,11 @@ namespace DLSeditor {
 				= numScaleLoop.Height + 4
 				+ picLoop.Height + 6
 			;
+
+			Height
+				= btnPlay.Height + 6
+				+ grbMain.Height + 6
+				+ grbLoop.Height + 48;
 		}
 
 		private void SizeChange() {

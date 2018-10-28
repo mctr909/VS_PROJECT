@@ -202,7 +202,7 @@
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.btnAdd);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.Name = "InstForm";
 			this.Text = "音色追加";

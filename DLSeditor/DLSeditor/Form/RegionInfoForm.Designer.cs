@@ -27,21 +27,31 @@
 			this.numKeyHigh = new System.Windows.Forms.NumericUpDown();
 			this.numVelocityHigh = new System.Windows.Forms.NumericUpDown();
 			this.numVelocityLow = new System.Windows.Forms.NumericUpDown();
-			this.glbKey = new System.Windows.Forms.GroupBox();
+			this.grbKey = new System.Windows.Forms.GroupBox();
 			this.lblKeyLow = new System.Windows.Forms.Label();
 			this.lblKeyHigh = new System.Windows.Forms.Label();
-			this.glbVelocity = new System.Windows.Forms.GroupBox();
+			this.grbVelocity = new System.Windows.Forms.GroupBox();
 			this.txtWave = new System.Windows.Forms.TextBox();
-			this.glbWave = new System.Windows.Forms.GroupBox();
-			this.btnEditWave = new System.Windows.Forms.Button();
+			this.grbWave = new System.Windows.Forms.GroupBox();
 			this.btnSelectWave = new System.Windows.Forms.Button();
+			this.btnEditWave = new System.Windows.Forms.Button();
+			this.btnAdd = new System.Windows.Forms.Button();
+			this.grbFineTune = new System.Windows.Forms.GroupBox();
+			this.numFineTune = new System.Windows.Forms.NumericUpDown();
+			this.grbUnityNote = new System.Windows.Forms.GroupBox();
+			this.numUnityNote = new System.Windows.Forms.NumericUpDown();
+			this.lblUnityNote = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.numKeyLow)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numKeyHigh)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numVelocityHigh)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numVelocityLow)).BeginInit();
-			this.glbKey.SuspendLayout();
-			this.glbVelocity.SuspendLayout();
-			this.glbWave.SuspendLayout();
+			this.grbKey.SuspendLayout();
+			this.grbVelocity.SuspendLayout();
+			this.grbWave.SuspendLayout();
+			this.grbFineTune.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numFineTune)).BeginInit();
+			this.grbUnityNote.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numUnityNote)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// numKeyLow
@@ -96,19 +106,19 @@
 			this.numVelocityLow.TabIndex = 0;
 			this.numVelocityLow.ValueChanged += new System.EventHandler(this.numVelocityLow_ValueChanged);
 			// 
-			// glbKey
+			// grbKey
 			// 
-			this.glbKey.BackColor = System.Drawing.SystemColors.ControlLight;
-			this.glbKey.Controls.Add(this.lblKeyLow);
-			this.glbKey.Controls.Add(this.lblKeyHigh);
-			this.glbKey.Controls.Add(this.numKeyLow);
-			this.glbKey.Controls.Add(this.numKeyHigh);
-			this.glbKey.Location = new System.Drawing.Point(12, 12);
-			this.glbKey.Name = "glbKey";
-			this.glbKey.Size = new System.Drawing.Size(280, 97);
-			this.glbKey.TabIndex = 0;
-			this.glbKey.TabStop = false;
-			this.glbKey.Text = "音程";
+			this.grbKey.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.grbKey.Controls.Add(this.lblKeyLow);
+			this.grbKey.Controls.Add(this.lblKeyHigh);
+			this.grbKey.Controls.Add(this.numKeyLow);
+			this.grbKey.Controls.Add(this.numKeyHigh);
+			this.grbKey.Location = new System.Drawing.Point(12, 12);
+			this.grbKey.Name = "grbKey";
+			this.grbKey.Size = new System.Drawing.Size(280, 97);
+			this.grbKey.TabIndex = 0;
+			this.grbKey.TabStop = false;
+			this.grbKey.Text = "音程";
 			// 
 			// lblKeyLow
 			// 
@@ -128,17 +138,17 @@
 			this.lblKeyHigh.TabIndex = 7;
 			this.lblKeyHigh.Text = "Bb-2 5";
 			// 
-			// glbVelocity
+			// grbVelocity
 			// 
-			this.glbVelocity.BackColor = System.Drawing.SystemColors.ControlLight;
-			this.glbVelocity.Controls.Add(this.numVelocityLow);
-			this.glbVelocity.Controls.Add(this.numVelocityHigh);
-			this.glbVelocity.Location = new System.Drawing.Point(298, 12);
-			this.glbVelocity.Name = "glbVelocity";
-			this.glbVelocity.Size = new System.Drawing.Size(280, 97);
-			this.glbVelocity.TabIndex = 1;
-			this.glbVelocity.TabStop = false;
-			this.glbVelocity.Text = "強弱";
+			this.grbVelocity.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.grbVelocity.Controls.Add(this.numVelocityLow);
+			this.grbVelocity.Controls.Add(this.numVelocityHigh);
+			this.grbVelocity.Location = new System.Drawing.Point(298, 12);
+			this.grbVelocity.Name = "grbVelocity";
+			this.grbVelocity.Size = new System.Drawing.Size(280, 97);
+			this.grbVelocity.TabIndex = 1;
+			this.grbVelocity.TabStop = false;
+			this.grbVelocity.Text = "強弱";
 			// 
 			// txtWave
 			// 
@@ -149,28 +159,18 @@
 			this.txtWave.Size = new System.Drawing.Size(406, 31);
 			this.txtWave.TabIndex = 0;
 			// 
-			// glbWave
+			// grbWave
 			// 
-			this.glbWave.BackColor = System.Drawing.SystemColors.ControlLight;
-			this.glbWave.Controls.Add(this.btnSelectWave);
-			this.glbWave.Controls.Add(this.btnEditWave);
-			this.glbWave.Controls.Add(this.txtWave);
-			this.glbWave.Location = new System.Drawing.Point(12, 115);
-			this.glbWave.Name = "glbWave";
-			this.glbWave.Size = new System.Drawing.Size(566, 77);
-			this.glbWave.TabIndex = 2;
-			this.glbWave.TabStop = false;
-			this.glbWave.Text = "波形";
-			// 
-			// btnEditWave
-			// 
-			this.btnEditWave.Location = new System.Drawing.Point(476, 26);
-			this.btnEditWave.Name = "btnEditWave";
-			this.btnEditWave.Size = new System.Drawing.Size(90, 39);
-			this.btnEditWave.TabIndex = 2;
-			this.btnEditWave.Text = "編集";
-			this.btnEditWave.UseVisualStyleBackColor = true;
-			this.btnEditWave.Click += new System.EventHandler(this.btnEditWave_Click);
+			this.grbWave.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.grbWave.Controls.Add(this.btnSelectWave);
+			this.grbWave.Controls.Add(this.btnEditWave);
+			this.grbWave.Controls.Add(this.txtWave);
+			this.grbWave.Location = new System.Drawing.Point(12, 115);
+			this.grbWave.Name = "grbWave";
+			this.grbWave.Size = new System.Drawing.Size(566, 77);
+			this.grbWave.TabIndex = 2;
+			this.grbWave.TabStop = false;
+			this.grbWave.Text = "波形";
 			// 
 			// btnSelectWave
 			// 
@@ -183,25 +183,114 @@
 			this.btnSelectWave.UseVisualStyleBackColor = true;
 			this.btnSelectWave.Click += new System.EventHandler(this.btnSelectWave_Click);
 			// 
+			// btnEditWave
+			// 
+			this.btnEditWave.Location = new System.Drawing.Point(476, 26);
+			this.btnEditWave.Name = "btnEditWave";
+			this.btnEditWave.Size = new System.Drawing.Size(90, 39);
+			this.btnEditWave.TabIndex = 2;
+			this.btnEditWave.Text = "編集";
+			this.btnEditWave.UseVisualStyleBackColor = true;
+			this.btnEditWave.Click += new System.EventHandler(this.btnEditWave_Click);
+			// 
+			// btnAdd
+			// 
+			this.btnAdd.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.btnAdd.Location = new System.Drawing.Point(459, 198);
+			this.btnAdd.Name = "btnAdd";
+			this.btnAdd.Size = new System.Drawing.Size(119, 63);
+			this.btnAdd.TabIndex = 5;
+			this.btnAdd.Text = "追加";
+			this.btnAdd.UseVisualStyleBackColor = true;
+			// 
+			// grbFineTune
+			// 
+			this.grbFineTune.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.grbFineTune.Controls.Add(this.numFineTune);
+			this.grbFineTune.Location = new System.Drawing.Point(242, 198);
+			this.grbFineTune.Name = "grbFineTune";
+			this.grbFineTune.Size = new System.Drawing.Size(162, 74);
+			this.grbFineTune.TabIndex = 4;
+			this.grbFineTune.TabStop = false;
+			this.grbFineTune.Text = "ピッチ(cent)";
+			// 
+			// numFineTune
+			// 
+			this.numFineTune.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.numFineTune.Location = new System.Drawing.Point(6, 25);
+			this.numFineTune.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+			this.numFineTune.Name = "numFineTune";
+			this.numFineTune.Size = new System.Drawing.Size(120, 36);
+			this.numFineTune.TabIndex = 0;
+			// 
+			// grbUnityNote
+			// 
+			this.grbUnityNote.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.grbUnityNote.Controls.Add(this.numUnityNote);
+			this.grbUnityNote.Controls.Add(this.lblUnityNote);
+			this.grbUnityNote.Location = new System.Drawing.Point(12, 198);
+			this.grbUnityNote.Name = "grbUnityNote";
+			this.grbUnityNote.Size = new System.Drawing.Size(224, 74);
+			this.grbUnityNote.TabIndex = 3;
+			this.grbUnityNote.TabStop = false;
+			this.grbUnityNote.Text = "基準音";
+			// 
+			// numUnityNote
+			// 
+			this.numUnityNote.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.numUnityNote.Location = new System.Drawing.Point(6, 25);
+			this.numUnityNote.Maximum = new decimal(new int[] {
+            127,
+            0,
+            0,
+            0});
+			this.numUnityNote.Name = "numUnityNote";
+			this.numUnityNote.Size = new System.Drawing.Size(120, 36);
+			this.numUnityNote.TabIndex = 0;
+			this.numUnityNote.ValueChanged += new System.EventHandler(this.numUnityNote_ValueChanged);
+			// 
+			// lblUnityNote
+			// 
+			this.lblUnityNote.AutoSize = true;
+			this.lblUnityNote.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.lblUnityNote.Location = new System.Drawing.Point(132, 27);
+			this.lblUnityNote.Name = "lblUnityNote";
+			this.lblUnityNote.Size = new System.Drawing.Size(83, 29);
+			this.lblUnityNote.TabIndex = 11;
+			this.lblUnityNote.Text = "label1";
+			// 
 			// RegionInfoForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(979, 646);
-			this.Controls.Add(this.glbWave);
-			this.Controls.Add(this.glbVelocity);
-			this.Controls.Add(this.glbKey);
+			this.ClientSize = new System.Drawing.Size(605, 287);
+			this.Controls.Add(this.grbFineTune);
+			this.Controls.Add(this.grbUnityNote);
+			this.Controls.Add(this.btnAdd);
+			this.Controls.Add(this.grbWave);
+			this.Controls.Add(this.grbVelocity);
+			this.Controls.Add(this.grbKey);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "RegionInfoForm";
 			this.Text = "RegionInfoForm";
 			((System.ComponentModel.ISupportInitialize)(this.numKeyLow)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numKeyHigh)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numVelocityHigh)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numVelocityLow)).EndInit();
-			this.glbKey.ResumeLayout(false);
-			this.glbKey.PerformLayout();
-			this.glbVelocity.ResumeLayout(false);
-			this.glbWave.ResumeLayout(false);
-			this.glbWave.PerformLayout();
+			this.grbKey.ResumeLayout(false);
+			this.grbKey.PerformLayout();
+			this.grbVelocity.ResumeLayout(false);
+			this.grbWave.ResumeLayout(false);
+			this.grbWave.PerformLayout();
+			this.grbFineTune.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.numFineTune)).EndInit();
+			this.grbUnityNote.ResumeLayout(false);
+			this.grbUnityNote.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numUnityNote)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -212,13 +301,19 @@
 		private System.Windows.Forms.NumericUpDown numKeyHigh;
 		private System.Windows.Forms.NumericUpDown numVelocityHigh;
 		private System.Windows.Forms.NumericUpDown numVelocityLow;
-		private System.Windows.Forms.GroupBox glbKey;
-		private System.Windows.Forms.GroupBox glbVelocity;
+		private System.Windows.Forms.GroupBox grbKey;
+		private System.Windows.Forms.GroupBox grbVelocity;
 		private System.Windows.Forms.Label lblKeyLow;
 		private System.Windows.Forms.Label lblKeyHigh;
 		private System.Windows.Forms.TextBox txtWave;
-		private System.Windows.Forms.GroupBox glbWave;
+		private System.Windows.Forms.GroupBox grbWave;
 		private System.Windows.Forms.Button btnSelectWave;
 		private System.Windows.Forms.Button btnEditWave;
+		private System.Windows.Forms.Button btnAdd;
+		private System.Windows.Forms.GroupBox grbFineTune;
+		private System.Windows.Forms.NumericUpDown numFineTune;
+		private System.Windows.Forms.GroupBox grbUnityNote;
+		private System.Windows.Forms.NumericUpDown numUnityNote;
+		private System.Windows.Forms.Label lblUnityNote;
 	}
 }
