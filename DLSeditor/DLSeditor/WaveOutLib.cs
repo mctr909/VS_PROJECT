@@ -92,7 +92,7 @@ unsafe public class WaveOutLib {
 	public int Channels { get; }
 	public int BufferSize { get; }
 
-	public WaveOutLib(int sampleRate = 44100, int channels = 2, int bufferSize = 512, int bufferCount = 8) {
+	public WaveOutLib(int sampleRate = 44100, int channels = 2, int bufferSize = 512, int bufferCount = 16) {
 		SampleRate = sampleRate;
 		Channels = channels;
 		BufferSize = bufferSize;

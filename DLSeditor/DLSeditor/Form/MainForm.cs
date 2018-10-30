@@ -698,7 +698,7 @@ namespace DLSeditor {
 
 			var bmp = new Bitmap(picRegion.Width, picRegion.Height);
 			var g = Graphics.FromImage(bmp);
-			var blueLine = new Pen(Color.FromArgb(255, 0, 0, 255), 2.0f);
+			var blueLine = new Pen(Color.FromArgb(255, 0, 0, 255), 1.0f);
 			var greenFill = new Pen(Color.FromArgb(48, 0, 255, 0), 1.0f).Brush;
 
 			var idx = lstRegion.SelectedIndex;
@@ -707,21 +707,20 @@ namespace DLSeditor {
 			foreach (var region in inst.Regions.List.Values) {
 				var key = region.Header.Key;
 				var vel = region.Header.Velocity;
-				g.DrawRectangle(
-					blueLine,
-					key.Low * 7,
-					bmp.Height - (vel.High + 1) * 3,
-					(key.High - key.Low + 1) * 7,
-					(vel.High - vel.Low + 1) * 3
-				);
 				g.FillRectangle(
 					greenFill,
 					key.Low * 7,
-					//bmp.Height - (vel.High + 1) * 3,
+					bmp.Height - (vel.High + 1) * 3 - 1,
 					(key.High - key.Low + 1) * 7,
 					(vel.High - vel.Low + 1) * 3
 				);
-
+				g.DrawRectangle(
+					blueLine,
+					key.Low * 7,
+					bmp.Height - (vel.High + 1) * 3 - 1,
+					(key.High - key.Low + 1) * 7,
+					(vel.High - vel.Low + 1) * 3
+				);
 				var waveName = "";
 				if (mDLS.WavePool.List.ContainsKey((int)region.WaveLink.TableIndex)) {
 					var wave = mDLS.WavePool.List[(int)region.WaveLink.TableIndex];
