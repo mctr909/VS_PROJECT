@@ -526,26 +526,7 @@ namespace DLSeditor {
 				return;
 			}
 
-			var locale = GetLocale(lstInst.SelectedIndex);
-			var regionId = PosToRegionId();
-
-			if (mDLS.Instruments.List[locale].Regions.List.ContainsKey(regionId)) {
-				var region = mDLS.Instruments.List[locale].Regions.List[regionId];
-				var fm = new RegionInfoForm(mDLS, region);
-				fm.ShowDialog();
-				DispRegionInfo();
-			}
-			else {
-				var region = new DLS.RGN();
-				region.Header.Key.Low = ushort.MaxValue;
-				var fm = new RegionInfoForm(mDLS, region);
-				fm.ShowDialog();
-
-				if (ushort.MaxValue != region.Header.Key.Low) {
-					mDLS.Instruments.List[locale].Regions.List.Add(region.Header, region);
-					DispRegionInfo();
-				}
-			}
+			EditRegion(PosToRegionId());
 		}
 
 		private void pictRange_MouseEnter(object sender, EventArgs e) {
@@ -561,8 +542,29 @@ namespace DLSeditor {
 				return;
 			}
 
+			EditRegion(ListToRegeonId());
+		}
+
+		private void AddRegion() {
 			var locale = GetLocale(lstInst.SelectedIndex);
-			var regionId = ListToRegeonId();
+
+			if (!mDLS.Instruments.List.ContainsKey(locale)) {
+				return;
+			}
+
+			var region = new DLS.RGN();
+			region.Header.Key.Low = ushort.MaxValue;
+			var fm = new RegionInfoForm(mDLS, region);
+			fm.ShowDialog();
+
+			if (ushort.MaxValue != region.Header.Key.Low) {
+				mDLS.Instruments.List[locale].Regions.List.Add(region.Header, region);
+				DispRegionInfo();
+			}
+		}
+
+		private void EditRegion(DLS.CK_RGNH regionId) {
+			var locale = GetLocale(lstInst.SelectedIndex);
 
 			if (mDLS.Instruments.List[locale].Regions.List.ContainsKey(regionId)) {
 				var region = mDLS.Instruments.List[locale].Regions.List[regionId];
@@ -571,34 +573,18 @@ namespace DLSeditor {
 				DispRegionInfo();
 			}
 			else {
-				var region = new DLS.RGN();
-				region.Header.Key.Low = ushort.MaxValue;
-				var fm = new RegionInfoForm(mDLS, region);
-				fm.ShowDialog();
-
-				if (ushort.MaxValue != region.Header.Key.Low) {
-					mDLS.Instruments.List[locale].Regions.List.Add(region.Header, region);
-					DispRegionInfo();
-				}
-			}
-		}
-
-		private void AddRegion() {
-			var region = new DLS.RGN();
-			region.Header.Key.Low = ushort.MaxValue;
-			var fm = new RegionInfoForm(mDLS, region);
-			fm.ShowDialog();
-
-			if (ushort.MaxValue != region.Header.Key.Low) {
-				var locale = GetLocale(lstInst.SelectedIndex);
-				mDLS.Instruments.List[locale].Regions.List.Add(region.Header, region);
-				DispRegionInfo();
+				AddRegion();
 			}
 		}
 
 		private void DeleteRegion() {
-			var inst = mDLS.Instruments.List[GetLocale(lstInst.SelectedIndex)];
+			var locale = GetLocale(lstInst.SelectedIndex);
 
+			if (!mDLS.Instruments.List.ContainsKey(locale)) {
+				return;
+			}
+
+			var inst = mDLS.Instruments.List[locale];
 			var index = lstRegion.SelectedIndex;
 
 			foreach (int idx in lstRegion.SelectedIndices) {

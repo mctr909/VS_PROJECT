@@ -133,8 +133,8 @@ namespace DLSeditor {
 			if (ushort.MaxValue == mRegion.Header.Key.Low) {
 				numKeyLow.Value = 63;
 				numKeyHigh.Value = 63;
-				numVelocityLow.Value = 63;
-				numVelocityHigh.Value = 63;
+				numVelocityLow.Value = 0;
+				numVelocityHigh.Value = 127;
 				btnEditWave.Enabled = false;
 
 				btnAdd.Text = "追加";
