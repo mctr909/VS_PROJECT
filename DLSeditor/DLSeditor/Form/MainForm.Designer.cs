@@ -206,6 +206,7 @@
 			this.tabControl.Controls.Add(this.tbpInstList);
 			this.tabControl.Controls.Add(this.tbpInstInfo);
 			this.tabControl.Controls.Add(this.tbpRegion);
+			this.tabControl.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.tabControl.Location = new System.Drawing.Point(16, 50);
 			this.tabControl.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.tabControl.Name = "tabControl";
@@ -227,15 +228,15 @@
 			// 
 			// lstWave
 			// 
-			this.lstWave.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.lstWave.Font = new System.Drawing.Font("ＭＳ ゴシック", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.lstWave.FormattingEnabled = true;
-			this.lstWave.ItemHeight = 24;
+			this.lstWave.ItemHeight = 29;
 			this.lstWave.Location = new System.Drawing.Point(7, 62);
 			this.lstWave.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.lstWave.Name = "lstWave";
 			this.lstWave.ScrollAlwaysVisible = true;
 			this.lstWave.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.lstWave.Size = new System.Drawing.Size(576, 460);
+			this.lstWave.Size = new System.Drawing.Size(576, 439);
 			this.lstWave.TabIndex = 1;
 			this.lstWave.DoubleClick += new System.EventHandler(this.lstWave_DoubleClick);
 			// 
@@ -307,13 +308,14 @@
 			// 
 			// lstInst
 			// 
+			this.lstInst.Font = new System.Drawing.Font("ＭＳ ゴシック", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.lstInst.FormattingEnabled = true;
-			this.lstInst.ItemHeight = 38;
+			this.lstInst.ItemHeight = 29;
 			this.lstInst.Location = new System.Drawing.Point(7, 62);
 			this.lstInst.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.lstInst.Name = "lstInst";
 			this.lstInst.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.lstInst.Size = new System.Drawing.Size(255, 156);
+			this.lstInst.Size = new System.Drawing.Size(255, 120);
 			this.lstInst.TabIndex = 3;
 			this.lstInst.DoubleClick += new System.EventHandler(this.lstInst_DoubleClick);
 			// 
@@ -408,12 +410,13 @@
 			// 
 			// lstRegion
 			// 
+			this.lstRegion.Font = new System.Drawing.Font("ＭＳ ゴシック", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.lstRegion.FormattingEnabled = true;
-			this.lstRegion.ItemHeight = 24;
+			this.lstRegion.ItemHeight = 29;
 			this.lstRegion.Location = new System.Drawing.Point(18, 44);
 			this.lstRegion.Name = "lstRegion";
 			this.lstRegion.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.lstRegion.Size = new System.Drawing.Size(120, 76);
+			this.lstRegion.Size = new System.Drawing.Size(120, 62);
 			this.lstRegion.TabIndex = 8;
 			this.lstRegion.DoubleClick += new System.EventHandler(this.lstRegion_DoubleClick);
 			// 
@@ -469,7 +472,7 @@
 			this.tsbAddRange.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsbAddRange.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbAddRange.Name = "tsbAddRange";
-			this.tsbAddRange.Size = new System.Drawing.Size(23, 35);
+			this.tsbAddRange.Size = new System.Drawing.Size(23, 28);
 			this.tsbAddRange.Text = "toolStripButton1";
 			this.tsbAddRange.Click += new System.EventHandler(this.tsbAddRange_Click);
 			// 
@@ -480,14 +483,14 @@
 			this.tsbDeleteRange.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsbDeleteRange.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbDeleteRange.Name = "tsbDeleteRange";
-			this.tsbDeleteRange.Size = new System.Drawing.Size(23, 35);
+			this.tsbDeleteRange.Size = new System.Drawing.Size(23, 28);
 			this.tsbDeleteRange.Text = "toolStripButton1";
 			this.tsbDeleteRange.Click += new System.EventHandler(this.tsbDeleteRange_Click);
 			// 
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 38);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 31);
 			// 
 			// tsbRangeList
 			// 
@@ -498,7 +501,7 @@
 			this.tsbRangeList.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsbRangeList.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbRangeList.Name = "tsbRangeList";
-			this.tsbRangeList.Size = new System.Drawing.Size(23, 35);
+			this.tsbRangeList.Size = new System.Drawing.Size(23, 28);
 			this.tsbRangeList.Text = "リスト表示";
 			this.tsbRangeList.Click += new System.EventHandler(this.tsbRangeList_Click);
 			// 
@@ -509,21 +512,21 @@
 			this.tsbRangeKey.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsbRangeKey.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbRangeKey.Name = "tsbRangeKey";
-			this.tsbRangeKey.Size = new System.Drawing.Size(23, 35);
+			this.tsbRangeKey.Size = new System.Drawing.Size(23, 28);
 			this.tsbRangeKey.Text = "グラフィック表示";
 			this.tsbRangeKey.Click += new System.EventHandler(this.tsbRangeKey_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 38);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 31);
 			// 
 			// tstRegion
 			// 
 			this.tstRegion.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.tstRegion.Name = "tstRegion";
 			this.tstRegion.ReadOnly = true;
-			this.tstRegion.Size = new System.Drawing.Size(350, 38);
+			this.tstRegion.Size = new System.Drawing.Size(350, 31);
 			// 
 			// timer1
 			// 

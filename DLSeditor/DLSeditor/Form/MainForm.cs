@@ -31,7 +31,7 @@ namespace DLSeditor {
 		private void timer1_Tick(object sender, EventArgs e) {
 			tstRegion.Text = "";
 			if (onRange) {
-				var posRegion = PosToRegeon();
+				var posRegion = PosToRegion();
 				tstRegion.Text = string.Format(
 					"音程:{0} 強弱:{1} ({2}{3})",
 					posRegion.X.ToString("000"),
@@ -354,7 +354,6 @@ namespace DLSeditor {
 			var idx = lstInst.SelectedIndex;
 
 			lstInst.Items.Clear();
-			lstInst.Font = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular);
 			foreach (var inst in mDLS.Instruments.List.Values) {
 				lstInst.Items.Add(string.Format(
 					"{0}\t{1}\t{2}\t{3}\t{4}",
@@ -527,9 +526,26 @@ namespace DLSeditor {
 				return;
 			}
 
-			var fm = new RegionInfoForm(mDLS, GetLocale(lstInst.SelectedIndex), PosToRegionId());
-			fm.ShowDialog();
-			DispRegionInfo();
+			var locale = GetLocale(lstInst.SelectedIndex);
+			var regionId = PosToRegionId();
+
+			if (mDLS.Instruments.List[locale].Regions.List.ContainsKey(regionId)) {
+				var region = mDLS.Instruments.List[locale].Regions.List[regionId];
+				var fm = new RegionInfoForm(mDLS, region);
+				fm.ShowDialog();
+				DispRegionInfo();
+			}
+			else {
+				var region = new DLS.RGN();
+				region.Header.Key.Low = ushort.MaxValue;
+				var fm = new RegionInfoForm(mDLS, region);
+				fm.ShowDialog();
+
+				if (ushort.MaxValue != region.Header.Key.Low) {
+					mDLS.Instruments.List[locale].Regions.List.Add(region.Header, region);
+					DispRegionInfo();
+				}
+			}
 		}
 
 		private void pictRange_MouseEnter(object sender, EventArgs e) {
@@ -545,20 +561,39 @@ namespace DLSeditor {
 				return;
 			}
 
-			var fm = new RegionInfoForm(mDLS, GetLocale(lstInst.SelectedIndex), ListToRegeonId());
-			fm.ShowDialog();
-			DispRegionInfo();
+			var locale = GetLocale(lstInst.SelectedIndex);
+			var regionId = ListToRegeonId();
+
+			if (mDLS.Instruments.List[locale].Regions.List.ContainsKey(regionId)) {
+				var region = mDLS.Instruments.List[locale].Regions.List[regionId];
+				var fm = new RegionInfoForm(mDLS, region);
+				fm.ShowDialog();
+				DispRegionInfo();
+			}
+			else {
+				var region = new DLS.RGN();
+				region.Header.Key.Low = ushort.MaxValue;
+				var fm = new RegionInfoForm(mDLS, region);
+				fm.ShowDialog();
+
+				if (ushort.MaxValue != region.Header.Key.Low) {
+					mDLS.Instruments.List[locale].Regions.List.Add(region.Header, region);
+					DispRegionInfo();
+				}
+			}
 		}
 
 		private void AddRegion() {
-			var region = new DLS.CK_RGNH();
-			region.Key.Low = ushort.MaxValue;
-			region.Key.High = ushort.MaxValue;
-			region.Velocity.Low = ushort.MaxValue;
-			region.Velocity.High = ushort.MaxValue;
-			var fm = new RegionInfoForm(mDLS, GetLocale(lstInst.SelectedIndex), region);
+			var region = new DLS.RGN();
+			region.Header.Key.Low = ushort.MaxValue;
+			var fm = new RegionInfoForm(mDLS, region);
 			fm.ShowDialog();
-			DispRegionInfo();
+
+			if (ushort.MaxValue != region.Header.Key.Low) {
+				var locale = GetLocale(lstInst.SelectedIndex);
+				mDLS.Instruments.List[locale].Regions.List.Add(region.Header, region);
+				DispRegionInfo();
+			}
 		}
 
 		private void DeleteRegion() {
@@ -590,7 +625,7 @@ namespace DLSeditor {
 			}
 		}
 
-		private Point PosToRegeon() {
+		private Point PosToRegion() {
 			var posRegion = picRegion.PointToClient(Cursor.Position);
 			if (posRegion.X < 0) {
 				posRegion.X = 0;
@@ -614,7 +649,7 @@ namespace DLSeditor {
 
 		private DLS.CK_RGNH PosToRegionId() {
 			var region = new DLS.CK_RGNH();
-			var posRegion = PosToRegeon();
+			var posRegion = PosToRegion();
 			var inst = mDLS.Instruments.List[GetLocale(lstInst.SelectedIndex)];
 			foreach (var rgn in inst.Regions.List.Values) {
 				var key = rgn.Header.Key;
@@ -675,19 +710,23 @@ namespace DLSeditor {
 				g.DrawRectangle(
 					blueLine,
 					key.Low * 7,
-					vel.Low * 3,
+					bmp.Height - (vel.High + 1) * 3,
 					(key.High - key.Low + 1) * 7,
 					(vel.High - vel.Low + 1) * 3
 				);
 				g.FillRectangle(
 					greenFill,
 					key.Low * 7,
-					vel.Low * 3,
+					//bmp.Height - (vel.High + 1) * 3,
 					(key.High - key.Low + 1) * 7,
 					(vel.High - vel.Low + 1) * 3
 				);
 
-				var wave = mDLS.WavePool.List[(int)region.WaveLink.TableIndex];
+				var waveName = "";
+				if (mDLS.WavePool.List.ContainsKey((int)region.WaveLink.TableIndex)) {
+					var wave = mDLS.WavePool.List[(int)region.WaveLink.TableIndex];
+					waveName = wave.Info.Name;
+				}
 
 				lstRegion.Items.Add(string.Format(
 					"音程 {0} {1}    強弱 {2} {3}    波形 {4} {5}",
@@ -696,7 +735,7 @@ namespace DLSeditor {
 					region.Header.Velocity.Low.ToString("000"),
 					region.Header.Velocity.High.ToString("000"),
 					region.WaveLink.TableIndex.ToString("0000"),
-					wave.Info.Name
+					waveName
 				));
 			}
 

@@ -4,60 +4,20 @@ using System.Windows.Forms;
 namespace DLSeditor {
 	public partial class RegionInfoForm : Form {
 		private DLS.DLS mDLS;
-		private DLS.MidiLocale mKey;
-		private DLS.CK_RGNH mRegionId;
+		private DLS.RGN mRegion;
 
 		private readonly string[] NoteName = new string[] {
 			"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"
 		};
 
-		public RegionInfoForm(DLS.DLS dls, DLS.MidiLocale key, DLS.CK_RGNH regionId) {
+		public RegionInfoForm(DLS.DLS dls, DLS.RGN region) {
 			InitializeComponent();
 
-			SetPosition();
-
 			mDLS = dls;
-			mKey = key;
-			mRegionId = regionId;
+			mRegion = region;
 
-			var inst = mDLS.Instruments.List[mKey];
-
-			if (ushort.MaxValue != mRegionId.Key.Low && inst.Regions.List.ContainsKey(mRegionId)) {
-				numKeyLow.Value = mRegionId.Key.Low;
-				numKeyHigh.Value = mRegionId.Key.High;
-				numVelocityLow.Value = mRegionId.Velocity.Low;
-				numVelocityHigh.Value = mRegionId.Velocity.High;
-				numKeyLow.Enabled = false;
-				numKeyHigh.Enabled = false;
-				numVelocityLow.Enabled = false;
-				numVelocityHigh.Enabled = false;
-
-				var region = inst.Regions.List[mRegionId];
-				var wave = mDLS.WavePool.List[(int)region.WaveLink.TableIndex];
-
-				txtWave.Text = string.Format(
-					"{0} {1}",
-					region.WaveLink.TableIndex.ToString("0000"),
-					wave.Info.Name
-				);
-
-				numUnityNote.Value = region.Sampler.UnityNote;
-				numFineTune.Value = region.Sampler.FineTune;
-
-				btnAdd.Text = "反映";
-				SetKeyLowName();
-				SetKeyHighName();
-			}
-			else {
-				numKeyLow.Value = 63;
-				numKeyHigh.Value = 63;
-				numVelocityLow.Value = 63;
-				numVelocityHigh.Value = 63;
-				btnEditWave.Enabled = false;
-				btnAdd.Text = "追加";
-				SetKeyLowName();
-				SetKeyHighName();
-			}
+			SetPosition();
+			DispRegionInfo();
 		}
 
 		private void numKeyLow_ValueChanged(object sender, EventArgs e) {
@@ -87,14 +47,28 @@ namespace DLSeditor {
 		}
 
 		private void btnSelectWave_Click(object sender, EventArgs e) {
-
+			var fm = new WaveSelectForm(mDLS, ref mRegion);
+			fm.ShowDialog();
+			DispRegionInfo();
 		}
 
 		private void btnEditWave_Click(object sender, EventArgs e) {
-			var inst = mDLS.Instruments.List[mKey];
-			var region = inst.Regions.List[mRegionId];
-			var fm = new WaveInfoForm(new WavePlayback(), mDLS, (int)region.WaveLink.TableIndex);
+			var fm = new WaveInfoForm(new WavePlayback(), mDLS, (int)mRegion.WaveLink.TableIndex);
 			fm.ShowDialog();
+		}
+
+		private void btnAdd_Click(object sender, EventArgs e) {
+			if (ushort.MaxValue == mRegion.Header.Key.Low) {
+				mRegion.Header.Key.Low = (ushort)numKeyLow.Value;
+				mRegion.Header.Key.High = (ushort)numKeyHigh.Value;
+				mRegion.Header.Velocity.Low = (ushort)numVelocityLow.Value;
+				mRegion.Header.Velocity.High = (ushort)numVelocityHigh.Value;
+			}
+
+			mRegion.Sampler.UnityNote = (ushort)numUnityNote.Value;
+			mRegion.Sampler.FineTune = (short)numFineTune.Value;
+			mRegion.Sampler.Gain = 0.0;
+			Close();
 		}
 
 		private void SetPosition() {
@@ -152,6 +126,53 @@ namespace DLSeditor {
 
 			if (numKeyHigh.Value < numKeyLow.Value) {
 				numKeyLow.Value = numKeyHigh.Value;
+			}
+		}
+
+		private void DispRegionInfo() {
+			if (ushort.MaxValue == mRegion.Header.Key.Low) {
+				numKeyLow.Value = 63;
+				numKeyHigh.Value = 63;
+				numVelocityLow.Value = 63;
+				numVelocityHigh.Value = 63;
+				btnEditWave.Enabled = false;
+
+				btnAdd.Text = "追加";
+				SetKeyLowName();
+				SetKeyHighName();
+			}
+			else {
+				numKeyLow.Value = mRegion.Header.Key.Low;
+				numKeyHigh.Value = mRegion.Header.Key.High;
+				numVelocityLow.Value = mRegion.Header.Velocity.Low;
+				numVelocityHigh.Value = mRegion.Header.Velocity.High;
+				numKeyLow.Enabled = false;
+				numKeyHigh.Enabled = false;
+				numVelocityLow.Enabled = false;
+				numVelocityHigh.Enabled = false;
+
+				var waveName = "";
+				if (mDLS.WavePool.List.ContainsKey((int)mRegion.WaveLink.TableIndex)) {
+					var wave = mDLS.WavePool.List[(int)mRegion.WaveLink.TableIndex];
+					waveName = wave.Info.Name;
+					btnEditWave.Enabled = true;
+				}
+				else {
+					btnEditWave.Enabled = false;
+				}
+
+				txtWave.Text = string.Format(
+					"{0} {1}",
+					mRegion.WaveLink.TableIndex.ToString("0000"),
+					waveName
+				);
+
+				numUnityNote.Value = mRegion.Sampler.UnityNote;
+				numFineTune.Value = mRegion.Sampler.FineTune;
+
+				btnAdd.Text = "反映";
+				SetKeyLowName();
+				SetKeyHighName();
 			}
 		}
 	}

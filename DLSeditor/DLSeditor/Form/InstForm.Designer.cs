@@ -58,7 +58,7 @@
 			// 
 			// lstPrgNo
 			// 
-			this.lstPrgNo.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.lstPrgNo.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.lstPrgNo.FormattingEnabled = true;
 			this.lstPrgNo.ItemHeight = 24;
 			this.lstPrgNo.Location = new System.Drawing.Point(10, 33);
@@ -70,7 +70,7 @@
 			// 
 			// lstBankMSB
 			// 
-			this.lstBankMSB.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.lstBankMSB.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.lstBankMSB.FormattingEnabled = true;
 			this.lstBankMSB.ItemHeight = 24;
 			this.lstBankMSB.Location = new System.Drawing.Point(10, 33);
@@ -82,7 +82,7 @@
 			// 
 			// lstBankLSB
 			// 
-			this.lstBankLSB.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.lstBankLSB.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.lstBankLSB.FormattingEnabled = true;
 			this.lstBankLSB.ItemHeight = 24;
 			this.lstBankLSB.Location = new System.Drawing.Point(10, 33);
