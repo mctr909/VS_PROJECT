@@ -53,7 +53,7 @@ namespace DLSeditor {
 		}
 
 		private void btnEditWave_Click(object sender, EventArgs e) {
-			var fm = new WaveInfoForm(new WavePlayback(), mDLS, (int)mRegion.WaveLink.TableIndex);
+			var fm = new WaveInfoForm(mDLS, (int)mRegion.WaveLink.TableIndex);
 			fm.ShowDialog();
 		}
 

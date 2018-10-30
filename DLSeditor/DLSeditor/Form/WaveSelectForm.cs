@@ -28,7 +28,7 @@ namespace DLSeditor {
 			}
 
 			var idx = lstWave.SelectedIndex;
-			var fm = new WaveInfoForm(new WavePlayback(), mDLS, idx);
+			var fm = new WaveInfoForm(mDLS, idx);
 			var index = lstWave.SelectedIndex;
 			fm.ShowDialog();
 			DispWaveList();

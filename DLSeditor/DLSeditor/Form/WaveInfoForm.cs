@@ -30,12 +30,13 @@ namespace DLSeditor {
 			"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"
 		};
 
-		public WaveInfoForm(WavePlayback waveOut, DLS.DLS dls, int index) {
+		public WaveInfoForm(DLS.DLS dls, int index) {
 			InitializeComponent();
 			StartPosition = FormStartPosition.CenterParent;
-			mWaveOut = waveOut;
+
 			mFile = dls;
 			mIndex = index;
+			mWaveOut = new WavePlayback();
 
 			mColors = new uint[256];
 			var dColor = 1280.0 / mColors.Length;
