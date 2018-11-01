@@ -67,7 +67,7 @@ namespace DLSeditor {
 
 			mRegion.Sampler.UnityNote = (ushort)numUnityNote.Value;
 			mRegion.Sampler.FineTune = (short)numFineTune.Value;
-			mRegion.Sampler.Gain = 0.0;
+			mRegion.Sampler.Gain = (double)numGain.Value / 100.0;
 			Close();
 		}
 
@@ -102,11 +102,14 @@ namespace DLSeditor {
 			grbUnityNote.Top = grbWave.Top + grbWave.Height + 6;
 			grbFineTune.Top = grbUnityNote.Top;
 			grbFineTune.Left = grbUnityNote.Left + grbUnityNote.Width + 6;
-			btnAdd.Top = grbUnityNote.Top + 4;
-			btnAdd.Left = grbWave.Right - btnAdd.Width;
+			grbGain.Top = grbUnityNote.Top;
+			grbGain.Left = grbFineTune.Left + grbFineTune.Width + 6;
+
+			btnAdd.Top = grbGain.Top + grbGain.Height + 6;
+			btnAdd.Left = grbUnityNote.Left;
 
 			Width = grbWave.Left + grbWave.Width + 24;
-			Height = btnAdd.Top + grbUnityNote.Height + 48;
+			Height = btnAdd.Top + btnAdd.Height + 48;
 		}
 
 		private void SetKeyLowName() {
@@ -169,6 +172,7 @@ namespace DLSeditor {
 
 				numUnityNote.Value = mRegion.Sampler.UnityNote;
 				numFineTune.Value = mRegion.Sampler.FineTune;
+				numGain.Value = (decimal)(mRegion.Sampler.Gain * 100.0);
 
 				btnAdd.Text = "反映";
 				SetKeyLowName();

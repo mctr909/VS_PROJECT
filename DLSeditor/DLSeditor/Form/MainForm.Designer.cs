@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.ファイルFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.新規作成NToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,12 +73,14 @@
 			this.tstRegion = new System.Windows.Forms.ToolStripTextBox();
 			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
+			this.ampEnvelope1 = new DLSeditor.AmpEnvelope();
 			this.menuStrip1.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tbpWaveList.SuspendLayout();
 			this.toolStrip3.SuspendLayout();
 			this.tbpInstList.SuspendLayout();
 			this.toolStrip2.SuspendLayout();
+			this.tbpInstInfo.SuspendLayout();
 			this.tbpRegion.SuspendLayout();
 			this.pnlRegion.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picRegion)).BeginInit();
@@ -389,6 +390,7 @@
 			// 
 			// tbpInstInfo
 			// 
+			this.tbpInstInfo.Controls.Add(this.ampEnvelope1);
 			this.tbpInstInfo.Location = new System.Drawing.Point(8, 39);
 			this.tbpInstInfo.Name = "tbpInstInfo";
 			this.tbpInstInfo.Size = new System.Drawing.Size(1624, 687);
@@ -434,12 +436,12 @@
 			// 
 			// picRegion
 			// 
-			this.picRegion.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("picRegion.BackgroundImage")));
+			this.picRegion.BackgroundImage = global::DLSeditor.Properties.Resources.region;
 			this.picRegion.InitialImage = null;
 			this.picRegion.Location = new System.Drawing.Point(0, 0);
 			this.picRegion.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.picRegion.Name = "picRegion";
-			this.picRegion.Size = new System.Drawing.Size(1764, 768);
+			this.picRegion.Size = new System.Drawing.Size(1764, 1024);
 			this.picRegion.TabIndex = 0;
 			this.picRegion.TabStop = false;
 			this.picRegion.DoubleClick += new System.EventHandler(this.pictRange_DoubleClick);
@@ -532,6 +534,13 @@
 			// 
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
+			// ampEnvelope1
+			// 
+			this.ampEnvelope1.Location = new System.Drawing.Point(4, 4);
+			this.ampEnvelope1.Name = "ampEnvelope1";
+			this.ampEnvelope1.Size = new System.Drawing.Size(1264, 527);
+			this.ampEnvelope1.TabIndex = 0;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
@@ -555,6 +564,7 @@
 			this.tbpInstList.PerformLayout();
 			this.toolStrip2.ResumeLayout(false);
 			this.toolStrip2.PerformLayout();
+			this.tbpInstInfo.ResumeLayout(false);
 			this.tbpRegion.ResumeLayout(false);
 			this.tbpRegion.PerformLayout();
 			this.pnlRegion.ResumeLayout(false);
@@ -612,6 +622,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripTextBox tstRegion;
 		private System.Windows.Forms.Timer timer1;
+		private AmpEnvelope ampEnvelope1;
 	}
 }
 

@@ -57,13 +57,13 @@ namespace DLS {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct Connection {
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public ushort Source;
+		public SRC_TYPE Source;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public ushort Control;
+		public SRC_TYPE Control;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public ushort Destination;
+		public DST_TYPE Destination;
 		[MarshalAs(UnmanagedType.U2, SizeConst = 2)]
-		public ushort Transform;
+		public TRN_TYPE Transform;
 		[MarshalAs(UnmanagedType.I4, SizeConst = 4)]
 		public int Scale;
 
@@ -230,10 +230,10 @@ namespace DLS {
 			get {
 				
 				var buff = new byte[12];
-				BitConverter.GetBytes(Source).CopyTo(buff, 0);
-				BitConverter.GetBytes(Control).CopyTo(buff, 2);
-				BitConverter.GetBytes(Destination).CopyTo(buff, 4);
-				BitConverter.GetBytes(Transform).CopyTo(buff, 6);
+				BitConverter.GetBytes((ushort)Source).CopyTo(buff, 0);
+				BitConverter.GetBytes((ushort)Control).CopyTo(buff, 2);
+				BitConverter.GetBytes((ushort)Destination).CopyTo(buff, 4);
+				BitConverter.GetBytes((ushort)Transform).CopyTo(buff, 6);
 				BitConverter.GetBytes(Scale).CopyTo(buff, 8);
 				return buff;
 			}

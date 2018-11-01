@@ -628,7 +628,7 @@ namespace DLSeditor {
 
 			posRegion.Y = picRegion.Height - posRegion.Y - 1;
 			posRegion.X = (int)(posRegion.X / 7.0);
-			posRegion.Y = (int)(posRegion.Y / 3.0 + 0.1);
+			posRegion.Y = (int)(posRegion.Y / 4.0);
 
 			return posRegion;
 		}
@@ -677,7 +677,35 @@ namespace DLSeditor {
 				return;
 			}
 
+			ampEnvelope1.Attack = 0;
+			ampEnvelope1.Hold = 0;
+			ampEnvelope1.Decay = 0;
+			ampEnvelope1.Sustain = 0;
+			ampEnvelope1.Releace = 0;
 			var inst = mDLS.Instruments.List[GetLocale(lstInst.SelectedIndex)];
+			if (null != inst.Articulations && null != inst.Articulations.ART) {
+				foreach (var art in inst.Articulations.ART.List.Values) {
+					if (DLS.Connection.SRC_TYPE.NONE == art.Source) {
+						switch (art.Destination) {
+						case DLS.Connection.DST_TYPE.EG1_ATTACK_TIME:
+							ampEnvelope1.Attack = art.Value;
+							break;
+						case DLS.Connection.DST_TYPE.EG1_HOLD_TIME:
+							ampEnvelope1.Hold = art.Value;
+							break;
+						case DLS.Connection.DST_TYPE.EG1_DECAY_TIME:
+							ampEnvelope1.Decay = art.Value;
+							break;
+						case DLS.Connection.DST_TYPE.EG1_SUSTAIN_LEVEL:
+							ampEnvelope1.Sustain = art.Value;
+							break;
+						case DLS.Connection.DST_TYPE.EG1_RELEASE_TIME:
+							ampEnvelope1.Releace = art.Value;
+							break;
+						}
+					}
+				}
+			}
 
 			tbpInstInfo.Text = string.Format("音色設定[{0}]", inst.Info.Name.Trim());
 			tbpRegion.Text = string.Format("レイヤー設定[{0}]", inst.Info.Name.Trim());
@@ -696,16 +724,16 @@ namespace DLSeditor {
 				g.FillRectangle(
 					greenFill,
 					key.Low * 7,
-					bmp.Height - (vel.High + 1) * 3 - 1,
+					bmp.Height - (vel.High + 1) * 4 - 1,
 					(key.High - key.Low + 1) * 7,
-					(vel.High - vel.Low + 1) * 3
+					(vel.High - vel.Low + 1) * 4
 				);
 				g.DrawRectangle(
 					blueLine,
 					key.Low * 7,
-					bmp.Height - (vel.High + 1) * 3 - 1,
+					bmp.Height - (vel.High + 1) * 4 - 1,
 					(key.High - key.Low + 1) * 7,
-					(vel.High - vel.Low + 1) * 3
+					(vel.High - vel.Low + 1) * 4
 				);
 				var waveName = "";
 				if (mDLS.WavePool.List.ContainsKey((int)region.WaveLink.TableIndex)) {

@@ -84,6 +84,12 @@
     <Compile Include="Form\WaveInfoForm.Designer.cs">
       <DependentUpon>WaveInfoForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\AmpEnvelope.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\AmpEnvelope.Designer.cs">
+      <DependentUpon>AmpEnvelope.cs</DependentUpon>
+    </Compile>
     <Compile Include="WaveOutLib.cs" />
     <Compile Include="WavePlayback.cs" />
     <Compile Include="Form\WaveSelectForm.cs">
@@ -117,6 +123,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Form\AmpEnvelope.resx">
+      <DependentUpon>AmpEnvelope.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -156,6 +165,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Image\key.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvAttack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvDecay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvHold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvReleace.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvSustain.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

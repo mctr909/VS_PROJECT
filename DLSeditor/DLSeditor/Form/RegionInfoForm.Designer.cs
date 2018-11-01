@@ -41,6 +41,8 @@
 			this.grbUnityNote = new System.Windows.Forms.GroupBox();
 			this.numUnityNote = new System.Windows.Forms.NumericUpDown();
 			this.lblUnityNote = new System.Windows.Forms.Label();
+			this.grbGain = new System.Windows.Forms.GroupBox();
+			this.numGain = new System.Windows.Forms.NumericUpDown();
 			((System.ComponentModel.ISupportInitialize)(this.numKeyLow)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numKeyHigh)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numVelocityHigh)).BeginInit();
@@ -52,6 +54,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.numFineTune)).BeginInit();
 			this.grbUnityNote.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numUnityNote)).BeginInit();
+			this.grbGain.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numGain)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// numKeyLow
@@ -196,10 +200,10 @@
 			// btnAdd
 			// 
 			this.btnAdd.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.btnAdd.Location = new System.Drawing.Point(459, 198);
+			this.btnAdd.Location = new System.Drawing.Point(459, 278);
 			this.btnAdd.Name = "btnAdd";
 			this.btnAdd.Size = new System.Drawing.Size(119, 63);
-			this.btnAdd.TabIndex = 5;
+			this.btnAdd.TabIndex = 6;
 			this.btnAdd.Text = "追加";
 			this.btnAdd.UseVisualStyleBackColor = true;
 			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
@@ -264,11 +268,36 @@
 			this.lblUnityNote.TabIndex = 11;
 			this.lblUnityNote.Text = "label1";
 			// 
+			// grbGain
+			// 
+			this.grbGain.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.grbGain.Controls.Add(this.numGain);
+			this.grbGain.Location = new System.Drawing.Point(416, 198);
+			this.grbGain.Name = "grbGain";
+			this.grbGain.Size = new System.Drawing.Size(162, 74);
+			this.grbGain.TabIndex = 5;
+			this.grbGain.TabStop = false;
+			this.grbGain.Text = "利得(%)";
+			// 
+			// numGain
+			// 
+			this.numGain.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.numGain.Location = new System.Drawing.Point(6, 25);
+			this.numGain.Name = "numGain";
+			this.numGain.Size = new System.Drawing.Size(120, 36);
+			this.numGain.TabIndex = 0;
+			this.numGain.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			// 
 			// RegionInfoForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(605, 287);
+			this.ClientSize = new System.Drawing.Size(605, 365);
+			this.Controls.Add(this.grbGain);
 			this.Controls.Add(this.grbFineTune);
 			this.Controls.Add(this.grbUnityNote);
 			this.Controls.Add(this.btnAdd);
@@ -292,6 +321,8 @@
 			this.grbUnityNote.ResumeLayout(false);
 			this.grbUnityNote.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numUnityNote)).EndInit();
+			this.grbGain.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.numGain)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -316,5 +347,7 @@
 		private System.Windows.Forms.GroupBox grbUnityNote;
 		private System.Windows.Forms.NumericUpDown numUnityNote;
 		private System.Windows.Forms.Label lblUnityNote;
+		private System.Windows.Forms.GroupBox grbGain;
+		private System.Windows.Forms.NumericUpDown numGain;
 	}
 }
