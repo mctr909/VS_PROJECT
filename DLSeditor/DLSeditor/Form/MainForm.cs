@@ -677,35 +677,9 @@ namespace DLSeditor {
 				return;
 			}
 
-			ampEnvelope1.Attack = 0;
-			ampEnvelope1.Hold = 0;
-			ampEnvelope1.Decay = 0;
-			ampEnvelope1.Sustain = 0;
-			ampEnvelope1.Releace = 0;
 			var inst = mDLS.Instruments.List[GetLocale(lstInst.SelectedIndex)];
-			if (null != inst.Articulations && null != inst.Articulations.ART) {
-				foreach (var art in inst.Articulations.ART.List.Values) {
-					if (DLS.Connection.SRC_TYPE.NONE == art.Source) {
-						switch (art.Destination) {
-						case DLS.Connection.DST_TYPE.EG1_ATTACK_TIME:
-							ampEnvelope1.Attack = art.Value;
-							break;
-						case DLS.Connection.DST_TYPE.EG1_HOLD_TIME:
-							ampEnvelope1.Hold = art.Value;
-							break;
-						case DLS.Connection.DST_TYPE.EG1_DECAY_TIME:
-							ampEnvelope1.Decay = art.Value;
-							break;
-						case DLS.Connection.DST_TYPE.EG1_SUSTAIN_LEVEL:
-							ampEnvelope1.Sustain = art.Value;
-							break;
-						case DLS.Connection.DST_TYPE.EG1_RELEASE_TIME:
-							ampEnvelope1.Releace = art.Value;
-							break;
-						}
-					}
-				}
-			}
+
+			ampEnvelope1.Art = inst.Articulations.ART;
 
 			tbpInstInfo.Text = string.Format("音色設定[{0}]", inst.Info.Name.Trim());
 			tbpRegion.Text = string.Format("レイヤー設定[{0}]", inst.Info.Name.Trim());
@@ -713,7 +687,7 @@ namespace DLSeditor {
 			var bmp = new Bitmap(picRegion.Width, picRegion.Height);
 			var g = Graphics.FromImage(bmp);
 			var blueLine = new Pen(Color.FromArgb(255, 0, 0, 255), 1.0f);
-			var greenFill = new Pen(Color.FromArgb(48, 0, 255, 0), 1.0f).Brush;
+			var greenFill = new Pen(Color.FromArgb(64, 0, 255, 0), 1.0f).Brush;
 
 			var idx = lstRegion.SelectedIndex;
 			lstRegion.Items.Clear();

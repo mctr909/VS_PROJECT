@@ -59,6 +59,7 @@
 			this.tsbCopyInst = new System.Windows.Forms.ToolStripButton();
 			this.tsbPasteInst = new System.Windows.Forms.ToolStripButton();
 			this.tbpInstInfo = new System.Windows.Forms.TabPage();
+			this.ampEnvelope1 = new DLSeditor.AmpEnvelope();
 			this.tbpRegion = new System.Windows.Forms.TabPage();
 			this.lstRegion = new System.Windows.Forms.ListBox();
 			this.pnlRegion = new System.Windows.Forms.Panel();
@@ -73,7 +74,6 @@
 			this.tstRegion = new System.Windows.Forms.ToolStripTextBox();
 			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
-			this.ampEnvelope1 = new DLSeditor.AmpEnvelope();
 			this.menuStrip1.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tbpWaveList.SuspendLayout();
@@ -398,6 +398,15 @@
 			this.tbpInstInfo.Text = "音色設定";
 			this.tbpInstInfo.UseVisualStyleBackColor = true;
 			// 
+			// ampEnvelope1
+			// 
+			this.ampEnvelope1.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+			this.ampEnvelope1.Art = null;
+			this.ampEnvelope1.Location = new System.Drawing.Point(4, 4);
+			this.ampEnvelope1.Name = "ampEnvelope1";
+			this.ampEnvelope1.Size = new System.Drawing.Size(1601, 527);
+			this.ampEnvelope1.TabIndex = 0;
+			// 
 			// tbpRegion
 			// 
 			this.tbpRegion.Controls.Add(this.lstRegion);
@@ -533,13 +542,6 @@
 			// timer1
 			// 
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-			// 
-			// ampEnvelope1
-			// 
-			this.ampEnvelope1.Location = new System.Drawing.Point(4, 4);
-			this.ampEnvelope1.Name = "ampEnvelope1";
-			this.ampEnvelope1.Size = new System.Drawing.Size(1264, 527);
-			this.ampEnvelope1.TabIndex = 0;
 			// 
 			// MainForm
 			// 

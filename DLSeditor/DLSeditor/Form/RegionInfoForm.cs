@@ -47,9 +47,22 @@ namespace DLSeditor {
 		}
 
 		private void btnSelectWave_Click(object sender, EventArgs e) {
-			var fm = new WaveSelectForm(mDLS, ref mRegion);
+			var fm = new WaveSelectForm(mDLS, mRegion);
 			fm.ShowDialog();
-			DispRegionInfo();
+
+			if (mDLS.WavePool.List.ContainsKey((int)mRegion.WaveLink.TableIndex)) {
+				var wave = mDLS.WavePool.List[(int)mRegion.WaveLink.TableIndex];
+				btnEditWave.Enabled = true;
+				txtWave.Text = string.Format(
+					"{0} {1}",
+					mRegion.WaveLink.TableIndex.ToString("0000"),
+					wave.Info.Name
+				);
+			}
+			else {
+				btnEditWave.Enabled = false;
+				txtWave.Text = "";
+			}
 		}
 
 		private void btnEditWave_Click(object sender, EventArgs e) {

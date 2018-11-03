@@ -6,7 +6,7 @@ namespace DLSeditor {
 		private DLS.DLS mDLS;
 		private DLS.RGN mRegion;
 
-		public WaveSelectForm(DLS.DLS dls, ref DLS.RGN region) {
+		public WaveSelectForm(DLS.DLS dls, DLS.RGN region) {
 			InitializeComponent();
 
 			mDLS = dls;
