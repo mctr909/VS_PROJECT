@@ -1,9 +1,7 @@
 ﻿using System;
 
-public class Spectrum
-{
-	private class BANK
-	{
+public class Spectrum {
+	private class BANK {
 		public double a1;
 		public double a2;
 		public double b0;
@@ -27,37 +25,33 @@ public class Spectrum
 	private readonly double mScale;
 	private readonly double mAttenuation;
 
-	public double[] Level
-	{
+	public double[] Level {
 		get {
 			return mLevel;
 		}
 	}
 
-	public int Banks
-	{
+	public int Banks {
 		get {
 			return mLevel.Length;
 		}
 	}
 
-	public double Max
-	{
+	public double Max {
 		get {
 			return mMax;
 		}
 	}
 
-	public Spectrum(UInt32 sampleRate, double baseFreq, UInt32 octDiv, UInt32 banks)
-	{
+	public Spectrum(uint sampleRate, double baseFreq, uint octDiv, uint banks) {
 		mFreqToOmega = 8.0 * Math.Atan(1.0) / sampleRate;
 		mBanks = new BANK[banks];
 		mLevel = new double[banks];
-		for (UInt32 bankNo = 0; bankNo < banks; ++bankNo) {
+		for (uint bankNo = 0; bankNo < banks; ++bankNo) {
 			mBanks[bankNo] = new BANK();
-			var width = 6.0 - 12.0 * bankNo / banks;
-			if (width < 0.75) {
-				width = 0.75;
+			var width = 4.0 - 8.0 * bankNo / banks;
+			if (width < 0.66) {
+				width = 0.66;
 			}
 
 			var omega = Math.Pow(2.0, (double)bankNo / octDiv) * baseFreq * mFreqToOmega;
@@ -76,8 +70,7 @@ public class Spectrum
 		mAttenuation = 0.75;
 	}
 
-	public void Filtering(UInt32 bankNo, double input)
-	{
+	public void Filtering(uint bankNo, double input) {
 		var bank = mBanks[bankNo];
 
 		var output
@@ -96,14 +89,13 @@ public class Spectrum
 		bank.amplitude += output * output * bank.attenuation;
 	}
 
-	public void SetLevel()
-	{
-		mMax *= 1.0 - 1.0 / 8192.0;
+	public void SetLevel() {
+		mMax *= 1.0 - 1.0 / 1024.0;
 
 		for (uint b = 0; b < mBanks.Length; ++b) {
-			var s = 0.92 - mAttenuation * b / mBanks.Length;
-			if (s < 0.05) {
-				s = 0.05;
+			var s = 1.0 - mAttenuation * b / mBanks.Length;
+			if (s < 0.01) {
+				s = 0.01;
 			}
 			mBanks[b].amplitude *= s;
 

@@ -10,53 +10,43 @@
 		public WaveInfo[] WaveList;
 
 		private Instruments mInstruments;
+		private Filter mFilter = new Filter(1.0, 0.0);
+		private double mCurCuttoff;
+		private double mCurResonce;
+
 
 		private double mVolD;
-		private byte mVolB;
-		public byte Vol { get { return mVolB; } }
+		public byte Vol { get; private set; }
 
 		private double mExpD;
-		private byte mExpB;
-		public byte Exp { get { return mExpB; } }
+		public byte Exp { get; private set; }
 
 		private double mPanL;
 		private double mPanR;
-		private byte mPanB;
-		public byte Pan { get { return mPanB; } }
+		public byte Pan { get; private set; }
 
 		private double mRevD;
-		private byte mRevB;
-		public byte Rev { get { return mRevB; } }
+		public byte Rev { get; private set; }
 
 		private double mDelD;
-		private byte mDelB;
-		public byte Del { get { return mDelB; } }
+		public byte Del { get; private set; }
 
 		private double mChoD;
-		private byte mChoB;
-		public byte Cho { get { return mChoB; } }
+		public byte Cho { get; private set; }
 
-		private double mHldD;
-		public double Hld { get { return mHldD; } }
+		public double Hld { get; private set; }
 
-		private double mFcD;
-		private byte mFcB;
-		public byte Fc { get { return mFcB; } }
-		public double FcD { get { return mFcD; } }
+		public byte Fc { get; private set; }
+		public double FcD { get; private set; }
 
-		private double mFqD;
-		private byte mFqB;
-		public byte Fq { get { return mFqB; } }
-		public double FqD { get { return mFqD; } }
+		public byte Fq { get; private set; }
+		public double FqD { get; private set; }
 
-		private byte mPitchRange;
-		public byte PitchRange { get { return mPitchRange; } }
+		public byte PitchRange { get; private set; }
 
-		private short mPitchS;
-		public short Pitch { get { return mPitchS; } }
+		public short Pitch { get; private set; }
 
-		private double mPitchD;
-		public double PitchD { get { return mPitchD; } }
+		public double PitchD { get; private set; }
 
 		private byte mRPN_MSB;
 		private byte mRPN_LSB;
@@ -90,6 +80,21 @@
 		}
 
 		public void Step(ref double left, ref double right) {
+			// Filter
+			{
+				mCurCuttoff += 10.0 * (FcD - mCurCuttoff) * Const.DeltaTime;
+				mCurResonce += 10.0 * (FqD - mCurResonce) * Const.DeltaTime;
+				if(1.0 < mCurCuttoff) {
+					mCurCuttoff = 1.0;
+				}
+				if(1.0 < mCurResonce) {
+					mCurResonce = 1.0;
+				}
+				mFilter.Cutoff = mCurCuttoff;
+				mFilter.Resonance = mCurResonce;
+				mFilter.Step(Wave, ref Wave);
+			}
+
 			var waveC = Wave * mVolD * mExpD;
 			var waveL = waveC * mPanL;
 			var waveR = waveC * mPanR;
@@ -202,29 +207,29 @@
 				break;
 
 			case CTRL_TYPE.VOLUME:
-				mVolB = value;
+				Vol = value;
 				mVolD = Const.Amp[value];
 				break;
 			case CTRL_TYPE.EXPRESSION:
-				mExpB = value;
+				Exp = value;
 				mExpD = Const.Amp[value];
 				break;
 			case CTRL_TYPE.PAN:
-				mPanB = value;
+				Pan = value;
 				mPanL = Const.Cos[value];
 				mPanR = Const.Sin[value];
 				break;
 
 			case CTRL_TYPE.REVERB:
-				mRevB = value;
+				Rev = value;
 				mRevD = value / 127.0;
 				break;
 			case CTRL_TYPE.CHORUS:
-				mChoB = value;
+				Cho = value;
 				mChoD = Const.FeedBack[value];
 				break;
 			case CTRL_TYPE.DELAY:
-				mDelB = value;
+				Del = value;
 				mDelD = 0.75 * Const.FeedBack[value];
 				break;
 
@@ -240,23 +245,23 @@
 
 			case CTRL_TYPE.DATA:
 				if (mRPN_MSB == 0 && mRPN_LSB == 0) {
-					mPitchRange = value;
+					PitchRange = value;
 				}
 				mRPN_MSB = 255;
 				mRPN_LSB = 255;
 				break;
 
 			case CTRL_TYPE.HOLD:
-				mHldD = (value < 64) ? 1.0 : 0.125;
+				Hld = (value < 64) ? 1.0 : 0.125;
 				break;
 
 			case CTRL_TYPE.CUTOFF:
-				mFcB = value;
-				mFcD = (2.0 * Const.Amp[mFcB] + 0.001);
+				Fc = value;
+				FcD = (2.0 * Const.Amp[Fc] + 0.001);
 				break;
 			case CTRL_TYPE.RESONANCE:
-				mFqB = value;
-				mFqD = value / 168.0;
+				Fq = value;
+				FqD = value / 168.0;
 				break;
 
 			case CTRL_TYPE.RPN_LSB:
@@ -299,14 +304,14 @@
 		}
 
 		public void PitchBend(byte lsb, byte msb) {
-			mPitchS = (short)((lsb | (msb << 7)) - 8192);
-			var temp = mPitchS * mPitchRange;
+			Pitch = (short)((lsb | (msb << 7)) - 8192);
+			var temp = Pitch * PitchRange;
 			if (temp < 0) {
 				temp = -temp;
-				mPitchD = 1.0 / (Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128]);
+				PitchD = 1.0 / (Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128]);
 			}
 			else {
-				mPitchD = Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128];
+				PitchD = Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128];
 			}
 		}
 
@@ -319,34 +324,38 @@
 
 			ProgramChange(InstID.ProgramNo);
 
-			mVolB = 100;
-			mExpB = 100;
-			mPanB = 64;
-			mVolD = Const.Amp[mVolB];
-			mExpD = Const.Amp[mExpB];
-			mPanL = Const.Cos[mPanB];
-			mPanR = Const.Sin[mPanB];
+			Vol = 100;
+			Exp = 100;
+			Pan = 64;
+			mVolD = Const.Amp[Vol];
+			mExpD = Const.Amp[Exp];
+			mPanL = Const.Cos[Pan];
+			mPanR = Const.Sin[Pan];
 
-			mRevB = 0;
-			mChoB = 0;
-			mDelB = 0;
+			Rev = 0;
+			Cho = 0;
+			Del = 0;
 			mRevD = 0.0;
 			mChoD = 0.0;
 			mDelD = 0.0;
 
-			mHldD = 1.0;
+			Hld = 1.0;
 
-			mFcB = 127;
-			mFqB = 64;
-			mFcD = (2.0 * Const.Amp[mFcB] + 0.001);
-			mFqD = mFqB / 168.0;
+			Fc = 127;
+			Fq = 64;
+			FcD = (2.0 * Const.Amp[Fc] + 0.001);
+			FqD = Fq / 168.0;
+
+			mCurCuttoff = FcD;
+			mCurResonce = FqD;
+			mFilter.Clear();
 
 			mRPN_MSB = 255;
 			mRPN_LSB = 255;
 
-			mPitchRange = 2;
-			mPitchS = 0;
-			mPitchD = 1.0;
+			PitchRange = 2;
+			Pitch = 0;
+			PitchD = 1.0;
 
 			mDelaySteps = (int)(0.1 * Const.SampleRate);
 

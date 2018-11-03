@@ -1,23 +1,20 @@
 ﻿namespace MIDI {
 	public class MessageSender {
 		private const int CHANNEL_COUNT = 16;
-		private const int SAMPLER_COUNT = 64;
+		private const int SAMPLER_COUNT = 128;
 
 		private Instruments mInstruments;
-		private Channel[] mChannel;
 		private Sampler[] mSampler;
 
-		public Channel[] Channel {
-			get { return mChannel; }
-		}
+		public Channel[] Channel { get; }
 
 		public MessageSender(Instruments instruments) {
 			mInstruments = instruments;
-			mChannel = new Channel[CHANNEL_COUNT];
+			Channel = new Channel[CHANNEL_COUNT];
 			mSampler = new Sampler[SAMPLER_COUNT];
 
 			for (int i = 0; i < CHANNEL_COUNT; ++i) {
-				mChannel[i] = new Channel(i, mInstruments);
+				Channel[i] = new Channel(i, mInstruments);
 			}
 
 			for (int i = 0; i < SAMPLER_COUNT; ++i) {
@@ -43,7 +40,7 @@
 				sumL = 0.0;
 				sumR = 0.0;
 				for (ch = 0; ch < CHANNEL_COUNT; ++ch) {
-					mChannel[ch].Step(ref sumL, ref sumR);
+					Channel[ch].Step(ref sumL, ref sumR);
 				}
 
 				if (sumL < -1.0) {
@@ -68,25 +65,25 @@
 		public void Send(Message msg) {
 			switch (msg.Type) {
 			case EVENT_TYPE.NOTE_OFF:
-				NoteOff(mChannel[msg.Channel], msg.Byte1);
-				mChannel[msg.Channel].Keyboard[msg.Byte1] = false;
+				NoteOff(Channel[msg.Channel], msg.Byte1);
+				Channel[msg.Channel].Keyboard[msg.Byte1] = false;
 				break;
 
 			case EVENT_TYPE.NOTE_ON:
-				NoteOn(mChannel[msg.Channel], msg.Byte1, msg.Byte2);
-				mChannel[msg.Channel].Keyboard[msg.Byte1] = (msg.Byte2 == 0) ? false : true;
+				NoteOn(Channel[msg.Channel], msg.Byte1, msg.Byte2);
+				Channel[msg.Channel].Keyboard[msg.Byte1] = (msg.Byte2 == 0) ? false : true;
 				break;
 
 			case EVENT_TYPE.CTRL_CHG:
-				mChannel[msg.Channel].ControlChange(msg.Byte1, msg.Byte2);
+				Channel[msg.Channel].ControlChange(msg.Byte1, msg.Byte2);
 				break;
 
 			case EVENT_TYPE.PRGM_CHG:
-				mChannel[msg.Channel].ProgramChange(msg.Byte1);
+				Channel[msg.Channel].ProgramChange(msg.Byte1);
 				break;
 
 			case EVENT_TYPE.PITCH:
-				mChannel[msg.Channel].PitchBend(msg.Byte1, msg.Byte2);
+				Channel[msg.Channel].PitchBend(msg.Byte1, msg.Byte2);
 				break;
 
 			default:
@@ -98,14 +95,14 @@
 			for (int i = 0; i < SAMPLER_COUNT; ++i) {
 				if (channel.No == mSampler[i].ChannelNo && note == mSampler[i].NoteNo) {
 					mSampler[i].NoteOff();
-					return;
 				}
 			}
 		}
 
 		private void NoteOn(Channel channel, byte note, byte velocity) {
+			NoteOff(channel, note);
+
 			if (0 == velocity) {
-				NoteOff(channel, note);
 				return;
 			}
 
@@ -129,7 +126,7 @@
 			}
 
 			for (int i = 0; i < SAMPLER_COUNT; ++i) {
-				if (!mSampler[i].IsActive) {
+				if (!mSampler[i].IsSuspend && !mSampler[i].IsActive) {
 					mSampler[i].NoteOn(channel, note, velocity);
 					return;
 				}

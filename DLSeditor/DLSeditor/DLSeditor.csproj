@@ -56,6 +56,7 @@
     <Compile Include="DLS\Lrgn.cs" />
     <Compile Include="DLS\structs.cs" />
     <Compile Include="DLS\wvpl.cs" />
+    <Compile Include="FFT.cs" />
     <Compile Include="Form\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -68,6 +69,12 @@
     <Compile Include="Form\InstForm.Designer.cs">
       <DependentUpon>InstForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\RegionInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\RegionInfoForm.Designer.cs">
+      <DependentUpon>RegionInfoForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Spectrum.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,16 +84,34 @@
     <Compile Include="Form\WaveInfoForm.Designer.cs">
       <DependentUpon>WaveInfoForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\AmpEnvelope.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\AmpEnvelope.Designer.cs">
+      <DependentUpon>AmpEnvelope.cs</DependentUpon>
+    </Compile>
     <Compile Include="WaveOutLib.cs" />
     <Compile Include="WavePlayback.cs" />
+    <Compile Include="Form\WaveSelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\WaveSelectForm.Designer.cs">
+      <DependentUpon>WaveSelectForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\InstForm.resx">
       <DependentUpon>InstForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form\RegionInfoForm.resx">
+      <DependentUpon>RegionInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form\WaveInfoForm.resx">
       <DependentUpon>WaveInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\WaveSelectForm.resx">
+      <DependentUpon>WaveSelectForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -98,6 +123,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Form\AmpEnvelope.resx">
+      <DependentUpon>AmpEnvelope.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -127,13 +155,31 @@
     <None Include="Image\plus.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Image\adsr.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Image\select.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Image\waveout.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\key.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvAttack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvDecay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvHold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvReleace.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image\EnvSustain.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
