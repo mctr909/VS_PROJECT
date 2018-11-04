@@ -168,6 +168,11 @@ namespace DLSeditor {
 			mScaleLoop = Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
 		}
 
+		private void numVolume_ValueChanged(object sender, EventArgs e) {
+			mFile.WavePool.List[mIndex].Sampler.Gain = (double)numVolume.Value / 100.0;
+			mWaveOut.mVolume = mFile.WavePool.List[mIndex].Sampler.Gain;
+		}
+
 		private void numUnityNote_ValueChanged(object sender, EventArgs e) {
 			var oct = (int)numUnityNote.Value / 12 - 2;
 			var note = (int)numUnityNote.Value % 12;
@@ -277,6 +282,7 @@ namespace DLSeditor {
 				= btnPlay.Height + 6
 				+ grbMain.Height + 6
 				+ grbLoop.Height + 48;
+			Width = btnUpdateAutoTune.Right + 22;
 		}
 
 		private void SizeChange() {
@@ -356,6 +362,7 @@ namespace DLSeditor {
 				btnLoopCreate.Text = "ループ作成";
 			}
 
+			numVolume.Value = (decimal)((int)(wave.Sampler.Gain * 1000) / 10.0);
 			numUnityNote.Value = wave.Sampler.UnityNote;
 			numFineTune.Value = wave.Sampler.FineTune;
 			txtName.Text = wave.Info.Name;
