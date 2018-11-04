@@ -89,6 +89,8 @@ namespace DLSeditor {
 				));
 				++count;
 			}
+
+			lstWave.SelectedIndex = (int)mRegion.WaveLink.TableIndex;
 		}
 	}
 }

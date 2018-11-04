@@ -51,6 +51,8 @@
 			this.btnUpdateAutoTune = new System.Windows.Forms.Button();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.txtName = new System.Windows.Forms.TextBox();
+			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.numVolume = new System.Windows.Forms.NumericUpDown();
 			((System.ComponentModel.ISupportInitialize)(this.picSpectrum)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picWave)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numScale)).BeginInit();
@@ -64,6 +66,8 @@
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupBox4.SuspendLayout();
+			this.groupBox5.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numVolume)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// btnPlay
@@ -129,6 +133,7 @@
             0,
             0});
 			this.numScale.Name = "numScale";
+			this.numScale.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.numScale.Size = new System.Drawing.Size(125, 37);
 			this.numScale.TabIndex = 0;
 			this.numScale.Value = new decimal(new int[] {
@@ -215,6 +220,7 @@
             0,
             0});
 			this.numScaleLoop.Name = "numScaleLoop";
+			this.numScaleLoop.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.numScaleLoop.Size = new System.Drawing.Size(125, 37);
 			this.numScaleLoop.TabIndex = 0;
 			this.numScaleLoop.Value = new decimal(new int[] {
@@ -234,6 +240,7 @@
             0,
             0});
 			this.numUnityNote.Name = "numUnityNote";
+			this.numUnityNote.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.numUnityNote.Size = new System.Drawing.Size(120, 36);
 			this.numUnityNote.TabIndex = 0;
 			this.numUnityNote.ValueChanged += new System.EventHandler(this.numUnityNote_ValueChanged);
@@ -253,6 +260,7 @@
             0,
             -2147483648});
 			this.numFineTune.Name = "numFineTune";
+			this.numFineTune.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.numFineTune.Size = new System.Drawing.Size(120, 36);
 			this.numFineTune.TabIndex = 0;
 			this.numFineTune.ValueChanged += new System.EventHandler(this.numFineTune_ValueChanged);
@@ -272,7 +280,7 @@
 			this.groupBox1.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.groupBox1.Controls.Add(this.numUnityNote);
 			this.groupBox1.Controls.Add(this.lblUnityNote);
-			this.groupBox1.Location = new System.Drawing.Point(575, 12);
+			this.groupBox1.Location = new System.Drawing.Point(743, 12);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(224, 74);
 			this.groupBox1.TabIndex = 2;
@@ -283,7 +291,7 @@
 			// 
 			this.groupBox2.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.groupBox2.Controls.Add(this.numFineTune);
-			this.groupBox2.Location = new System.Drawing.Point(805, 12);
+			this.groupBox2.Location = new System.Drawing.Point(973, 12);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(162, 74);
 			this.groupBox2.TabIndex = 3;
@@ -305,7 +313,7 @@
 			this.groupBox3.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.groupBox3.Controls.Add(this.lblPitchCent);
 			this.groupBox3.Controls.Add(this.lblPitch);
-			this.groupBox3.Location = new System.Drawing.Point(973, 12);
+			this.groupBox3.Location = new System.Drawing.Point(1141, 12);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(234, 74);
 			this.groupBox3.TabIndex = 17;
@@ -325,7 +333,7 @@
 			// 
 			// btnUpdateAutoTune
 			// 
-			this.btnUpdateAutoTune.Location = new System.Drawing.Point(1213, 12);
+			this.btnUpdateAutoTune.Location = new System.Drawing.Point(1381, 12);
 			this.btnUpdateAutoTune.Name = "btnUpdateAutoTune";
 			this.btnUpdateAutoTune.Size = new System.Drawing.Size(252, 74);
 			this.btnUpdateAutoTune.TabIndex = 4;
@@ -353,12 +361,35 @@
 			this.txtName.TabIndex = 0;
 			this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
 			// 
+			// groupBox5
+			// 
+			this.groupBox5.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.groupBox5.Controls.Add(this.numVolume);
+			this.groupBox5.Location = new System.Drawing.Point(575, 12);
+			this.groupBox5.Name = "groupBox5";
+			this.groupBox5.Size = new System.Drawing.Size(162, 74);
+			this.groupBox5.TabIndex = 4;
+			this.groupBox5.TabStop = false;
+			this.groupBox5.Text = "音量(%)";
+			// 
+			// numVolume
+			// 
+			this.numVolume.DecimalPlaces = 1;
+			this.numVolume.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.numVolume.Location = new System.Drawing.Point(6, 25);
+			this.numVolume.Name = "numVolume";
+			this.numVolume.RightToLeft = System.Windows.Forms.RightToLeft.No;
+			this.numVolume.Size = new System.Drawing.Size(120, 36);
+			this.numVolume.TabIndex = 0;
+			this.numVolume.ValueChanged += new System.EventHandler(this.numVolume_ValueChanged);
+			// 
 			// WaveInfoForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(1730, 942);
+			this.Controls.Add(this.groupBox5);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.btnUpdateAutoTune);
 			this.Controls.Add(this.groupBox3);
@@ -389,6 +420,8 @@
 			this.groupBox3.PerformLayout();
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
+			this.groupBox5.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.numVolume)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -418,5 +451,7 @@
 		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.TextBox txtName;
 		private System.Windows.Forms.Label lblPitchCent;
+		private System.Windows.Forms.GroupBox groupBox5;
+		private System.Windows.Forms.NumericUpDown numVolume;
 	}
 }

@@ -5,6 +5,7 @@ namespace DLSeditor {
 	unsafe public class WavePlayback : WaveOutLib {
 		public int mLoopBegin;
 		public int mLoopEnd;
+		public double mVolume;
 		public double mPitch;
 
 		private short[] mWave;
@@ -55,7 +56,7 @@ namespace DLSeditor {
 
 		protected override void SetData() {
 			for (var i = 0; i < BufferSize; i += 2) {
-				var wave = ((int)mTime < mWave.Length) ? (mWave[(int)mTime] / 32768.0) : 0.0;
+				var wave = ((int)mTime < mWave.Length) ? (mWave[(int)mTime] * mVolume / 32768.0) : 0.0;
 				WaveBuffer[i] = (short)(32767 * wave);
 				WaveBuffer[i + 1] = (short)(32767 * wave);
 
