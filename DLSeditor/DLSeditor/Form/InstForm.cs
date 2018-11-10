@@ -4,6 +4,7 @@ using System.Windows.Forms;
 namespace DLSeditor {
 	public partial class InstForm : Form {
 		private DLS.DLS mDLS;
+		private DLS.INS mINS;
 
 		private readonly string[] GM_INST_NAME = new string[] {
 			"Acoustic Grand Piano",
@@ -142,6 +143,13 @@ namespace DLSeditor {
 			mDLS = dls;
 		}
 
+		public InstForm(DLS.DLS dls, DLS.INS ins) {
+			InitializeComponent();
+			StartPosition = FormStartPosition.CenterParent;
+			mDLS = dls;
+			mINS = ins;
+		}
+
 		private void InstAddForm_Load(object sender, EventArgs e) {
 			setProgramList();
 			setBankMsbList();
@@ -181,12 +189,31 @@ namespace DLSeditor {
 				return;
 			}
 
+			if (null != mINS) {
+				mINS.Header.Locale = inst.Header.Locale;
+				if (null == mINS.Info) {
+					mINS.Info = new DLS.INFO();
+				}
+				mINS.Info.Name = inst.Info.Name;
+				inst = mINS;
+			}
+
 			mDLS.Instruments.List.Add(inst.Header.Locale, inst);
+
 			Close();
 		}
 
 		private void setProgramList() {
 			lstPrgNo.Items.Clear();
+
+			if (null != mINS) {
+				rbDrum.Checked = (mINS.Header.Locale.BankFlags & 0x80) == 0x80;
+				rbDrum.Enabled = false;
+				rbNote.Enabled = false;
+				if (null != mINS.Info) {
+					txtInstName.Text = mINS.Info.Name.Trim();
+				}
+			}
 
 			for (byte i = 0; i < 128; ++i) {
 				var strUse = "   ";
@@ -215,6 +242,10 @@ namespace DLSeditor {
 				else {
 					lstPrgNo.Items.Add(string.Format("{0} {1} {2}", i.ToString("000"), strUse, GM_INST_NAME[i]));
 				}
+			}
+
+			if (null != mINS) {
+				lstPrgNo.SelectedIndex = mINS.Header.Locale.ProgramNo;
 			}
 		}
 
@@ -251,6 +282,10 @@ namespace DLSeditor {
 					}
 				}
 				lstBankMSB.Items.Add(string.Format("{0} {1}", i.ToString("000"), strUse));
+			}
+
+			if (null != mINS) {
+				lstBankMSB.SelectedIndex = mINS.Header.Locale.BankMSB;
 			}
 		}
 
@@ -293,6 +328,10 @@ namespace DLSeditor {
 					}
 				}
 				lstBankLSB.Items.Add(string.Format("{0} {1}", i.ToString("000"), strUse));
+			}
+
+			if (null != mINS) {
+				lstBankLSB.SelectedIndex = mINS.Header.Locale.BankLSB;
 			}
 		}
 	}

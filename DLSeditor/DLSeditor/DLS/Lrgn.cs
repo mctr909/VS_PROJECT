@@ -61,6 +61,8 @@ namespace DLS {
 		public CK_WLNK WaveLink;
 		public LART Articulations = new LART();
 
+		public RGN() { }
+
 		public RGN(byte noteLow = 0, byte noteHigh = 127, byte velocityLow = 0, byte velocityHigh = 127) {
 			Header.Key.Low = noteLow;
 			Header.Key.High = noteHigh;

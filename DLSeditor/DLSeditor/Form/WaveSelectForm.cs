@@ -90,7 +90,9 @@ namespace DLSeditor {
 				++count;
 			}
 
-			lstWave.SelectedIndex = (int)mRegion.WaveLink.TableIndex;
+			if ((int)mRegion.WaveLink.TableIndex < lstWave.Items.Count) {
+				lstWave.SelectedIndex = (int)mRegion.WaveLink.TableIndex;
+			}
 		}
 	}
 }

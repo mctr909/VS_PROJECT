@@ -9,6 +9,7 @@ namespace DLSeditor {
 		private DLS.DLS mDLS;
 		private string mFilePath;
 		private bool onRange;
+		private DLS.INS mINS;
 
 		private readonly string[] NoteName = new string[] {
 			"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"
@@ -296,7 +297,7 @@ namespace DLSeditor {
 		}
 
 		private void AddInst() {
-			InstForm fm = new InstForm(mDLS);
+			var fm = new InstForm(mDLS);
 			fm.ShowDialog();
 			DispInstList();
 		}
@@ -325,9 +326,62 @@ namespace DLSeditor {
 		}
 
 		private void CopyInst() {
+			var inst = mDLS.Instruments.List[GetLocale(lstInst.SelectedIndex)];
+			mINS = new DLS.INS();
+			mINS.Header = inst.Header;
+
+			// Regions
+			mINS.Regions = new DLS.LRGN();
+			foreach (var rgn in inst.Regions.List) {
+				var tempRgn = new DLS.RGN();
+				tempRgn.Header = rgn.Value.Header;
+				tempRgn.WaveLink = rgn.Value.WaveLink;
+
+				// Sampler
+				tempRgn.Sampler = rgn.Value.Sampler;
+				tempRgn.Loops = new Dictionary<int, DLS.WaveLoop>();
+				foreach (var loop in rgn.Value.Loops) {
+					var tempLoop = new DLS.WaveLoop();
+					tempLoop.Size = loop.Value.Size;
+					tempLoop.Type = loop.Value.Type;
+					tempLoop.Start = loop.Value.Start;
+					tempLoop.Length = loop.Value.Length;
+					tempRgn.Loops.Add(loop.Key, tempLoop);
+				}
+
+				// Articulations
+				if (null != rgn.Value.Articulations && null != rgn.Value.Articulations.ART) {
+					tempRgn.Articulations = new DLS.LART();
+					tempRgn.Articulations.ART = new DLS.ART();
+					foreach (var art in rgn.Value.Articulations.ART.List) {
+						tempRgn.Articulations.ART.List.Add(art.Key, art.Value);
+					}
+				}
+
+				mINS.Regions.List.Add(rgn.Key, tempRgn);
+			}
+
+			// Articulations
+			if (null != inst.Articulations && null != inst.Articulations.ART) {
+				mINS.Articulations = new DLS.LART();
+				mINS.Articulations.ART = new DLS.ART();
+				foreach (var art in inst.Articulations.ART.List) {
+					mINS.Articulations.ART.List.Add(art.Key, art.Value);
+				}
+			}
+
+			mINS.Info = new DLS.INFO();
+			mINS.Info.Name = inst.Info.Name;
 		}
 
 		private void PasteInst() {
+			if(null == mINS) {
+				return;
+			}
+
+			var fm = new InstForm(mDLS, mINS);
+			fm.ShowDialog();
+
 			DispInstList();
 		}
 
@@ -554,6 +608,7 @@ namespace DLSeditor {
 
 			var region = new DLS.RGN();
 			region.Header.Key.Low = ushort.MaxValue;
+			region.WaveLink.TableIndex = uint.MaxValue;
 			var fm = new RegionInfoForm(mDLS, region);
 			fm.ShowDialog();
 
@@ -715,15 +770,22 @@ namespace DLSeditor {
 					waveName = wave.Info.Name;
 				}
 
-				lstRegion.Items.Add(string.Format(
-					"音程 {0} {1}    強弱 {2} {3}    波形 {4} {5}",
+				var regionInfo = string.Format(
+					"音程 {0} {1}    強弱 {2} {3}",
 					region.Header.Key.Low.ToString("000"),
 					region.Header.Key.High.ToString("000"),
 					region.Header.Velocity.Low.ToString("000"),
-					region.Header.Velocity.High.ToString("000"),
-					region.WaveLink.TableIndex.ToString("0000"),
-					waveName
-				));
+					region.Header.Velocity.High.ToString("000")
+				);
+				if(uint.MaxValue != region.WaveLink.TableIndex) {
+					regionInfo = string.Format(
+						"{0}    波形 {1} {2}",
+						regionInfo,
+						region.WaveLink.TableIndex.ToString("0000"),
+						waveName
+					);
+				}
+				lstRegion.Items.Add(regionInfo);
 			}
 
 			if (null != picRegion.Image) {

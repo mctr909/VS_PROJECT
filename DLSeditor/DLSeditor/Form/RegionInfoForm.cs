@@ -119,7 +119,7 @@ namespace DLSeditor {
 			grbVolume.Left = grbFineTune.Left + grbFineTune.Width + 6;
 
 			btnAdd.Top = grbVolume.Top + grbVolume.Height + 6;
-			btnAdd.Left = grbUnityNote.Left;
+			btnAdd.Left = grbWave.Right - btnAdd.Width;
 
 			Width = grbWave.Left + grbWave.Width + 24;
 			Height = btnAdd.Top + btnAdd.Height + 48;
@@ -177,11 +177,16 @@ namespace DLSeditor {
 					btnEditWave.Enabled = false;
 				}
 
-				txtWave.Text = string.Format(
-					"{0} {1}",
-					mRegion.WaveLink.TableIndex.ToString("0000"),
-					waveName
-				);
+				if (uint.MaxValue == mRegion.WaveLink.TableIndex) {
+					txtWave.Text = "";
+				}
+				else {
+					txtWave.Text = string.Format(
+						"{0} {1}",
+						mRegion.WaveLink.TableIndex.ToString("0000"),
+						waveName
+					);
+				}
 
 				numUnityNote.Value = mRegion.Sampler.UnityNote;
 				numFineTune.Value = mRegion.Sampler.FineTune;

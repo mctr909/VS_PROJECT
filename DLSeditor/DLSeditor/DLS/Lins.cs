@@ -60,6 +60,8 @@ namespace DLS {
 		public LART Articulations = new LART();
 		public INFO Info = new INFO();
 
+		public INS() { }
+
 		public INS(byte programNo, byte bankMSB = 0, byte bankLSB = 0, bool isDrum = false) {
 			Header.Locale.BankFlags = (byte)(isDrum ? 0x80 : 0x00);
 			Header.Locale.ProgramNo = programNo;
