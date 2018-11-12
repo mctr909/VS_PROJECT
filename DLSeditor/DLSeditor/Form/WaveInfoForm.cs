@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DLSeditor {
 	unsafe public partial class WaveInfoForm : Form {
@@ -304,8 +305,8 @@ namespace DLSeditor {
 			var ms = new MemoryStream(wave.Data);
 			var br = new BinaryReader(ms);
 			var samples = 8 * wave.Data.Length / wave.Format.Bits;
-			var packSize = 32;
-			samples += packSize - (samples % packSize);
+			var packSize = 256;
+			samples += packSize * 2 - (samples % (packSize * 2));
 
 			mWave = new short[samples];
 			switch (wave.Format.Bits) {
@@ -440,20 +441,26 @@ namespace DLSeditor {
 				ImageLockMode.WriteOnly,
 				bmp.PixelFormat
 			);
-			var pix = (uint*)bmpData.Scan0.ToPointer();
 
-			int y, x;
+			var height = bmp.Height;
+			var width = bmp.Width;
+			var pixO = (uint*)bmpData.Scan0.ToPointer();
 			double begin = hsbTime.Value * mTimeDiv;
 			double scale = mTimeDiv / mScale;
-			for (y = bmp.Height - 1; 0 <= y; --y) {
-				for (x = 0; x < bmp.Width; ++x) {
-					var sx = (int)(begin + scale * x);
-					if (sx < mSpectrogram.Length && y < mSpectrogram[sx].Length) {
-						*pix = mColors[mSpectrogram[sx][y]];
+			Parallel.For(0, height - 1, y => {
+				var pix = pixO + (height - y - 1) * width;
+				for (var x = 0; x < width; ++x) {
+					var t = begin + scale * x;
+					var t1 = (int)t;
+					var t2 = t1 + 1;
+					var dt = t - t1;
+					if (t2 < mSpectrogram.Length && y < mSpectrogram[t2].Length) {
+						var v = (int)(mSpectrogram[t1][y] * (1.0 - dt) + mSpectrogram[t2][y] * dt);
+						*pix = mColors[v];
 					}
 					++pix;
 				}
-			}
+			});
 			bmp.UnlockBits(bmpData);
 
 			if (null != picSpectrum.Image) {

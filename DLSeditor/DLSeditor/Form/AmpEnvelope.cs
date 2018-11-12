@@ -27,27 +27,27 @@ namespace DLSeditor {
 
 			hsbAttack.Left = picAttack.Right + 4;
 			hsbAttack.Top = picAttack.Top;
-			hsbAttack.Width = 500;
+			hsbAttack.Width = 300;
 			hsbAttack.Height = picAttack.Height;
 
 			hsbHold.Left = picHold.Right + 4;
 			hsbHold.Top = picHold.Top;
-			hsbHold.Width = 500;
+			hsbHold.Width = 300;
 			hsbHold.Height = picHold.Height;
 
 			hsbDecay.Left = picDecay.Right + 4;
 			hsbDecay.Top = picDecay.Top;
-			hsbDecay.Width = 500;
+			hsbDecay.Width = 300;
 			hsbDecay.Height = picDecay.Height;
 
 			hsbSustain.Left = picSustain.Right + 4;
 			hsbSustain.Top = picSustain.Top;
-			hsbSustain.Width = 500;
+			hsbSustain.Width = 300;
 			hsbSustain.Height = picSustain.Height;
 
 			hsbReleace.Left = picReleace.Right + 4;
 			hsbReleace.Top = picReleace.Top;
-			hsbReleace.Width = 500;
+			hsbReleace.Width = 300;
 			hsbReleace.Height = picReleace.Height;
 
 

@@ -741,7 +741,7 @@ namespace DLSeditor {
 
 			var bmp = new Bitmap(picRegion.Width, picRegion.Height);
 			var g = Graphics.FromImage(bmp);
-			var blueLine = new Pen(Color.FromArgb(255, 0, 0, 255), 1.0f);
+			var blueLine = new Pen(Color.FromArgb(255, 0, 0, 255), 2.0f);
 			var greenFill = new Pen(Color.FromArgb(64, 0, 255, 0), 1.0f).Brush;
 
 			var idx = lstRegion.SelectedIndex;
@@ -760,7 +760,7 @@ namespace DLSeditor {
 				g.DrawRectangle(
 					blueLine,
 					key.Low * 7,
-					bmp.Height - (vel.High + 1) * 4 - 1,
+					bmp.Height - (vel.High + 1) * 4,
 					(key.High - key.Low + 1) * 7,
 					(vel.High - vel.Low + 1) * 4
 				);

@@ -49,9 +49,9 @@ public class Spectrum {
 		mLevel = new double[banks];
 		for (uint bankNo = 0; bankNo < banks; ++bankNo) {
 			mBanks[bankNo] = new BANK();
-			var width = 4.0 - 8.0 * bankNo / banks;
-			if (width < 0.66) {
-				width = 0.66;
+			var width = 2.0 - 6.0 * bankNo / banks;
+			if (width < 0.5) {
+				width = 0.5;
 			}
 
 			var omega = Math.Pow(2.0, (double)bankNo / octDiv) * baseFreq * mFreqToOmega;
