@@ -13,10 +13,10 @@ namespace DLSeditor {
 
 		private byte[][] mSpectrogram;
 		private uint[] mColors;
-		private short[] mWave;
-		private double mScale;
-		private double mScaleLoop;
-		private double mTimeDiv;
+		private float[] mWave;
+		private float mScale;
+		private float mScaleLoop;
+		private float mTimeDiv;
 		private double mDelta;
 		private Point mCursolPos;
 		private bool mOnWaveDisp;
@@ -87,8 +87,8 @@ namespace DLSeditor {
 			SizeChange();
 
 			InitWave();
-			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
-			mScaleLoop = Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
+			mScale = (float)Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
+			mScaleLoop = (float)Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
 		}
 
 		private void WaveInfoForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -162,11 +162,11 @@ namespace DLSeditor {
 		}
 
 		private void numScale_ValueChanged(object sender, EventArgs e) {
-			mScale = Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
+			mScale = (float)Math.Pow(2.0, ((double)numScale.Value - 32.0) / 4.0);
 		}
 
 		private void numScaleLoop_ValueChanged(object sender, EventArgs e) {
-			mScaleLoop = Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
+			mScaleLoop = (float)Math.Pow(2.0, ((double)numScaleLoop.Value - 32.0) / 4.0);
 		}
 
 		private void numVolume_ValueChanged(object sender, EventArgs e) {
@@ -308,16 +308,16 @@ namespace DLSeditor {
 			var packSize = 256;
 			samples += packSize * 2 - (samples % (packSize * 2));
 
-			mWave = new short[samples];
+			mWave = new float[samples];
 			switch (wave.Format.Bits) {
 			case 8:
 				for (var i = 0; ms.Position < ms.Length; ++i) {
-					mWave[i] = (short)(256 * (br.ReadByte() - 128));
+					mWave[i] = (br.ReadByte() - 128) / 128.0f;
 				}
 				break;
 			case 16:
 				for (var i = 0; ms.Position < ms.Length; ++i) {
-					mWave[i] = br.ReadInt16();
+					mWave[i] = br.ReadInt16() / 32768.0f;
 				}
 				break;
 			}
@@ -329,14 +329,14 @@ namespace DLSeditor {
 			br.Dispose();
 
 			mDelta = wave.Format.SampleRate / 44100.0;
-			mTimeDiv = 1.0 / mDelta / packSize;
+			mTimeDiv = 1.0f / (float)mDelta / packSize;
 			mSpectrogram = new byte[(int)(mWave.Length * mTimeDiv)][];
 
-			var sp = new Spectrum(wave.Format.SampleRate, 27.5, 12, 112);
+			var sp = new Spectrum(wave.Format.SampleRate, 27.5, 24, 224);
 			var time = 0.0;
 			for (var s = 0; s < mSpectrogram.Length; ++s) {
 				for (var i = 0; i < packSize && time < mWave.Length; ++i) {
-					var w = mWave[(int)time] / 32768.0;
+					var w = mWave[(int)time];
 					for (uint b = 0; b < sp.Banks; ++b) {
 						sp.Filtering(b, w);
 					}
@@ -351,6 +351,10 @@ namespace DLSeditor {
 					var lv = level[b] / sp.Max;
 					mSpectrogram[s][b] = (byte)(1.0 < lv ? amp : (amp * lv));
 				}
+			}
+
+			for (var i = 0; i < mWave.Length; ++i) {
+				mWave[i] = 0.5f - 0.5f * mWave[i];
 			}
 
 			if (0 < wave.Loops.Count) {
@@ -369,71 +373,6 @@ namespace DLSeditor {
 			txtName.Text = wave.Info.Name;
 		}
 
-		private void DrawWave() {
-			var bmp = new Bitmap(picWave.Width, picWave.Height, PixelFormat.Format16bppRgb555);
-			var graph = Graphics.FromImage(bmp);
-
-			var amp = bmp.Height - 1;
-
-			var green = new Pen(Color.FromArgb(0, 168, 0), 1.0f);
-
-			var begin = hsbTime.Value;
-			var end = hsbTime.Value + bmp.Width / mScale + 1;
-
-			var wave = mFile.WavePool.List[mIndex];
-
-			//
-			if (0 < wave.Sampler.LoopCount) {
-				var loopBegin = (float)(mScale * (mLoop.Start - begin));
-				var loopLength = (float)(mScale * mLoop.Length);
-				var loopEnd = loopBegin + loopLength;
-				graph.FillRectangle(Brushes.WhiteSmoke, loopBegin, 0, loopLength, bmp.Height);
-
-				if (mOnWaveDisp && Math.Abs(mCursolPos.X - loopBegin) <= 7) {
-					Cursor = Cursors.SizeWE;
-					if(onDragWave && !onDragLoopEnd) {
-						onDragLoopBegin = true;
-					}
-				}
-				else if (mOnWaveDisp && Math.Abs(mCursolPos.X - loopEnd) <= 7) {
-					Cursor = Cursors.SizeWE;
-					if (onDragWave && !onDragLoopBegin) {
-						onDragLoopEnd = true;
-					}
-				}
-				else {
-					Cursor = Cursors.Default;
-				}
-			}
-
-			//
-			for (int t1 = begin, t2 = begin + 1; t2 < end; ++t1, ++t2) {
-				if (t1 < 0) {
-					continue;
-				}
-				if (mWave.Length <= t2) {
-					break;
-				}
-
-				var y1 = (float)(amp * (0.5 - 0.5 * mWave[t1] / 32768.0));
-				var y2 = (float)(amp * (0.5 - 0.5 * mWave[t2] / 32768.0));
-				var x1 = (float)(mScale * (t1 - begin));
-				var x2 = (float)(mScale * (t2 - begin));
-				graph.DrawLine(green, x1, y1, x2, y2);
-			}
-
-			//
-			graph.DrawLine(Pens.Red, 0, picWave.Height / 2.0f - 1, picWave.Width - 1, picWave.Height / 2.0f - 1);
-
-			if (null != picWave.Image) {
-				picWave.Image.Dispose();
-				picWave.Image = null;
-			}
-			picWave.BackColor = Color.Black;
-			picWave.Image = bmp;
-			graph.Dispose();
-		}
-
 		private void DrawSpec() {
 			var bmp = new Bitmap(picSpectrum.Width, picSpectrum.Height, PixelFormat.Format32bppRgb);
 			BitmapData bmpData = bmp.LockBits(
@@ -445,20 +384,26 @@ namespace DLSeditor {
 			var height = bmp.Height;
 			var width = bmp.Width;
 			var pixO = (uint*)bmpData.Scan0.ToPointer();
-			double begin = hsbTime.Value * mTimeDiv;
-			double scale = mTimeDiv / mScale;
+			var begin = hsbTime.Value * mTimeDiv;
+			var delta = mTimeDiv / mScale;
 			Parallel.For(0, height - 1, y => {
 				var pix = pixO + (height - y - 1) * width;
+				var time = begin;
 				for (var x = 0; x < width; ++x) {
-					var t = begin + scale * x;
-					var t1 = (int)t;
+					var t1 = (int)time;
 					var t2 = t1 + 1;
-					var dt = t - t1;
-					if (t2 < mSpectrogram.Length && y < mSpectrogram[t2].Length) {
+					var dt = time - t1;
+					time += delta;
+					if (mSpectrogram.Length <= t2) {
+						*pix = 0;
+						++pix;
+						break;
+					}
+					if (y < mSpectrogram[t2].Length) {
 						var v = (int)(mSpectrogram[t1][y] * (1.0 - dt) + mSpectrogram[t2][y] * dt);
 						*pix = mColors[v];
+						++pix;
 					}
-					++pix;
 				}
 			});
 			bmp.UnlockBits(bmpData);
@@ -471,51 +416,112 @@ namespace DLSeditor {
 			picSpectrum.Image = bmp;
 		}
 
+		private void DrawWave() {
+			var bmp = new Bitmap(picWave.Width, picWave.Height, PixelFormat.Format16bppRgb555);
+			var graph = Graphics.FromImage(bmp);
+
+			var green = new Pen(Color.FromArgb(0, 168, 0), 1.0f);
+
+			var amp = bmp.Height - 1;
+			var begin = hsbTime.Value;
+
+			//
+			var wave = mFile.WavePool.List[mIndex];
+			if (0 < wave.Sampler.LoopCount) {
+				var loopBegin = (mLoop.Start - begin) * mScale;
+				var loopLength = mLoop.Length * mScale;
+				var loopEnd = loopBegin + loopLength;
+				graph.FillRectangle(Brushes.WhiteSmoke, loopBegin, 0, loopLength, bmp.Height);
+
+				if (mOnWaveDisp && Math.Abs(mCursolPos.X - loopBegin) <= 8) {
+					Cursor = Cursors.SizeWE;
+					if (onDragWave && !onDragLoopEnd) {
+						onDragLoopBegin = true;
+					}
+				}
+				else if (mOnWaveDisp && Math.Abs(mCursolPos.X - loopEnd) <= 8) {
+					Cursor = Cursors.SizeWE;
+					if (onDragWave && !onDragLoopBegin) {
+						onDragLoopEnd = true;
+					}
+				}
+				else {
+					Cursor = Cursors.Default;
+				}
+			}
+
+			//
+			graph.DrawLine(Pens.Red, 0, picWave.Height / 2.0f - 1, picWave.Width - 1, picWave.Height / 2.0f - 1);
+
+			//
+			var x1 = 0.0f;
+			var x2 = mScale;
+			for (int t1 = begin, t2 = begin + 1; x2 < bmp.Width && t2 < mWave.Length; ++t1, ++t2) {
+				if (t1 < 0) {
+					continue;
+				}
+
+				graph.DrawLine(green, x1, mWave[t1] * amp, x2, mWave[t2] * amp);
+				x1 += mScale;
+				x2 += mScale;
+			}
+
+			//
+			if (null != picWave.Image) {
+				picWave.Image.Dispose();
+				picWave.Image = null;
+			}
+			picWave.BackColor = Color.Black;
+			picWave.Image = bmp;
+			graph.Dispose();
+		}
+
 		private void DrawLoop() {
 			var bmp = new Bitmap(picLoop.Width, picLoop.Height, PixelFormat.Format16bppRgb555);
-			var g = Graphics.FromImage(bmp);
+			var graph = Graphics.FromImage(bmp);
+
+			var green = new Pen(Color.FromArgb(0, 168, 0), 1.0f);
 
 			var amp = bmp.Height - 1;
 			var halfWidth = (int)(picLoop.Width / 2.0f - 1);
 
-			var wave = mFile.WavePool.List[mIndex];
-
+			//
 			var loopBegin = (int)mLoop.Start;
 			var loopEnd = (int)mLoop.Start + (int)mLoop.Length;
 			if (mWave.Length <= loopEnd) {
 				loopEnd = mWave.Length - 1;
 			}
 
-			var green = new Pen(Color.FromArgb(0, 168, 0), 1.0f);
-
-			g.DrawLine(Pens.Red, 0, picLoop.Height / 2.0f - 1, picLoop.Width - 1, picLoop.Height / 2.0f - 1);
-			g.DrawLine(Pens.Red, halfWidth, 0, halfWidth, picLoop.Height);
+			//
+			graph.DrawLine(Pens.Red, 0, picLoop.Height / 2.0f - 1, picLoop.Width - 1, picLoop.Height / 2.0f - 1);
+			graph.DrawLine(Pens.Red, halfWidth, 0, halfWidth, picLoop.Height);
 
 			//
-			for (int t1 = loopBegin, t2 = loopBegin + 1, px1 = 0, px2 = 1; t2 <= loopEnd; ++t1, ++t2, ++px1, ++px2) {
-				var y1 = (float)(amp * (0.5 - 0.5 * mWave[t1] / 32768.0));
-				var y2 = (float)(amp * (0.5 - 0.5 * mWave[t2] / 32768.0));
-				var x1 = (float)(halfWidth + mScaleLoop * px1);
-				var x2 = (float)(halfWidth + mScaleLoop * px2);
-				g.DrawLine(green, x1, y1, x2, y2);
+			float x1 = halfWidth;
+			float x2 = halfWidth + mScaleLoop;
+			for (int t1 = loopBegin, t2 = loopBegin + 1; t2 <= loopEnd; ++t1, ++t2) {
+				graph.DrawLine(green, x1, mWave[t1] * amp, x2, mWave[t2] * amp);
+				x1 += mScaleLoop;
+				x2 += mScaleLoop;
 			}
 
 			//
-			for (int t1 = loopEnd, t2 = loopEnd - 1, px1 = 0, px2 = 1; loopBegin <= t2; --t1, --t2, ++px1, ++px2) {
-				var y1 = (float)(amp * (0.5 - 0.5 * mWave[t1] / 32768.0));
-				var y2 = (float)(amp * (0.5 - 0.5 * mWave[t2] / 32768.0));
-				var x1 = (float)(halfWidth - mScaleLoop * px1);
-				var x2 = (float)(halfWidth - mScaleLoop * px2);
-				g.DrawLine(green, x1, y1, x2, y2);
+			x1 = halfWidth;
+			x2 = halfWidth - mScaleLoop;
+			for (int t1 = loopEnd, t2 = loopEnd - 1; loopBegin <= t2; --t1, --t2) {
+				graph.DrawLine(green, x1, mWave[t1] * amp, x2, mWave[t2] * amp);
+				x1 -= mScaleLoop;
+				x2 -= mScaleLoop;
 			}
 
+			//
 			if (null != picLoop.Image) {
 				picLoop.Image.Dispose();
 				picLoop.Image = null;
 			}
 			picLoop.BackColor = Color.Black;
 			picLoop.Image = bmp;
-			g.Dispose();
+			graph.Dispose();
 		}
 	}
 }

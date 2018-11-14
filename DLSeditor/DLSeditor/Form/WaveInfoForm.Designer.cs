@@ -84,16 +84,16 @@
 			// picSpectrum
 			// 
 			this.picSpectrum.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.picSpectrum.Location = new System.Drawing.Point(10, 49);
+			this.picSpectrum.Location = new System.Drawing.Point(10, 51);
 			this.picSpectrum.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.picSpectrum.Name = "picSpectrum";
-			this.picSpectrum.Size = new System.Drawing.Size(1681, 224);
+			this.picSpectrum.Size = new System.Drawing.Size(1681, 448);
 			this.picSpectrum.TabIndex = 2;
 			this.picSpectrum.TabStop = false;
 			// 
 			// hsbTime
 			// 
-			this.hsbTime.Location = new System.Drawing.Point(10, 491);
+			this.hsbTime.Location = new System.Drawing.Point(10, 717);
 			this.hsbTime.Name = "hsbTime";
 			this.hsbTime.Size = new System.Drawing.Size(1681, 28);
 			this.hsbTime.TabIndex = 3;
@@ -101,7 +101,7 @@
 			// picWave
 			// 
 			this.picWave.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.picWave.Location = new System.Drawing.Point(10, 285);
+			this.picWave.Location = new System.Drawing.Point(10, 511);
 			this.picWave.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.picWave.Name = "picWave";
 			this.picWave.Size = new System.Drawing.Size(1681, 200);
@@ -164,7 +164,7 @@
 			this.grbMain.Controls.Add(this.btnUpdate);
 			this.grbMain.Location = new System.Drawing.Point(12, 96);
 			this.grbMain.Name = "grbMain";
-			this.grbMain.Size = new System.Drawing.Size(1706, 564);
+			this.grbMain.Size = new System.Drawing.Size(1706, 803);
 			this.grbMain.TabIndex = 5;
 			this.grbMain.TabStop = false;
 			this.grbMain.Text = "ループ範囲選択";
@@ -197,7 +197,7 @@
 			this.grbLoop.Controls.Add(this.numScaleLoop);
 			this.grbLoop.Controls.Add(this.picLoop);
 			this.grbLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.grbLoop.Location = new System.Drawing.Point(12, 670);
+			this.grbLoop.Location = new System.Drawing.Point(12, 905);
 			this.grbLoop.Name = "grbLoop";
 			this.grbLoop.Size = new System.Drawing.Size(1706, 261);
 			this.grbLoop.TabIndex = 6;
@@ -388,7 +388,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
-			this.ClientSize = new System.Drawing.Size(1730, 942);
+			this.ClientSize = new System.Drawing.Size(1736, 1177);
 			this.Controls.Add(this.groupBox5);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.btnUpdateAutoTune);
