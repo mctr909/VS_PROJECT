@@ -93,7 +93,7 @@ namespace DLSeditor {
 
 		private void WaveInfoForm_FormClosing(object sender, FormClosingEventArgs e) {
 			if (null != mWaveOut) {
-				mWaveOut.Stop();
+				mWaveOut.Dispose();
 			}
 		}
 

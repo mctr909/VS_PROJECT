@@ -45,13 +45,11 @@ namespace DLSeditor {
 		public void Play() {
 			mDelta = (double)mSampleRate / SampleRate;
 			mTime = 0.0;
+			WaveOutOpen();
 		}
 
 		public void Stop() {
-			mLoopBegin = 0;
-			mLoopEnd = 0;
-			mDelta = 0.0;
-			mTime = 0.0;
+			WaveOutClose();
 		}
 
 		protected override void SetData() {
