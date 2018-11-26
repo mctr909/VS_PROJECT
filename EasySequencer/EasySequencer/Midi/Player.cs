@@ -192,9 +192,5 @@ namespace MIDI {
 		public void Send(Message msg) {
 			mSender.Send(msg);
 		}
-
-		public Channel Recv(byte channel) {
-			return mSender.Channel[channel];
-		}
 	}
 }

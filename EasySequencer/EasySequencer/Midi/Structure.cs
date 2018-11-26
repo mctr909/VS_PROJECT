@@ -216,6 +216,12 @@
 		public Meta Meta;
 		public SystemEx SystemEx;
 
+		public uint Bytes {
+			get {
+				return (uint)Type | Channel | (uint)(Byte1 << 8) | (uint)(Byte2 << 16);
+			}
+		}
+
 		public Message(EVENT_TYPE type = EVENT_TYPE.INVALID, byte channel = 0xF0, byte byte1 = 0x00, byte byte2 = 0x00) {
 			Type = type;
 			Channel = channel;
