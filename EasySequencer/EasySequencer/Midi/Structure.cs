@@ -1,78 +1,35 @@
 ﻿namespace MIDI {
-	public struct InstID {
-		public byte ProgramNo;
-		public byte BankMSB;
-		public byte BankLSB;
-		public bool IsDrum;
+	public struct INST_ID {
+		public byte isDrum;
+		public byte programNo;
+		public byte bankMSB;
+		public byte bankLSB;
+	};
 
-		public InstID(byte programNo, byte bankMSB, byte bankLSB, bool isDrum = false) {
-			ProgramNo = programNo;
-			BankMSB = bankMSB;
-			BankLSB = bankLSB;
-			IsDrum = isDrum;
-		}
+	public struct WaveLoop {
+		public uint size;
+		public uint type;
+		public uint start;
+		public uint length;
 	}
 
 	public struct Envelope {
-		public double LevelA;
-		public double LevelH;
-		public double LevelS;
-		public double LevelR;
-		public double TimeA;
-		public double TimeH;
-		public double DeltaA;
-		public double DeltaD;
-		public double DeltaR;
+		public double attackTime;
+		public double decayTime;
+		public double releaceTime;
+		public double holdTime;
+		public double sustainLevel;
+	};
 
-		public double AttackTime {
-			set {
-				if (value < 0.001) {
-					value = 0.001;
-				}
-				TimeA = value;
-				DeltaA = 16.0 * Const.DeltaTime / value;
-			}
-		}
-
-		public double HoldTime {
-			set {
-				if (value < 0.001) {
-					value = 0.001;
-				}
-				TimeH = value;
-			}
-		}
-
-		public double DecayTime {
-			set {
-				if (value < 0.001) {
-					value = 0.001;
-				}
-				DeltaD = 16.0 * Const.DeltaTime / value;
-			}
-		}
-
-		public double ReleaseTime {
-			set {
-				if (value < 0.001) {
-					value = 0.001;
-				}
-				DeltaR = 16.0 * Const.DeltaTime / value;
-			}
-		}
-	}
-
-	public struct WaveInfo {
-		public Envelope EnvAmp;
-		public Envelope EnvCutoff;
-		public uint LoopEnd;
-		public uint LoopLength;
-		public bool LoopEnable;
-		public byte BaseNoteNo;
-		public double Delta;
-		public double Gain;
-		public double Resonance;
-		public short[] Buff;
+	unsafe public struct WaveInfo {
+		public uint unityNote;
+		public double gain;
+		public double delta;
+		public Envelope envAmp;
+		public WaveLoop loop;
+		public bool loopEnable;
+		public uint pcmAddr;
+		public uint pcmLength;
 	}
 
 	public struct Filter {

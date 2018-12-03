@@ -33,10 +33,6 @@ namespace MIDI
 		PAN = 10,
 		EXPRESSION = 11,
 
-		REVERB = 91,
-		CHORUS = 93,
-		DELAY = 94,
-
 		MODULATION = 1,
 		PORTAMENTO = 65,
 		PORTAMENTO_TIME = 5,
@@ -45,6 +41,17 @@ namespace MIDI
 
 		RESONANCE = 71,
 		CUTOFF = 74,
+
+		RELEACE = 72,
+		ATTACK = 73,
+
+		VIB_RATE = 76,
+		VIB_DEPTH = 77,
+		VIB_DELAY = 78,
+
+		REVERB = 91,
+		CHORUS = 93,
+		DELAY = 94,
 
 		RPN_LSB = 100,
 		RPN_MSB = 101,

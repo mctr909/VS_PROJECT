@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 
 namespace MIDI {
-	public class Player {
+	unsafe public class Player {
 		private MessageSender mSender;
 		private Task mTask;
 		private Event[] mEventList;
@@ -167,7 +167,7 @@ namespace MIDI {
 					if (mTicks < (mCurrentTime - eventTime)) {
 						continue;
 					}
-					if (!mSender.Channel[msg.Channel].InstID.IsDrum) {
+					if (0x00 == mSender.Channel[msg.Channel].InstId.isDrum) {
 						if ((msg.Byte1 + Transpose) < 0 || 127 < (msg.Byte1 + Transpose)) {
 							continue;
 						}
