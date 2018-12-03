@@ -1,111 +1,78 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 
-namespace DLS
-{
-	unsafe public class File
-	{
-		private UInt32 mID;
-		private UInt32 mSize;
-		private UInt32 mType;
-		private UInt32 mInstCount;
-		private byte[] mVersion;
-		private UInt32 mMSYN;
+namespace DLS {
+	unsafe public class File : Chunk {
+		public LINS instruments = null;
+		public WVPL wavePool = null;
+		public byte[] buffer = null;
+		public byte* bufferAddr = null;
 
-		public PTBL WaveOffsetPool;
-		public LINS InstPool;
-		public WVPL WavePool;
-		public INFO Info;
+		private CK_COLH m_colh;
+		private CK_PTBL m_ptbl;
+		private CK_VERS* mp_version = null;
 
-		private File() { }
+		public File(string filePath) {
+			uint size = 0;
+			var fs = new FileStream(filePath, FileMode.Open);
+			var br = new BinaryReader(fs);
 
-		public File(string filePath)
-		{
-			byte[] buff = null;
-			byte* ptr = null;
+			fs.Seek(4, SeekOrigin.Begin);
+			size = br.ReadUInt32();
 
-			using (var fs = new FileStream(filePath, FileMode.Open))
-			using (var br = new BinaryReader(fs)) {
-				mID = br.ReadUInt32();
-				mSize = br.ReadUInt32();
-				mType = br.ReadUInt32();
+			buffer = new byte[size];
+			fs.Seek(12, SeekOrigin.Begin);
+			br.Read(buffer, 0, (int)size);
 
-				buff = new byte[mSize - 4];
-				fs.Read(buff, 0, buff.Length);
-				fs.Close();
+			fixed (byte* p = &buffer[0]) {
+				bufferAddr = p;
+				Load(p, size);
 			}
 
-			fixed (byte* p = &buff[0]) ptr = p;
-			var termAddr = (UInt32)ptr + (UInt32)buff.Length;
-			ReadChunk(ptr, termAddr);
+			br.Close();
+			br.Dispose();
+			fs.Dispose();
+		}
 
-			int size = 0;
-			foreach (var wave in WavePool.List) {
-				size += wave.Samples.Length;
-			}
+		public override void Dispose() {
+			instruments.Dispose();
+			wavePool.Dispose();
+		}
 
-			var idx = 0;
-			var temp = new byte[size];
-			foreach (var wave in WavePool.List) {
-				for (int i = 0; i < wave.Samples.Length; ++i) {
-					temp[idx] = wave.Samples[i];
-					++idx;
-				}
+		protected override void LoadChunk(byte* ptr) {
+			switch (mp_chunk->type) {
+			case CHUNK_TYPE.COLH:
+				m_colh = *(CK_COLH*)ptr;
+				break;
+			case CHUNK_TYPE.VERS:
+				mp_version = (CK_VERS*)ptr;
+				break;
+			case CHUNK_TYPE.MSYN:
+				break;
+			case CHUNK_TYPE.PTBL:
+				m_ptbl = *(CK_PTBL*)ptr;
+				break;
+			case CHUNK_TYPE.DLID:
+				break;
+			default:
+				//"Unknown ChunkType"
+				break;
 			}
 		}
 
-		private void ReadChunk(byte* buff, UInt32 termAddr)
-		{
-			while ((UInt32)buff < termAddr)
-			{
-				var chunkType = *(CHUNK_TYPE*)buff; buff += 4;
-				var chunkSize = *(UInt32*)buff; buff += 4;
-
-				switch (chunkType)
-				{
-					case CHUNK_TYPE.COLH:
-						mInstCount = *(UInt32*)buff;
-						break;
-					case CHUNK_TYPE.VERS:
-						mVersion = new byte[chunkSize];
-						Marshal.Copy((IntPtr)buff, mVersion, 0, mVersion.Length);
-						break;
-					case CHUNK_TYPE.MSYN:
-						mMSYN = *(UInt32*)buff;
-						break;
-					case CHUNK_TYPE.PTBL:
-						WaveOffsetPool = new PTBL(buff);
-						break;
-					case CHUNK_TYPE.LIST:
-						ReadLIST(buff, chunkSize);
-						break;
-					default:
-						throw new Exception();
-				}
-
-				buff += chunkSize;
-			}
-		}
-
-		private void ReadLIST(byte* buff, UInt32 chunkSize)
-		{
-			var listType = *(LIST_TYPE*)buff; buff += 4;
-			var termAddr = (UInt32)buff + chunkSize - 4;
-
-			switch (listType)
-			{
-				case LIST_TYPE.LINS:
-					InstPool = new LINS(buff, termAddr);
-					break;
-				case LIST_TYPE.WVPL:
-					WavePool = new WVPL(buff, termAddr);
-					break;
-				case LIST_TYPE.INFO:
-					Info = new INFO(buff, termAddr);
-					break;
-				default:
-					throw new Exception();
+		protected override void LoadList(byte* ptr, uint size) {
+			switch (mp_list->type) {
+			case LIST_TYPE.LINS:
+				instruments = new LINS(ptr, size, m_colh.instruments);
+				break;
+			case LIST_TYPE.WVPL:
+				wavePool = new WVPL(ptr, size, m_ptbl.count);
+				break;
+			case LIST_TYPE.INFO:
+				break;
+			default:
+				// "Unknown ListType"
+				break;
 			}
 		}
 	}

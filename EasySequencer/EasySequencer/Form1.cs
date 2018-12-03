@@ -18,7 +18,6 @@ namespace EasySequencer {
 
 		private MIDI.SMF mSMF;
 		private MIDI.MessageSender mMsgSender;
-		//private MIDI.WaveOut mWaveOut;
 
 		public MIDI.Player mPlayer;
 		public int mProgress = 0;
@@ -26,12 +25,10 @@ namespace EasySequencer {
 
 		public Form1() {
 			InitializeComponent();
-			mDlsFilePath = "C:\\Users\\owner\\Desktop\\gmm.dls";
+			mDlsFilePath = "C:\\Users\\owner\\Desktop\\gm.dls";
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
-			//mMsgSender = new MIDI.MessageSender(new MIDI.Instruments(mDlsFilePath));
-			//mWaveOut = new MIDI.WaveOut(mMsgSender);
 			mMsgSender = new MIDI.MessageSender(mDlsFilePath);
 			mPlayer = new MIDI.Player(mMsgSender);
 
@@ -70,7 +67,7 @@ namespace EasySequencer {
 			var filePath = saveFileDialog1.FileName;
 
 			Task task = Task.Factory.StartNew(() => {
-				var wavFile = new RiffWave(filePath, MIDI.Const.SampleRate, 2, 16);
+				//var wavFile = new RiffWave(filePath, MIDI.Const.SampleRate, 2, 16);
 				//var snd = new MIDI.MessageSender(new MIDI.Instruments(mDlsFilePath));
 				var snd = new MIDI.MessageSender(mDlsFilePath);
 				var events = mSMF.EventList;
@@ -87,7 +84,7 @@ namespace EasySequencer {
 				while (eventIdx < events.Length) {
 					while (currentTick < (events[eventIdx].Time * delta)) {
 						//snd.SetWave(ref waveBuff);
-						wavFile.Write(ref waveBuff);
+						//wavFile.Write(ref waveBuff);
 						currentTick += bpm * (1000.0 * buffSamples * MIDI.Const.DeltaTime) / 60.0;
 						mCurrentTime += buffSamples * MIDI.Const.DeltaTime;
 					}
@@ -102,13 +99,13 @@ namespace EasySequencer {
 								bpm = msg.Meta.BPM;
 							}
 						}
-						snd.Send(ev.Message);
+						//snd.Send(ev.Message);
 					}
 
 					mProgress = 1000 * eventIdx / events.Length;
 				}
 
-				wavFile.Close();
+				//wavFile.Close();
 			});
 
 			var wndStatus = new StatusWindow();
@@ -257,10 +254,16 @@ namespace EasySequencer {
 				var y_ch = 40 * ch;
 
 				for (int k = 0; k < 127; ++k) {
-					if (channel.Keyboard[k]) {
-						var x_oct = 7 * whiteWidth * (k / 12 - 1) + (int)(0.5 * whiteWidth * channel.Pitch * channel.PitchRange / 8192.0);
+					if (MIDI.KEY_STATUS.ON == channel.KeyBoard[k]) {
+						var x_oct = 7 * whiteWidth * (k / 12 - 1) + (int)(0.5 * whiteWidth * channel.Pitch * channel.BendRange / 8192.0);
 						var key = MIDI.Const.KeyboardPos[k % 12];
 						g.FillRectangle(Brushes.Red, key.X + x_oct, key.Y + y_ch, key.Width, key.Height);
+					}
+
+					if (MIDI.KEY_STATUS.HOLD == channel.KeyBoard[k]) {
+						var x_oct = 7 * whiteWidth * (k / 12 - 1) + (int)(0.5 * whiteWidth * channel.Pitch * channel.BendRange / 8192.0);
+						var key = MIDI.Const.KeyboardPos[k % 12];
+						g.FillRectangle(Brushes.Blue, key.X + x_oct, key.Y + y_ch, key.Width, key.Height);
 					}
 				}
 

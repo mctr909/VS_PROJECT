@@ -1,134 +1,163 @@
 ﻿namespace MIDI {
-	public class Channel {
-		public readonly int No;
+	unsafe public class Channel {
+		public CHANNEL* mpChannel = null;
 
-		public InstID InstID;
 		public bool Enable;
-		public bool[] Keyboard;
 
-		private Filter mFilter = new Filter(1.0, 0.0);
-		private double mCurCuttoff;
-		private double mCurResonce;
+		private DLS.Instruments mInst = null;
+		private INST_ID instId;
+		private CONTROL ctrl;
 
-		private double mVolD;
-		public byte Vol { get; private set; }
+		public byte No { get; private set; }
 
-		private double mExpD;
-		public byte Exp { get; private set; }
+		public INST_ID InstId {
+			get { return instId; }
+		}
 
-		private double mPanL;
-		private double mPanR;
-		public byte Pan { get; private set; }
+		public KEY_STATUS[] KeyBoard { get; set; }
 
-		private double mRevD;
-		public byte Rev { get; private set; }
+		public byte Vol {
+			get { return ctrl.vol; }
+		}
 
-		private double mDelD;
-		public byte Del { get; private set; }
+		public byte Exp {
+			get { return ctrl.exp; }
+		}
 
-		private double mChoD;
-		public byte Cho { get; private set; }
+		public byte Pan {
+			get { return ctrl.pan; }
+		}
 
-		public double Hld { get; private set; }
+		public byte Rev {
+			get { return ctrl.rev; }
+		}
 
-		public byte Fc { get; private set; }
-		public double FcD { get; private set; }
+		public byte Del {
+			get { return ctrl.del; }
+		}
 
-		public byte Fq { get; private set; }
-		public double FqD { get; private set; }
+		public byte Cho {
+			get { return ctrl.cho; }
+		}
 
-		public byte PitchRange { get; private set; }
+		public byte Hld {
+			get { return ctrl.hold; }
+		}
 
-		public short Pitch { get; private set; }
+		public byte Fc {
+			get { return ctrl.cut; }
+		}
 
-		public double PitchD { get; private set; }
+		public byte Fq {
+			get { return ctrl.res; }
+		}
 
-		private byte mRPN_MSB;
-		private byte mRPN_LSB;
+		public byte BendRange {
+			get { return ctrl.bendRange; }
+		}
 
-		public Channel(int no) {
-			No = no;
+		public int Pitch { get; private set; }
 
+		public Channel(DLS.Instruments inst, CHANNEL* pChannel, int no) {
+			mInst = inst;
+			mpChannel = pChannel;
+			mpChannel->no = (uint)no;
+			No = (byte)no;
+			KeyBoard = new KEY_STATUS[128];
 			Enable = true;
-			InstID = new InstID();
-			Keyboard = new bool[128];
-
 			AllReset();
 		}
 
-		public void ControlChange(byte type, byte value) {
+		/******************************************************************************/
+		public void AllReset() {
+			mpChannel->wave = 0.0;
+
+			instId = new INST_ID();
+
+			setAmp(100, 100);
+			setPan(64);
+
+			setHold(0);
+
+			ctrl.res = 64;
+			ctrl.cut = 64;
+
+			ctrl.rel = 64;
+			ctrl.atk = 64;
+
+			ctrl.vibRate = 64;
+			ctrl.vibDepth = 64;
+			ctrl.vibDelay = 64;
+
+			ctrl.rev = 0;
+			setChorusDepth(0);
+			setDelayDepath(0);
+
+			mpChannel->chorusRate = 0.05;
+			mpChannel->delayRate = 0.2;
+
+			ctrl.nrpnLSB = 0xFF;
+			ctrl.nrpnMSB = 0xFF;
+			ctrl.rpnLSB = 0xFF;
+			ctrl.rpnMSB = 0xFF;
+
+			ctrl.bendRange = 2;
+
+			mpChannel->pitch = 1.0;
+			Pitch = 0;
+
+			ProgramChange(0);
+		}
+
+		public void CtrlChange(byte type, byte b1) {
 			switch ((CTRL_TYPE)type) {
 			case CTRL_TYPE.BANK_MSB:
-				InstID.BankMSB = value;
-				break;
+				instId.bankMSB = b1; break;
 			case CTRL_TYPE.BANK_LSB:
-				InstID.BankLSB = value;
-				break;
-
-			case CTRL_TYPE.VOLUME:
-				Vol = value;
-				mVolD = Const.Amp[value];
-				break;
-			case CTRL_TYPE.EXPRESSION:
-				Exp = value;
-				mExpD = Const.Amp[value];
-				break;
-			case CTRL_TYPE.PAN:
-				Pan = value;
-				mPanL = Const.Cos[value];
-				mPanR = Const.Sin[value];
-				break;
-
-			case CTRL_TYPE.REVERB:
-				Rev = value;
-				mRevD = value / 127.0;
-				break;
-			case CTRL_TYPE.CHORUS:
-				Cho = value;
-				mChoD = Const.FeedBack[value];
-				break;
-			case CTRL_TYPE.DELAY:
-				Del = value;
-				mDelD = 0.75 * Const.FeedBack[value];
-				break;
-
-			case CTRL_TYPE.MODULATION:
-				//Mod
-				break;
-			case CTRL_TYPE.PORTAMENTO:
-				//Pol
-				break;
-			case CTRL_TYPE.PORTAMENTO_TIME:
-				//PoT
-				break;
+				instId.bankLSB = b1; break;
 
 			case CTRL_TYPE.DATA:
-				if (mRPN_MSB == 0 && mRPN_LSB == 0) {
-					PitchRange = value;
-				}
-				mRPN_MSB = 255;
-				mRPN_LSB = 255;
+				rpn(b1);
 				break;
+
+			case CTRL_TYPE.EXPRESSION:
+				setAmp(ctrl.vol, b1); break;
+			case CTRL_TYPE.PAN:
+				setPan(b1); break;
+			case CTRL_TYPE.VOLUME:
+				setAmp(b1, ctrl.exp); break;
 
 			case CTRL_TYPE.HOLD:
-				Hld = (value < 64) ? 1.0 : 0.125;
-				break;
+				setHold(b1); break;
 
-			case CTRL_TYPE.CUTOFF:
-				Fc = value;
-				FcD = (2.0 * Const.Amp[Fc] + 0.001);
-				break;
 			case CTRL_TYPE.RESONANCE:
-				Fq = value;
-				FqD = value / 168.0;
-				break;
+				ctrl.res = b1; break;
+			case CTRL_TYPE.CUTOFF:
+				ctrl.cut = b1; break;
+
+			case CTRL_TYPE.RELEACE:
+				ctrl.rel = b1; break;
+			case CTRL_TYPE.ATTACK:
+				ctrl.atk = b1; break;
+
+			case CTRL_TYPE.VIB_RATE:
+				ctrl.vibRate = b1; break;
+			case CTRL_TYPE.VIB_DEPTH:
+				ctrl.vibDepth = b1; break;
+			case CTRL_TYPE.VIB_DELAY:
+				ctrl.vibDelay = b1; break;
+
+			case CTRL_TYPE.REVERB:
+				ctrl.rev = b1; break;
+			case CTRL_TYPE.CHORUS:
+				setChorusDepth(b1); break;
+			case CTRL_TYPE.DELAY:
+				setDelayDepath(b1); break;
 
 			case CTRL_TYPE.RPN_LSB:
-				mRPN_LSB = value;
-				break;
+				ctrl.rpnLSB = b1; break;
 			case CTRL_TYPE.RPN_MSB:
-				mRPN_MSB = value;
-				break;
+				ctrl.rpnMSB = b1; break;
 
 			case CTRL_TYPE.ALL_RESET:
 				AllReset();
@@ -136,84 +165,84 @@
 			}
 		}
 
-		public void ProgramChange(byte no) {
-			InstID.ProgramNo = no;
+		public void ProgramChange(byte value) {
+			instId.isDrum = (byte)(9 == No ? 0x80 : 0x00);
+			instId.programNo = value;
 
-			//if (mInstruments.List.ContainsKey(InstID)) {
-			//	WaveList = mInstruments.List[InstID];
-			//}
-			//else {
-			//	if (InstID.IsDrum) {
-			//		if (mInstruments.List.ContainsKey(new InstID(InstID.ProgramNo, 0, 0, true))) {
-			//			WaveList = mInstruments.List[new InstID(InstID.ProgramNo, 0, 0, true)];
-			//		}
-			//		else {
-			//			WaveList = mInstruments.List[new InstID(0, 0, 0, true)];
-			//		}
-			//	}
-			//	else {
-			//		if (mInstruments.List.ContainsKey(new InstID(InstID.ProgramNo, 0, 0))) {
-			//			WaveList = mInstruments.List[new InstID(InstID.ProgramNo, 0, 0)];
-			//		}
-			//		else {
-			//			WaveList = mInstruments.List[new InstID(0, 0, 0)];
-			//		}
-			//	}
-			//}
+			if (!mInst.List.ContainsKey(instId)) {
+				instId.bankMSB = 0;
+				instId.bankLSB = 0;
+				if (!mInst.List.ContainsKey(instId)) {
+					instId.programNo = 0;
+				}
+			}
 		}
 
 		public void PitchBend(byte lsb, byte msb) {
-			Pitch = (short)((lsb | (msb << 7)) - 8192);
-			var temp = Pitch * PitchRange;
+			Pitch = (lsb | (msb << 7)) - 8192;
+
+			var temp = Pitch * ctrl.bendRange;
 			if (temp < 0) {
 				temp = -temp;
-				PitchD = 1.0 / (Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128]);
+				mpChannel->pitch = 1.0 / (Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128]);
 			}
 			else {
-				PitchD = Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128];
+				mpChannel->pitch = Const.SemiTone[temp >> 13] * Const.PitchMSB[(temp >> 7) % 64] * Const.PitchLSB[temp % 128];
 			}
 		}
 
-		private void AllReset() {
-			InstID.ProgramNo = 0;
-			InstID.BankMSB = 0;
-			InstID.BankLSB = 0;
-			InstID.IsDrum = (9 == No);
+		/******************************************************************************/
+		private void setAmp(byte vol, byte exp) {
+			ctrl.vol = vol;
+			ctrl.exp = exp;
+			mpChannel->tarAmp = Const.Amp[vol] * Const.Amp[exp];
+		}
 
-			ProgramChange(InstID.ProgramNo);
+		private void setPan(byte value) {
+			ctrl.pan = value;
+			mpChannel->panLeft = Const.Cos[value];
+			mpChannel->panRight = Const.Sin[value];
+		}
 
-			Vol = 100;
-			Exp = 100;
-			Pan = 64;
-			mVolD = Const.Amp[Vol];
-			mExpD = Const.Amp[Exp];
-			mPanL = Const.Cos[Pan];
-			mPanR = Const.Sin[Pan];
+		private void setHold(byte value) {
+			if (value < 64) {
+				for (byte k = 0; k < 128; ++k) {
+					if (KEY_STATUS.HOLD == KeyBoard[k]) {
+						KeyBoard[k] = KEY_STATUS.OFF;
+					}
+				}
+			}
+			else {
+				for (byte k = 0; k < 128; ++k) {
+					if (KEY_STATUS.ON == KeyBoard[k]) {
+						KeyBoard[k] = KEY_STATUS.HOLD;
+					}
+				}
+			}
+			ctrl.hold = value;
+			mpChannel->hold = (value < 64 ? 10.0 : 1.5);
+		}
 
-			Rev = 0;
-			Cho = 0;
-			Del = 0;
-			mRevD = 0.0;
-			mChoD = 0.0;
-			mDelD = 0.0;
+		private void setDelayDepath(byte value) {
+			ctrl.del = value;
+			mpChannel->delayDepth = 0.8 * Const.FeedBack[value];
+		}
 
-			Hld = 1.0;
+		private void setChorusDepth(byte value) {
+			ctrl.cho = value;
+			mpChannel->chorusDepth = 1.5 * Const.FeedBack[value];
+		}
 
-			Fc = 127;
-			Fq = 64;
-			FcD = (2.0 * Const.Amp[Fc] + 0.001);
-			FqD = Fq / 168.0;
+		private void rpn(byte b1) {
+			switch (ctrl.rpnLSB | ctrl.rpnMSB << 8) {
+			case 0x0000:
+				ctrl.bendRange = b1; break;
+			default:
+				break;
+			}
 
-			mCurCuttoff = FcD;
-			mCurResonce = FqD;
-			mFilter.Clear();
-
-			mRPN_MSB = 255;
-			mRPN_LSB = 255;
-
-			PitchRange = 2;
-			Pitch = 0;
-			PitchD = 1.0;
+			ctrl.rpnMSB = 0xFF;
+			ctrl.rpnLSB = 0xFF;
 		}
 	}
 }
