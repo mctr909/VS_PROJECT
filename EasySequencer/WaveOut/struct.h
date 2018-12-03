@@ -1,10 +1,9 @@
 #pragma once
 #include <windows.h>
-#include "main.h"
 
 #pragma pack(4)
 typedef struct {
-	UINT no;
+	DWORD no;
 	DOUBLE wave;
 	DOUBLE pitch;
 	DOUBLE hold;
@@ -24,29 +23,29 @@ typedef struct {
 	USHORT channelNo;
 	USHORT noteNo;
 
-	bool onKey;
-	bool isActive;
+	BOOLEAN onKey;
+	BOOLEAN isActive;
 
-	UINT pcmAddr;
-	UINT pcmLength;
+	DWORD pcmAddr;
+	DWORD pcmLength;
 
-	bool loopEnable;
-	UINT loopBegin;
-	UINT loopLength;
+	BOOLEAN loopEnable;
+	DWORD loopBegin;
+	DWORD loopLength;
 
-	double tarAmp;
+	DOUBLE tarAmp;
 
-	double envAmp;
-	double envAmpDeltaA;
-	double envAmpDeltaD;
-	double envAmpDeltaR;
-	double envAmpLevel;
-	double envAmpHold;
+	DOUBLE envAmp;
+	DOUBLE envAmpDeltaA;
+	DOUBLE envAmpDeltaD;
+	DOUBLE envAmpDeltaR;
+	DOUBLE envAmpLevel;
+	DOUBLE envAmpHold;
 
-	double gain;
-	double delta;
+	DOUBLE gain;
+	DOUBLE delta;
 
-	double index;
-	double time;
+	DOUBLE index;
+	DOUBLE time;
 } SAMPLER;
 #pragma
