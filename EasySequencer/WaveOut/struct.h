@@ -20,8 +20,8 @@ typedef struct {
 
 #pragma pack(4)
 typedef struct {
-	USHORT channelNo;
-	USHORT noteNo;
+	WORD channelNo;
+	WORD noteNo;
 
 	BOOLEAN onKey;
 	BOOLEAN isActive;

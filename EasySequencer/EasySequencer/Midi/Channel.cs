@@ -220,7 +220,7 @@
 				}
 			}
 			ctrl.hold = value;
-			mpChannel->hold = (value < 64 ? 10.0 : 1.5);
+			mpChannel->hold = (value < 64 ? 10.0 : 1.0);
 		}
 
 		private void setDelayDepath(byte value) {
