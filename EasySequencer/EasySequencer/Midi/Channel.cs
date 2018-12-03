@@ -93,7 +93,7 @@
 			setChorusDepth(0);
 			setDelayDepath(0);
 
-			mpChannel->chorusRate = 0.1;
+			mpChannel->chorusRate = 0.05;
 			mpChannel->delayRate = 0.2;
 
 			ctrl.nrpnLSB = 0xFF;
@@ -230,7 +230,7 @@
 
 		private void setChorusDepth(byte value) {
 			ctrl.cho = value;
-			mpChannel->chorusDepth = Const.FeedBack[value];
+			mpChannel->chorusDepth = 1.5 * Const.FeedBack[value];
 		}
 
 		private void rpn(byte b1) {

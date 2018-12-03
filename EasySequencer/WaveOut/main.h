@@ -25,7 +25,7 @@ WAVEHDR			g_waveHdr[BUFFER_COUNT] = { NULL };
 UINT			g_bufferLength = 4096;
 UINT			g_sampleRate = 44100;
 UINT			g_delayTaps = (UINT)(0.5 * g_sampleRate);
-UINT			g_chorusPhases = 5;
+UINT			g_chorusPhases = 3;
 UINT			g_deviceListLength = 0;
 WCHAR			g_deviceList[DEVICE_LIST_SIZE] = { '\0' };
 

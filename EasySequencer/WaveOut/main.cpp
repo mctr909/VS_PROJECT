@@ -155,8 +155,8 @@ VOID WINAPI Attach(LPBYTE ptr, INT size) {
 		chorus->pLfoRe = (DOUBLE*)malloc(sizeof(DOUBLE) * g_chorusPhases);
 		chorus->pLfoIm = (DOUBLE*)malloc(sizeof(DOUBLE) * g_chorusPhases);
 		for (int p = 0; p < g_chorusPhases; ++p) {
-			chorus->pLfoRe[p] = cos(6.283 * p / g_chorusPhases);
-			chorus->pLfoIm[p] = sin(6.283 * p / g_chorusPhases);
+			chorus->pLfoRe[p] = cos(3.1416 * p / g_chorusPhases);
+			chorus->pLfoIm[p] = sin(3.1416 * p / g_chorusPhases);
 		}
 	}
 
@@ -312,8 +312,6 @@ inline void channelStep(CHANNEL &ch) {
 
 		waveL += chorusL * ch.chorusDepth / g_chorusPhases;
 		waveR += chorusR * ch.chorusDepth / g_chorusPhases;
-		waveL *= (1.0 - 0.2 * ch.chorusDepth);
-		waveR *= (1.0 - 0.2 * ch.chorusDepth);
 	}
 
 	ch.curAmp += 100 * (ch.tarAmp - ch.curAmp) / g_sampleRate;
