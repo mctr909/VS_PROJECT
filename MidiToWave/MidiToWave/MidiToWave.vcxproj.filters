@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="DLS\source\dls.cpp">
+      <Filter>DLS\source</Filter>
+    </ClCompile>
+    <ClCompile Include="DLS\source\dls_chunk.cpp">
+      <Filter>DLS\source</Filter>
+    </ClCompile>
+    <ClCompile Include="DLS\source\dls_rgn.cpp">
+      <Filter>DLS\source</Filter>
+    </ClCompile>
+    <ClCompile Include="DLS\source\dls_ins.cpp">
+      <Filter>DLS\source</Filter>
+    </ClCompile>
+    <ClCompile Include="DLS\source\dls_art.cpp">
+      <Filter>DLS\source</Filter>
+    </ClCompile>
+    <ClCompile Include="DLS\source\dls_wave.cpp">
+      <Filter>DLS\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h" />
+    <ClInclude Include="DLS\header\dls.h">
+      <Filter>DLS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="DLS\header\dls_chunk.h">
+      <Filter>DLS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="DLS\header\dls_const.h">
+      <Filter>DLS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="DLS\header\dls_struct.h">
+      <Filter>DLS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="DLS\header\dls_wave.h">
+      <Filter>DLS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="DLS\header\dls_rgn.h">
+      <Filter>DLS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="DLS\header\dls_ins.h">
+      <Filter>DLS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="DLS\header\dls_art.h">
+      <Filter>DLS\header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="DLS">
+      <UniqueIdentifier>{0e6e374a-8244-4c68-9796-ec04e4ce73f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DLS\header">
+      <UniqueIdentifier>{acc27f4a-5cf8-4d38-97e2-49860f7d0459}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DLS\source">
+      <UniqueIdentifier>{459ec0d6-b7ba-4b90-94a8-356361e04fc3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

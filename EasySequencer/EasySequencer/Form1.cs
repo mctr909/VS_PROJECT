@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace EasySequencer {
 	unsafe public partial class Form1 : Form {
 		private static readonly Font mFont = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular, GraphicsUnit.Point);
-		private readonly string mInstFilePath;
+		private readonly string mDlsFilePath;
 
 		private bool mIsSeek = false;
 		private bool mIsParamChg = false;
@@ -17,22 +17,22 @@ namespace EasySequencer {
 		private int mChangeValue = 0;
 
 		private MIDI.SMF mSMF;
-		private MIDI.Instruments mInstruments;
 		private MIDI.MessageSender mMsgSender;
-		private MIDI.WaveOut mWaveOut;
+		//private MIDI.WaveOut mWaveOut;
+
 		public MIDI.Player mPlayer;
 		public int mProgress = 0;
 		public double mCurrentTime = 0.0;
 
 		public Form1() {
 			InitializeComponent();
-			mInstFilePath = "C:\\Users\\owner\\Desktop\\gm.dls";
+			mDlsFilePath = "C:\\Users\\owner\\Desktop\\gmm.dls";
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
-			mInstruments = new MIDI.Instruments(mInstFilePath);
-			mMsgSender = new MIDI.MessageSender(mInstruments);
-			mWaveOut = new MIDI.WaveOut(mMsgSender);
+			//mMsgSender = new MIDI.MessageSender(new MIDI.Instruments(mDlsFilePath));
+			//mWaveOut = new MIDI.WaveOut(mMsgSender);
+			mMsgSender = new MIDI.MessageSender(mDlsFilePath);
 			mPlayer = new MIDI.Player(mMsgSender);
 
 			timer1.Interval = 10;
@@ -71,7 +71,8 @@ namespace EasySequencer {
 
 			Task task = Task.Factory.StartNew(() => {
 				var wavFile = new RiffWave(filePath, MIDI.Const.SampleRate, 2, 16);
-				var msgSender = new MIDI.MessageSender(mInstruments);
+				//var snd = new MIDI.MessageSender(new MIDI.Instruments(mDlsFilePath));
+				var snd = new MIDI.MessageSender(mDlsFilePath);
 				var events = mSMF.EventList;
 
 				var buffSamples = 256;
@@ -85,7 +86,7 @@ namespace EasySequencer {
 
 				while (eventIdx < events.Length) {
 					while (currentTick < (events[eventIdx].Time * delta)) {
-						msgSender.SetWave(ref waveBuff);
+						//snd.SetWave(ref waveBuff);
 						wavFile.Write(ref waveBuff);
 						currentTick += bpm * (1000.0 * buffSamples * MIDI.Const.DeltaTime) / 60.0;
 						mCurrentTime += buffSamples * MIDI.Const.DeltaTime;
@@ -101,7 +102,7 @@ namespace EasySequencer {
 								bpm = msg.Meta.BPM;
 							}
 						}
-						msgSender.Send(ev.Message);
+						snd.Send(ev.Message);
 					}
 
 					mProgress = 1000 * eventIdx / events.Length;

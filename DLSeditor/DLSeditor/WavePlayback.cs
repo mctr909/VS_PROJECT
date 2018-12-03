@@ -1,37 +1,29 @@
 ﻿using System;
 using System.IO;
 
-namespace DLSeditor
-{
-	public class WavePlayback : WaveOutLib
-	{
+namespace DLSeditor {
+	unsafe public class WavePlayback : WaveOutLib {
+		public int mLoopBegin;
+		public int mLoopEnd;
+		public double mVolume;
+		public double mPitch;
+
 		private short[] mWave;
-		private uint mLoopBegin;
-		private uint mLoopEnd;
+		private int mSampleRate;
 		private double mDelta;
 		private double mTime;
+		private int mFftIndex;
+		private FFT mFft;
 
-		public Spectrum Spectrum;
-
-		public WavePlayback()
-		{
+		public WavePlayback() {
 			mWave = new short[1];
+			mFft = new FFT(16384, SampleRate);
 			Stop();
 		}
 
-		//public int Position
-		//{
-		//	get {
-		//		return (int)mTime;
-		//	}
-		//}
-
-		public void SetValue(DLS.WAVE wave)
-		{
+		public void SetValue(DLS.WAVE wave) {
 			mWave = new short[8 * wave.Data.Length / wave.Format.Bits];
-			mLoopBegin = 0;
-			mLoopEnd = (uint)mWave.Length;
-
+			mSampleRate = (int)wave.Format.SampleRate;
 			var br = new BinaryReader(new MemoryStream(wave.Data));
 
 			switch (wave.Format.Bits) {
@@ -48,35 +40,30 @@ namespace DLSeditor
 			default:
 				return;
 			}
-
-			if (0 < wave.Sampler.LoopCount) {
-				mLoopBegin = wave.Loops[0].Start;
-				mLoopEnd = mLoopBegin + wave.Loops[0].Length;
-			}
-
-			mDelta = (double)wave.Format.SampleRate / SampleRate;
-			mTime = 0.0;
 		}
 
-		public void Stop()
-		{
-			mWave = new short[1];
-			mLoopBegin = 0;
-			mLoopEnd = 0;
-			mDelta = 0.0;
+		public void Play() {
+			mDelta = (double)mSampleRate / SampleRate;
 			mTime = 0.0;
-			Spectrum = new Spectrum((uint)SampleRate, 27.5, 12, 112);
+			WaveOutOpen();
 		}
 
-		protected override void SetData()
-		{
+		public void Stop() {
+			WaveOutClose();
+		}
+
+		protected override void SetData() {
 			for (var i = 0; i < BufferSize; i += 2) {
-				var wave = ((int)mTime < mWave.Length) ? (mWave[(int)mTime] / 32768.0) : 0.0;
+				var wave = ((int)mTime < mWave.Length) ? (mWave[(int)mTime] * mVolume / 32768.0) : 0.0;
 				WaveBuffer[i] = (short)(32767 * wave);
 				WaveBuffer[i + 1] = (short)(32767 * wave);
 
-				for (UInt32 b = 0; b < Spectrum.Banks; ++b) {
-					Spectrum.Filtering(b, wave);
+				mFft.Re[mFftIndex] = wave;
+				mFft.Im[mFftIndex] = 0.0;
+				++mFftIndex;
+				if(16384 <= mFftIndex) {
+					mFftIndex = 0;
+					mPitch = mFft.Pitch();
 				}
 
 				mTime += mDelta;
@@ -84,8 +71,6 @@ namespace DLSeditor
 					mTime = mLoopBegin + mTime - mLoopEnd;
 				}
 			}
-
-			Spectrum.SetLevel();
 		}
 	}
 }
