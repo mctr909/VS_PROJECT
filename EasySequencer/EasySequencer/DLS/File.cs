@@ -5,33 +5,13 @@ namespace DLS {
 	unsafe public class File : Chunk {
 		public LINS instruments = null;
 		public WVPL wavePool = null;
-		public byte[] buffer = null;
-		public byte* bufferAddr = null;
 
 		private CK_COLH m_colh;
 		private CK_PTBL m_ptbl;
 		private CK_VERS* mp_version = null;
 
-		public File(string filePath) {
-			uint size = 0;
-			var fs = new FileStream(filePath, FileMode.Open);
-			var br = new BinaryReader(fs);
-
-			fs.Seek(4, SeekOrigin.Begin);
-			size = br.ReadUInt32();
-
-			buffer = new byte[size];
-			fs.Seek(12, SeekOrigin.Begin);
-			br.Read(buffer, 0, (int)size);
-
-			fixed (byte* p = &buffer[0]) {
-				bufferAddr = p;
-				Load(p, size);
-			}
-
-			br.Close();
-			br.Dispose();
-			fs.Dispose();
+		public File(IntPtr dlsPtr, uint dlsSize) {
+			Load((byte*)dlsPtr, dlsSize);
 		}
 
 		public override void Dispose() {

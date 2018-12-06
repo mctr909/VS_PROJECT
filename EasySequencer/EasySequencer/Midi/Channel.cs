@@ -61,7 +61,6 @@
 		public Channel(DLS.Instruments inst, CHANNEL* pChannel, int no) {
 			mInst = inst;
 			mpChannel = pChannel;
-			mpChannel->no = (uint)no;
 			No = (byte)no;
 			KeyBoard = new KEY_STATUS[128];
 			Enable = true;

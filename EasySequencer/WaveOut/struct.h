@@ -1,51 +1,76 @@
 #pragma once
-#include <windows.h>
+typedef unsigned	int		UInt32;
+typedef signed		int		Int32;
+typedef unsigned	short	UInt16;
+typedef signed		short	Int16;
+typedef unsigned	char	bool;
+
+#define true	((bool)1)
+#define false	((bool)0)
 
 #pragma pack(4)
 typedef struct {
-	DWORD no;
-	DOUBLE wave;
-	DOUBLE pitch;
-	DOUBLE hold;
-	DOUBLE delayDepth;
-	DOUBLE delayRate;
-	DOUBLE chorusDepth;
-	DOUBLE chorusRate;
-	DOUBLE tarAmp;
-	DOUBLE curAmp;
-	DOUBLE panLeft;
-	DOUBLE panRight;
-} CHANNEL;
+	Int32 writeIndex;
+	Int32 readIndex;
+	double *pTapL;
+	double *pTapR;
+} DELAY_VALUES;
 #pragma
 
 #pragma pack(4)
 typedef struct {
-	WORD channelNo;
-	WORD noteNo;
+	double lfoK;
+	double *pMixL;
+	double *pMixR;
+	double *pLfoRe;
+	double *pLfoIm;
+} CHORUS_VALUES;
+#pragma
 
-	BOOLEAN onKey;
-	BOOLEAN isActive;
+#pragma pack(4)
+typedef struct CHANNEL {
+	double wave;
+	double pitch;
+	double hold;
+	double delayDepth;
+	double delayRate;
+	double chorusDepth;
+	double chorusRate;
+	double tarAmp;
+	double curAmp;
+	double panLeft;
+	double panRight;
+} CHANNEL;
+#pragma
 
-	DWORD pcmAddr;
-	DWORD pcmLength;
+#pragma pack(4)
+typedef struct SAMPLER {
+	UInt16 channelNo;
+	UInt16 noteNo;
 
-	BOOLEAN loopEnable;
-	DWORD loopBegin;
-	DWORD loopLength;
+	bool onKey;
+	bool isActive;
 
-	DOUBLE tarAmp;
+	UInt32 pcmAddr;
+	UInt32 pcmLength;
 
-	DOUBLE envAmp;
-	DOUBLE envAmpDeltaA;
-	DOUBLE envAmpDeltaD;
-	DOUBLE envAmpDeltaR;
-	DOUBLE envAmpLevel;
-	DOUBLE envAmpHold;
+	bool loopEnable;
+	UInt32 loopBegin;
+	UInt32 loopLength;
 
-	DOUBLE gain;
-	DOUBLE delta;
+	double tarAmp;
 
-	DOUBLE index;
-	DOUBLE time;
+	double envAmp;
+	double envAmpDeltaA;
+	double envAmpDeltaD;
+	double envAmpDeltaR;
+	double envAmpLevel;
+	double envAmpHold;
+
+	double gain;
+	double delta;
+
+	double index;
+	double time;
 } SAMPLER;
 #pragma

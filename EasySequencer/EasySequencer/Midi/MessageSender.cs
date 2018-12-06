@@ -43,7 +43,6 @@ namespace MIDI {
 
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	unsafe public struct CHANNEL {
-		public uint no;
 		public double wave;
 		public double pitch;
 		public double hold;
@@ -103,7 +102,7 @@ namespace MIDI {
 		public static extern void WaveOutClose();
 
 		[DllImport("WaveOut.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		unsafe public static extern void Attach(byte* ptr, int size);
+		unsafe public static extern IntPtr LoadDLS(IntPtr filePath, out uint size);
 
 		[DllImport("WaveOut.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern CHANNEL** GetChannelPtr();
@@ -117,13 +116,12 @@ namespace MIDI {
 		public Channel[] Channel { get; }
 
 		public MessageSender(string dlsPath) {
-			mInst = new DLS.Instruments(dlsPath, Const.SampleRate);
-
 			var ppChannel = GetChannelPtr();
 			mppSampler = GetSamplerPtr();
-			fixed (byte* p = &mInst.buffer[0]) {
-				Attach(p, mInst.buffer.Length);
-			}
+
+			uint dlsSize;
+			var dlsPtr = LoadDLS(Marshal.StringToHGlobalAuto(dlsPath), out dlsSize);
+			mInst = new DLS.Instruments(dlsPtr, dlsSize, Const.SampleRate);
 
 			Channel = new Channel[CHANNEL_COUNT];
 			for (int i = 0; i < CHANNEL_COUNT; ++i) {

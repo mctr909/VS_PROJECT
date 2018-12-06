@@ -4,14 +4,12 @@ using System.Collections.Generic;
 namespace DLS {
 	unsafe public class Instruments {
 		public Dictionary<MIDI.INST_ID, MIDI.WaveInfo[]> List;
-		public byte[] buffer = null;
 
-		public Instruments(string filePath, int sampleRate) {
-			var dls = new File(filePath);
+		public Instruments(IntPtr dlsPtr, uint dlsSize, int sampleRate) {
+			var dls = new File(dlsPtr, dlsSize);
 			var deltaTime = 1.0 / sampleRate;
 
 			List = new Dictionary<MIDI.INST_ID, MIDI.WaveInfo[]>();
-			buffer = dls.buffer;
 
 			foreach (var inst in dls.instruments.List) {
 				var envAmp = new MIDI.Envelope();
@@ -124,7 +122,7 @@ namespace DLS {
 						waveInfo[noteNo].gain = region.pSampler->Gain;
 					}
 
-					waveInfo[noteNo].pcmAddr = wave.pcmAddr - (uint)((IntPtr)dls.bufferAddr).ToInt32();
+					waveInfo[noteNo].pcmAddr = wave.pcmAddr - (uint)dlsPtr.ToInt32();
 					waveInfo[noteNo].pcmLength = wave.dataSize / wave.pFormat->blockAlign;
 				}
 
