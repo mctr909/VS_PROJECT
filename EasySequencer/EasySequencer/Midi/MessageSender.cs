@@ -9,6 +9,32 @@ namespace MIDI {
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+	public struct FILTER {
+		public double cutoff;
+		public double resonance;
+		public double pole00;
+		public double pole01;
+		public double pole02;
+		public double pole03;
+		public double pole10;
+		public double pole11;
+		public double pole12;
+		public double pole13;
+	};
+
+	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+	public struct ENVELOPE {
+		public double levelA;
+		public double levelD;
+		public double levelS;
+		public double levelR;
+		public double deltaA;
+		public double deltaD;
+		public double deltaR;
+		public double hold;
+	};
+
+	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct CONTROL {
 		public byte vol;
 		public byte exp;
@@ -50,10 +76,13 @@ namespace MIDI {
 		public double delayRate;
 		public double chorusDepth;
 		public double chorusRate;
+		public double tarCutoff;
 		public double tarAmp;
 		public double curAmp;
 		public double panLeft;
 		public double panRight;
+
+		public FILTER eq;
 	}
 
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -71,26 +100,25 @@ namespace MIDI {
 		public uint loopBegin;
 		public uint loopLength;
 
-		public double tarAmp;
-
-		public double envAmp;
-		public double envAmpDeltaA;
-		public double envAmpDeltaD;
-		public double envAmpDeltaR;
-		public double envAmpLevel;
-		public double envAmpHold;
-
 		public double gain;
 		public double delta;
 
 		public double index;
 		public double time;
+
+		public double tarAmp;
+		public double curAmp;
+
+		public ENVELOPE envAmp;
+		public ENVELOPE envEq;
+
+		public FILTER eq;
 	};
 
 	unsafe public class MessageSender {
 		
 		private SAMPLER** mppSampler = null;
-		private DLS.Instruments mInst = null;
+		private Instruments mInst = null;
 
 		[DllImport("WaveOut.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern IntPtr WaveOutList();
@@ -121,7 +149,7 @@ namespace MIDI {
 
 			uint dlsSize;
 			var dlsPtr = LoadDLS(Marshal.StringToHGlobalAuto(dlsPath), out dlsSize);
-			mInst = new DLS.Instruments(dlsPtr, dlsSize, Const.SampleRate);
+			mInst = new Instruments(dlsPtr, dlsSize, Const.SampleRate);
 
 			Channel = new Channel[CHANNEL_COUNT];
 			for (int i = 0; i < CHANNEL_COUNT; ++i) {
@@ -197,22 +225,25 @@ namespace MIDI {
 					pSmpl->loopLength = wave.loop.length;
 
 					pSmpl->tarAmp = velocity / 127.0;
+					pSmpl->curAmp = 0.0;
 
-					pSmpl->envAmp = 0.0;
-					pSmpl->envAmpDeltaA = 112 / wave.envAmp.attackTime;
-					pSmpl->envAmpDeltaD = 16 / wave.envAmp.decayTime;
-					pSmpl->envAmpDeltaR = 16 / wave.envAmp.releaceTime;
-					pSmpl->envAmpLevel = wave.envAmp.sustainLevel;
-					pSmpl->envAmpHold = wave.envAmp.holdTime;
+					pSmpl->envAmp.levelA = 0.0;
+					pSmpl->envAmp.levelD = 1.0;
+					pSmpl->envAmp.levelS = wave.envAmp.sustainLevel;
+					pSmpl->envAmp.levelR = 0.0;
+					pSmpl->envAmp.deltaA = 112 / wave.envAmp.attackTime;
+					pSmpl->envAmp.deltaD = 16 / wave.envAmp.decayTime;
+					pSmpl->envAmp.deltaR = 16 / wave.envAmp.releaceTime;
+					pSmpl->envAmp.hold = wave.envAmp.holdTime;
 
-					if (Const.SampleRate < pSmpl->envAmpDeltaA) {
-						pSmpl->envAmpDeltaA = Const.SampleRate;
+					if (Const.SampleRate < pSmpl->envAmp.deltaA) {
+						pSmpl->envAmp.deltaA = Const.SampleRate;
 					}
-					if (Const.SampleRate < pSmpl->envAmpDeltaD) {
-						pSmpl->envAmpDeltaD = Const.SampleRate;
+					if (Const.SampleRate < pSmpl->envAmp.deltaD) {
+						pSmpl->envAmp.deltaD = Const.SampleRate;
 					}
-					if (Const.SampleRate < pSmpl->envAmpDeltaR) {
-						pSmpl->envAmpDeltaR = Const.SampleRate;
+					if (Const.SampleRate < pSmpl->envAmp.deltaR) {
+						pSmpl->envAmp.deltaR = Const.SampleRate;
 					}
 
 					pSmpl->gain = wave.gain;
@@ -227,6 +258,39 @@ namespace MIDI {
 
 					pSmpl->index = 0.0;
 					pSmpl->time = 0.0;
+
+					if (ch.No == 9 || ch.InstId.programNo < 33 || 40 < ch.InstId.programNo) {
+						pSmpl->envEq.levelA = 1.0;
+						pSmpl->envEq.levelD = 1.0;
+						pSmpl->envEq.levelS = 1.0;
+						pSmpl->envEq.levelR = 1.0;
+						pSmpl->envEq.deltaA = 1000;
+						pSmpl->envEq.deltaD = 1000;
+						pSmpl->envEq.deltaR = 1000;
+						pSmpl->envEq.hold = 0.0;
+						pSmpl->eq.resonance = 0.0;
+					}
+					else {
+						pSmpl->envEq.levelA = 0.5;
+						pSmpl->envEq.levelD = 0.25;
+						pSmpl->envEq.levelS = 0.01;
+						pSmpl->envEq.levelR = 0.01;
+						pSmpl->envEq.deltaA = 100;
+						pSmpl->envEq.deltaD = 20;
+						pSmpl->envEq.deltaR = 20;
+						pSmpl->envEq.hold = 0.03;
+						pSmpl->eq.resonance = 0.25;
+					}
+
+					pSmpl->eq.cutoff = pSmpl->envEq.levelA;
+					pSmpl->eq.pole00 = 0.0;
+					pSmpl->eq.pole01 = 0.0;
+					pSmpl->eq.pole02 = 0.0;
+					pSmpl->eq.pole03 = 0.0;
+					pSmpl->eq.pole10 = 0.0;
+					pSmpl->eq.pole11 = 0.0;
+					pSmpl->eq.pole12 = 0.0;
+					pSmpl->eq.pole13 = 0.0;
 
 					pSmpl->onKey = true;
 					pSmpl->isActive = true;

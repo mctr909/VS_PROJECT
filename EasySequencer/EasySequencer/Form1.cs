@@ -25,7 +25,7 @@ namespace EasySequencer {
 
 		public Form1() {
 			InitializeComponent();
-			mDlsFilePath = "C:\\Users\\owner\\Desktop\\gm.dls";
+			mDlsFilePath = "C:\\Users\\user\\Desktop\\dls\\gm1.dls";
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {

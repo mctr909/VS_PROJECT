@@ -22,11 +22,11 @@ HWAVEOUT		g_hWaveOut = NULL;
 WAVEFORMATEX	g_waveFmt = { 0 };
 WAVEHDR			g_waveHdr[BUFFER_COUNT] = { NULL };
 
-UInt32			g_bufferLength = 4096;
-UInt32			g_sampleRate = 44100;
-UInt32			g_delayTaps = 44100;
-UInt32			g_chorusPhases = 3;
-UInt32			g_deviceListLength = 0;
+Int32			g_bufferLength = 4096;
+Int32			g_sampleRate = 44100;
+Int32			g_delayTaps = 44100;
+Int32			g_chorusPhases = 3;
+Int32			g_deviceListLength = 0;
 WCHAR			g_deviceList[DEVICE_LIST_SIZE] = { '\0' };
 
 LPBYTE			gp_buffer = NULL;
@@ -63,3 +63,4 @@ inline void channelStep(CHANNEL *ch, UInt32 no);
 inline void delayStep(CHANNEL *ch, DELAY_VALUES *delay);
 inline void chorusStep(CHANNEL *ch, DELAY_VALUES *delay, CHORUS_VALUES *chorus);
 inline void samplerStep(SAMPLER *smpl);
+inline void filterStep(FILTER *filter, double input, double *output);

@@ -47,9 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DLS\art.cs" />
+    <Compile Include="DLS\art2.cs" />
     <Compile Include="DLS\chunk.cs" />
-    <Compile Include="DLS\file.cs" />
+    <Compile Include="DLS\file2.cs" />
     <Compile Include="DLS\ins.cs" />
     <Compile Include="DLS\rgn.cs" />
     <Compile Include="DLS\struct.cs" />

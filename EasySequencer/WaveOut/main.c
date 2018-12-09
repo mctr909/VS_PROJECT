@@ -160,13 +160,13 @@ LPBYTE WINAPI LoadDLS(LPWSTR filePath, UInt32 *size) {
 	//
 	for (UInt32 i = 0; i < CHANNEL_COUNT; ++i) {
 		CHORUS_VALUES *chorus = &gp_chorus[i];
-		if (NULL != chorus->pMixL) {
-			free(chorus->pMixL);
-			chorus->pMixL = NULL;
+		if (NULL != chorus->pPanL) {
+			free(chorus->pPanL);
+			chorus->pPanL = NULL;
 		}
-		if (NULL != chorus->pMixR) {
-			free(chorus->pMixR);
-			chorus->pMixR = NULL;
+		if (NULL != chorus->pPanR) {
+			free(chorus->pPanR);
+			chorus->pPanR = NULL;
 		}
 		if (NULL != chorus->pLfoRe) {
 			free(chorus->pLfoRe);
@@ -178,16 +178,16 @@ LPBYTE WINAPI LoadDLS(LPWSTR filePath, UInt32 *size) {
 		}
 
 		chorus->lfoK = 6.283 / g_sampleRate;
-		chorus->pMixL = (double*)malloc(sizeof(double) * g_chorusPhases);
-		chorus->pMixR = (double*)malloc(sizeof(double) * g_chorusPhases);
+		chorus->pPanL = (double*)malloc(sizeof(double) * g_chorusPhases);
+		chorus->pPanR = (double*)malloc(sizeof(double) * g_chorusPhases);
 		chorus->pLfoRe = (double*)malloc(sizeof(double) * g_chorusPhases);
 		chorus->pLfoIm = (double*)malloc(sizeof(double) * g_chorusPhases);
 
-		for (UInt32 p = 0; p < g_chorusPhases; ++p) {
-			chorus->pMixL[p] = cos(3.1416 * p / g_chorusPhases);
-			chorus->pMixR[p] = sin(3.1416 * p / g_chorusPhases);
-			chorus->pLfoRe[p] = cos(3.1416 * p / g_chorusPhases);
-			chorus->pLfoIm[p] = sin(3.1416 * p / g_chorusPhases);
+		for (Int32 p = 0; p < g_chorusPhases; ++p) {
+			chorus->pPanL[p] = cos(3.1416 * p / g_chorusPhases);
+			chorus->pPanR[p] = sin(3.1416 * p / g_chorusPhases);
+			chorus->pLfoRe[p] = cos(6.283 * p / g_chorusPhases);
+			chorus->pLfoIm[p] = sin(6.283 * p / g_chorusPhases);
 		}
 	}
 
@@ -205,7 +205,7 @@ void CALLBACK DSEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, LPCTSTR lpszDrvName, L
 }
 
 void CALLBACK WaveOutProc(HWAVEOUT hwo, UInt32 uMsg) {
-	static UInt32 b, t, s, ch;
+	static Int32 b, t, s, ch;
 	static Int16* pWave = NULL;
 
 	switch (uMsg) {
@@ -282,7 +282,11 @@ void CALLBACK WaveOutProc(HWAVEOUT hwo, UInt32 uMsg) {
 
 /******************************************************************************/
 inline void channelStep(CHANNEL *ch, UInt32 no) {
-	g_chWaveC = ch->curAmp * ch->wave;
+	//
+	g_chWaveC = 0;
+	filterStep(&ch->eq, ch->curAmp * ch->wave, &g_chWaveC);
+
+	//
 	g_chWaveL = g_chWaveC * ch->panLeft;
 	g_chWaveR = g_chWaveC * ch->panRight;
 
@@ -290,6 +294,8 @@ inline void channelStep(CHANNEL *ch, UInt32 no) {
 	chorusStep(ch, &gp_delay[no], &gp_chorus[no]);
 
 	ch->curAmp += 100 * (ch->tarAmp - ch->curAmp) / g_sampleRate;
+
+	ch->eq.cutoff += 100 * (ch->tarCutoff - ch->eq.cutoff) / g_sampleRate;
 
 	//
 	g_waveL += g_chWaveL;
@@ -326,8 +332,8 @@ inline void chorusStep(CHANNEL *ch, DELAY_VALUES *delay, CHORUS_VALUES *chorus) 
 	Int32 indexPre;
 	double dt;
 
-	for (UInt32 ph = 0; ph < g_chorusPhases; ++ph) {
-		index = delay->writeIndex - (0.5 - 0.48 * chorus->pLfoRe[ph]) * g_sampleRate * 0.02;
+	for (Int32 ph = 0; ph < g_chorusPhases; ++ph) {
+		index = delay->writeIndex - (0.5 - 0.45 * chorus->pLfoRe[ph]) * g_sampleRate * 0.05;
 		indexCur = (Int32)index;
 		indexPre = indexCur - 1;
 		dt = index - indexCur;
@@ -346,8 +352,8 @@ inline void chorusStep(CHANNEL *ch, DELAY_VALUES *delay, CHORUS_VALUES *chorus) 
 			indexPre -= g_delayTaps;
 		}
 
-		chorusL += (delay->pTapL[indexCur] * dt + delay->pTapL[indexPre] * (1.0 - dt)) * chorus->pMixL[ph];
-		chorusR += (delay->pTapR[indexCur] * dt + delay->pTapR[indexPre] * (1.0 - dt)) * chorus->pMixR[ph];
+		chorusL += (delay->pTapL[indexCur] * dt + delay->pTapL[indexPre] * (1.0 - dt)) * chorus->pPanL[ph];
+		chorusR += (delay->pTapR[indexCur] * dt + delay->pTapR[indexPre] * (1.0 - dt)) * chorus->pPanR[ph];
 
 		chorus->pLfoRe[ph] -= chorus->lfoK * ch->chorusRate * chorus->pLfoIm[ph];
 		chorus->pLfoIm[ph] += chorus->lfoK * ch->chorusRate * chorus->pLfoRe[ph];
@@ -368,22 +374,31 @@ inline void samplerStep(SAMPLER *smpl) {
 	}
 
 	if (smpl->onKey) {
-		if (smpl->time < smpl->envAmpHold) {
-			smpl->envAmp += (1.0 - smpl->envAmp) * smpl->envAmpDeltaA / g_sampleRate;
+		if (smpl->time < smpl->envAmp.hold) {
+			smpl->curAmp += (smpl->envAmp.levelD - smpl->curAmp) * smpl->envAmp.deltaA / g_sampleRate;
 		}
 		else {
-			smpl->envAmp += (smpl->envAmpLevel - smpl->envAmp) * smpl->envAmpDeltaD / g_sampleRate;
+			smpl->curAmp += (smpl->envAmp.levelS - smpl->curAmp) * smpl->envAmp.deltaD / g_sampleRate;
+		}
+
+		if (smpl->time < smpl->envEq.hold) {
+			smpl->eq.cutoff += (smpl->envEq.levelD - smpl->eq.cutoff) * smpl->envEq.deltaA / g_sampleRate;
+		}
+		else {
+			smpl->eq.cutoff += (smpl->envEq.levelS - smpl->eq.cutoff) * smpl->envEq.deltaD / g_sampleRate;
 		}
 	}
 	else {
 		if (ch->hold < 10.0) {
-			smpl->envAmp -= smpl->envAmp * ch->hold / g_sampleRate;
+			smpl->curAmp -= smpl->curAmp * ch->hold / g_sampleRate;
 		}
 		else {
-			smpl->envAmp -= smpl->envAmp * smpl->envAmpDeltaR / g_sampleRate;
+			smpl->curAmp -= smpl->curAmp * smpl->envAmp.deltaR / g_sampleRate;
 		}
 
-		if (smpl->envAmp < 0.0001) {
+		smpl->eq.cutoff += (smpl->envEq.levelR - smpl->eq.cutoff) * smpl->envEq.deltaR / g_sampleRate;
+
+		if (smpl->curAmp < 0.0001) {
 			smpl->isActive = false;
 		}
 	}
@@ -406,7 +421,11 @@ inline void samplerStep(SAMPLER *smpl) {
 	}
 
 	//
-	ch->wave += (pcm[cur] * dt + pcm[pre] * (1.0 - dt)) * smpl->gain * smpl->tarAmp * smpl->envAmp / 32768.0;
+	filterStep(
+		&smpl->eq,
+		(pcm[cur] * dt + pcm[pre] * (1.0 - dt)) * smpl->gain * smpl->tarAmp * smpl->curAmp / 32768.0,
+		&ch->wave
+	);
 
 	//
 	smpl->index += smpl->delta * ch->pitch;
@@ -419,4 +438,24 @@ inline void samplerStep(SAMPLER *smpl) {
 			smpl->isActive = false;
 		}
 	}
+}
+
+inline void filterStep(FILTER *filter, double input, double *output) {
+	double fk = filter->cutoff * 1.16;
+	double fki = 1.0 - fk;
+
+	input -= filter->pole03 * (1.0 - fk * fk * 0.15) * 4.0 * filter->resonance;
+	input *= (fk * fk) * (fk * fk) * 0.35013;
+
+	filter->pole00 = input + 0.3 * filter->pole10 + fki * filter->pole00;
+	filter->pole01 = filter->pole00 + 0.3 * filter->pole11 + fki * filter->pole01;
+	filter->pole02 = filter->pole01 + 0.3 * filter->pole12 + fki * filter->pole02;
+	filter->pole03 = filter->pole02 + 0.3 * filter->pole13 + fki * filter->pole03;
+
+	filter->pole10 = input;
+	filter->pole11 = filter->pole00;
+	filter->pole12 = filter->pole01;
+	filter->pole13 = filter->pole02;
+
+	*output += filter->pole03;
 }

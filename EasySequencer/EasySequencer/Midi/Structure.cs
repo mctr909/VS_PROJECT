@@ -21,7 +21,7 @@
 		public double sustainLevel;
 	};
 
-	unsafe public struct WaveInfo {
+	public struct WaveInfo {
 		public uint unityNote;
 		public double gain;
 		public double delta;
@@ -32,69 +32,18 @@
 		public uint pcmLength;
 	}
 
-	public struct Filter {
-		public double Cutoff;
-		public double Resonance;
-		private double[,] mPole;
-
-		public Filter(double cutoff, double resonance) {
-			Cutoff = cutoff;
-			Resonance = resonance;
-			mPole = new double[2, 4];
-		}
-
-		public void Clear() {
-			mPole[0, 0] = 0.0;
-			mPole[0, 1] = 0.0;
-			mPole[0, 2] = 0.0;
-			mPole[0, 3] = 0.0;
-			mPole[1, 0] = 0.0;
-			mPole[1, 1] = 0.0;
-			mPole[1, 2] = 0.0;
-			mPole[1, 3] = 0.0;
-		}
-
-		public void Step(double input, ref double output) {
-			var fk = Cutoff * 1.16;
-			var fki = 1.0 - fk;
-
-			input -= mPole[0, 3] * (1.0 - fk * fk * 0.15) * 4.0 * Resonance;
-			input *= (fk * fk) * (fk * fk) * 0.35013;
-
-			mPole[0, 0] = input + 0.3 * mPole[1, 0] + fki * mPole[0, 0];
-			mPole[0, 1] = mPole[0, 0] + 0.3 * mPole[1, 1] + fki * mPole[0, 1];
-			mPole[0, 2] = mPole[0, 1] + 0.3 * mPole[1, 2] + fki * mPole[0, 2];
-			mPole[0, 3] = mPole[0, 2] + 0.3 * mPole[1, 3] + fki * mPole[0, 3];
-
-			mPole[1, 0] = input;
-			mPole[1, 1] = mPole[0, 0];
-			mPole[1, 2] = mPole[0, 1];
-			mPole[1, 3] = mPole[0, 2];
-
-			output = mPole[0, 3];
-		}
-	}
-
 	public struct Time {
-		private uint mValue;
-		private uint mIndex;
-
-		public uint Value {
-			get { return mValue; }
-		}
-
-		public uint Index {
-			get { return mIndex; }
-		}
+		public uint Value { get; private set; }
+		public uint Index { get; private set; }
 
 		public Time(uint value, uint index) {
-			mValue = value;
-			mIndex = index;
+			Value = value;
+			Index = index;
 		}
 
 		public void Step(uint delta) {
-			mValue += delta;
-			mIndex = (delta == 0 ? (mIndex + 1) : 0);
+			Value += delta;
+			Index = (delta == 0 ? (Index + 1) : 0);
 		}
 	}
 

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using DLS;
 
-namespace DLS {
+namespace MIDI {
 	unsafe public class Instruments {
-		public Dictionary<MIDI.INST_ID, MIDI.WaveInfo[]> List;
+		public Dictionary<INST_ID, WaveInfo[]> List;
 
 		public Instruments(IntPtr dlsPtr, uint dlsSize, int sampleRate) {
 			var dls = new File(dlsPtr, dlsSize);
 			var deltaTime = 1.0 / sampleRate;
 
-			List = new Dictionary<MIDI.INST_ID, MIDI.WaveInfo[]>();
+			List = new Dictionary<INST_ID, WaveInfo[]>();
 
 			foreach (var inst in dls.instruments.List) {
-				var envAmp = new MIDI.Envelope();
+				var envAmp = new Envelope();
 				if (null != inst.articulations) {
 					envAmp.attackTime = 1.0;
 					envAmp.decayTime = 1.0;
@@ -45,7 +46,7 @@ namespace DLS {
 					envAmp.holdTime += holdTime;
 				}
 
-				var waveInfo = new MIDI.WaveInfo[128];
+				var waveInfo = new WaveInfo[128];
 				for (var noteNo = 0; noteNo < waveInfo.Length; ++noteNo) {
 					RGN_ region = null;
 					foreach (var rgn in inst.regions.List) {
@@ -126,7 +127,7 @@ namespace DLS {
 					waveInfo[noteNo].pcmLength = wave.dataSize / wave.pFormat->blockAlign;
 				}
 
-				var id = new MIDI.INST_ID();
+				var id = new INST_ID();
 				id.isDrum = inst.pHeader->locale.bankFlags;
 				id.programNo = inst.pHeader->locale.programNo;
 				id.bankMSB = inst.pHeader->locale.bankMSB;

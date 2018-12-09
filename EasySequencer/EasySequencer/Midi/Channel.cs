@@ -4,14 +4,14 @@
 
 		public bool Enable;
 
-		private DLS.Instruments mInst = null;
-		private INST_ID instId;
+		private Instruments mInst = null;
+		private INST_ID mInstId;
 		private CONTROL ctrl;
 
 		public byte No { get; private set; }
 
 		public INST_ID InstId {
-			get { return instId; }
+			get { return mInstId; }
 		}
 
 		public KEY_STATUS[] KeyBoard { get; set; }
@@ -58,7 +58,7 @@
 
 		public int Pitch { get; private set; }
 
-		public Channel(DLS.Instruments inst, CHANNEL* pChannel, int no) {
+		public Channel(Instruments inst, CHANNEL* pChannel, int no) {
 			mInst = inst;
 			mpChannel = pChannel;
 			No = (byte)no;
@@ -71,15 +71,23 @@
 		public void AllReset() {
 			mpChannel->wave = 0.0;
 
-			instId = new INST_ID();
+			mInstId = new INST_ID();
 
 			setAmp(100, 100);
 			setPan(64);
 
 			setHold(0);
 
-			ctrl.res = 64;
-			ctrl.cut = 64;
+			setRes(64);
+			setCut(64);
+			mpChannel->eq.pole00 = 0.0;
+			mpChannel->eq.pole01 = 0.0;
+			mpChannel->eq.pole02 = 0.0;
+			mpChannel->eq.pole03 = 0.0;
+			mpChannel->eq.pole10 = 0.0;
+			mpChannel->eq.pole11 = 0.0;
+			mpChannel->eq.pole12 = 0.0;
+			mpChannel->eq.pole13 = 0.0;
 
 			ctrl.rel = 64;
 			ctrl.atk = 64;
@@ -111,9 +119,9 @@
 		public void CtrlChange(byte type, byte b1) {
 			switch ((CTRL_TYPE)type) {
 			case CTRL_TYPE.BANK_MSB:
-				instId.bankMSB = b1; break;
+				mInstId.bankMSB = b1; break;
 			case CTRL_TYPE.BANK_LSB:
-				instId.bankLSB = b1; break;
+				mInstId.bankLSB = b1; break;
 
 			case CTRL_TYPE.DATA:
 				rpn(b1);
@@ -130,9 +138,9 @@
 				setHold(b1); break;
 
 			case CTRL_TYPE.RESONANCE:
-				ctrl.res = b1; break;
+				setRes(b1); break;
 			case CTRL_TYPE.CUTOFF:
-				ctrl.cut = b1; break;
+				setCut(b1); break;
 
 			case CTRL_TYPE.RELEACE:
 				ctrl.rel = b1; break;
@@ -165,14 +173,14 @@
 		}
 
 		public void ProgramChange(byte value) {
-			instId.isDrum = (byte)(9 == No ? 0x80 : 0x00);
-			instId.programNo = value;
+			mInstId.isDrum = (byte)(9 == No ? 0x80 : 0x00);
+			mInstId.programNo = value;
 
-			if (!mInst.List.ContainsKey(instId)) {
-				instId.bankMSB = 0;
-				instId.bankLSB = 0;
-				if (!mInst.List.ContainsKey(instId)) {
-					instId.programNo = 0;
+			if (!mInst.List.ContainsKey(mInstId)) {
+				mInstId.bankMSB = 0;
+				mInstId.bankLSB = 0;
+				if (!mInst.List.ContainsKey(mInstId)) {
+					mInstId.programNo = 0;
 				}
 			}
 		}
@@ -220,6 +228,16 @@
 			}
 			ctrl.hold = value;
 			mpChannel->hold = (value < 64 ? 10.0 : 1.0);
+		}
+
+		private void setRes(byte value) {
+			ctrl.res = value;
+			mpChannel->eq.resonance = (value < 64) ? 0.0 : ((value-64) / 64.0);
+		}
+
+		private void setCut(byte value) {
+			ctrl.cut = value;
+			mpChannel->tarCutoff = (value < 64) ? Const.Level[2 * value] : 1.0;
 		}
 
 		private void setDelayDepath(byte value) {
