@@ -199,9 +199,9 @@ namespace MIDI {
 					pSmpl->tarAmp = velocity / 127.0;
 
 					pSmpl->envAmp = 0.0;
-					pSmpl->envAmpDeltaA = 256 / wave.envAmp.attackTime;
-					pSmpl->envAmpDeltaD = 96 / wave.envAmp.decayTime;
-					pSmpl->envAmpDeltaR = 96 / wave.envAmp.releaceTime;
+					pSmpl->envAmpDeltaA = 112 / wave.envAmp.attackTime;
+					pSmpl->envAmpDeltaD = 16 / wave.envAmp.decayTime;
+					pSmpl->envAmpDeltaR = 16 / wave.envAmp.releaceTime;
 					pSmpl->envAmpLevel = wave.envAmp.sustainLevel;
 					pSmpl->envAmpHold = wave.envAmp.holdTime;
 

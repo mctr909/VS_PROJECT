@@ -183,7 +183,7 @@ LPBYTE WINAPI LoadDLS(LPWSTR filePath, UInt32 *size) {
 		chorus->pLfoRe = (double*)malloc(sizeof(double) * g_chorusPhases);
 		chorus->pLfoIm = (double*)malloc(sizeof(double) * g_chorusPhases);
 
-		for (UINT p = 0; p < g_chorusPhases; ++p) {
+		for (UInt32 p = 0; p < g_chorusPhases; ++p) {
 			chorus->pMixL[p] = cos(3.1416 * p / g_chorusPhases);
 			chorus->pMixR[p] = sin(3.1416 * p / g_chorusPhases);
 			chorus->pLfoRe[p] = cos(3.1416 * p / g_chorusPhases);
@@ -303,7 +303,7 @@ inline void delayStep(CHANNEL *ch, DELAY_VALUES *delay) {
 		delay->writeIndex = 0;
 	}
 
-	delay->readIndex = delay->writeIndex - (INT)(ch->delayRate * g_sampleRate);
+	delay->readIndex = delay->writeIndex - (Int32)(ch->delayRate * g_sampleRate);
 	if (delay->readIndex < 0) {
 		delay->readIndex += g_delayTaps;
 	}
@@ -326,9 +326,9 @@ inline void chorusStep(CHANNEL *ch, DELAY_VALUES *delay, CHORUS_VALUES *chorus) 
 	Int32 indexPre;
 	double dt;
 
-	for (UINT ph = 0; ph < g_chorusPhases; ++ph) {
+	for (UInt32 ph = 0; ph < g_chorusPhases; ++ph) {
 		index = delay->writeIndex - (0.5 - 0.48 * chorus->pLfoRe[ph]) * g_sampleRate * 0.02;
-		indexCur = (INT)index;
+		indexCur = (Int32)index;
 		indexPre = indexCur - 1;
 		dt = index - indexCur;
 
@@ -382,6 +382,7 @@ inline void samplerStep(SAMPLER *smpl) {
 		else {
 			smpl->envAmp -= smpl->envAmp * smpl->envAmpDeltaR / g_sampleRate;
 		}
+
 		if (smpl->envAmp < 0.0001) {
 			smpl->isActive = false;
 		}
@@ -389,7 +390,7 @@ inline void samplerStep(SAMPLER *smpl) {
 
 	//
 	Int16 *pcm = (Int16*)(gp_buffer + smpl->pcmAddr);
-	Int32 cur = (INT)smpl->index;
+	Int32 cur = (Int32)smpl->index;
 	Int32 pre = cur - 1;
 	double dt = smpl->index - cur;
 	if (pre < 0) {

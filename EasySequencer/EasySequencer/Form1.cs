@@ -244,7 +244,6 @@ namespace EasySequencer {
 			}
 
 			Bitmap bmp = new Bitmap(numKey.Width, numKey.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			bmp.MakeTransparent(Color.Black);
 			Graphics g = Graphics.FromImage(bmp);
 
 			var whiteWidth = MIDI.Const.KeyboardPos[0].Width + 1;
