@@ -62,7 +62,7 @@
     </Compile>
     <Compile Include="Midi\Channel.cs" />
     <Compile Include="Midi\Const.cs" />
-    <Compile Include="DLS\instruments.cs" />
+    <Compile Include="Midi\Instruments.cs" />
     <Compile Include="Midi\MessageSender.cs" />
     <Compile Include="Midi\Player.cs" />
     <Compile Include="Midi\SMF.cs" />
