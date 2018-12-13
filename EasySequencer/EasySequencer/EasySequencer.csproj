@@ -62,6 +62,7 @@
     </Compile>
     <Compile Include="Midi\Channel.cs" />
     <Compile Include="Midi\Const.cs" />
+    <Compile Include="Midi\DoubleBuffer.cs" />
     <Compile Include="Midi\Instruments.cs" />
     <Compile Include="Midi\MessageSender.cs" />
     <Compile Include="Midi\Player.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="StatusWindow.resx">
       <DependentUpon>StatusWindow.cs</DependentUpon>
@@ -102,6 +104,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="panel.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

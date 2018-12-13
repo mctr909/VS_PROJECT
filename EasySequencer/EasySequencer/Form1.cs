@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace EasySequencer {
 	unsafe public partial class Form1 : Form {
+		private MIDI.DoubleBuffer mBuffer;
 		private static readonly Font mFont = new Font("ＭＳ ゴシック", 9.0f, FontStyle.Regular, GraphicsUnit.Point);
-		private readonly string mDlsFilePath;
+		private string mDlsFilePath;
 
 		private bool mIsSeek = false;
 		private bool mIsParamChg = false;
@@ -25,16 +26,27 @@ namespace EasySequencer {
 
 		public Form1() {
 			InitializeComponent();
-			mDlsFilePath = "C:\\Users\\user\\Desktop\\dls\\gm1.dls";
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
+			mDlsFilePath = "C:\\Users\\owner\\Desktop\\gm.dls";
 			mMsgSender = new MIDI.MessageSender(mDlsFilePath);
 			mPlayer = new MIDI.Player(mMsgSender);
 
-			timer1.Interval = 10;
+			mBuffer = new MIDI.DoubleBuffer(picKey, Properties.Resources.panel);
+
+			SetSize();
+
+			timer1.Interval = 25;
 			timer1.Enabled = true;
 			timer1.Start();
+
+			Task.Run(() => {
+				while (true) {
+					draw();
+					Thread.Sleep(10);
+				}
+			});
 		}
 
 		private void 開くOToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -112,12 +124,10 @@ namespace EasySequencer {
 			wndStatus.StartPosition = FormStartPosition.CenterParent;
 			wndStatus.Task = task;
 			wndStatus.ProgressMax = 1000;
-			fixed (int* ptr = &mProgress)
-			{
+			fixed (int* ptr = &mProgress) {
 				wndStatus.Progress = ptr;
 			}
-			fixed (double* ptr = &mCurrentTime)
-			{
+			fixed (double* ptr = &mCurrentTime) {
 				wndStatus.Time = ptr;
 			}
 			wndStatus.Show();
@@ -157,96 +167,100 @@ namespace EasySequencer {
 			mIsSeek = false;
 		}
 
-		private void timer1_Tick(object sender, EventArgs e) {
+		private void picKeyboard_MouseDown(Object sender, MouseEventArgs e) {
+			var pos = picKey.PointToClient(Cursor.Position);
+			var knobX = (pos.X - 525) / 24;
+			var knobY = pos.Y / 40;
+
+			if (0 <= knobY && knobY <= 15) {
+				if (knobX == 8) {
+					if (e.Button == MouseButtons.Right) {
+						if (mPlayer.Channel[knobY].Enable) {
+							for (int i = 0; i < mPlayer.Channel.Length; ++i) {
+								if (knobY == i) {
+									mPlayer.Channel[i].Enable = false;
+								}
+								else {
+									mPlayer.Channel[i].Enable = true;
+								}
+							}
+						}
+						else {
+							for (int i = 0; i < mPlayer.Channel.Length; ++i) {
+								if (knobY == i) {
+									mPlayer.Channel[i].Enable = true;
+								}
+								else {
+									mPlayer.Channel[i].Enable = false;
+								}
+							}
+						}
+					}
+					else {
+						mPlayer.Channel[knobY].Enable = !mPlayer.Channel[knobY].Enable;
+					}
+				}
+
+				if (0 <= knobX && knobX <= 7) {
+					mIsParamChg = true;
+					mKnobX = knobX;
+					mKnobY = knobY;
+				}
+			}
+		}
+
+		private void picKeyboard_MouseUp(Object sender, MouseEventArgs e) {
+			if (mIsParamChg) {
+				mIsParamChg = false;
+				mKnobX = 0;
+				mKnobY = 0;
+			}
+		}
+
+		private void picKeyboard_MouseMove(Object sender, MouseEventArgs e) {
+			if (mIsParamChg) {
+				var pos = picKey.PointToClient(Cursor.Position);
+				var knobCenter = MIDI.Const.KnobPos[mKnobX];
+				knobCenter.Y += mKnobY * 40;
+
+				var sx = pos.X - knobCenter.X;
+				var sy = pos.Y - knobCenter.Y;
+				var th = 0.625 * Math.Atan2(sx, -sy) / Math.PI;
+				if (th < -0.5) {
+					th = -0.5;
+				}
+				if (0.5 < th) {
+					th = 0.5;
+				}
+
+				mChangeValue = (int)((th + 0.5) * 127.0);
+				if (mChangeValue < 0) {
+					mChangeValue = 0;
+				}
+				if (127 < mChangeValue) {
+					mChangeValue = 127;
+				}
+			}
+		}
+
+		private void Form1_SizeChanged(object sender, EventArgs e) {
+			SetSize();
+		}
+
+		private void SetSize() {
+			tabControl1.Width = Width - tabControl1.Location.X - 20;
+			tabControl1.Height = Height - tabControl1.Location.Y - 48;
+			pnlKeyboard.Width = tabControl1.Width - 16;
+			pnlKeyboard.Height = tabControl1.Height - 38;
+		}
+
+		private void draw() {
 			if (null == mPlayer) {
 				return;
 			}
 
-			lblPosition.Text = mPlayer.TimeText;
-			lblTempo.Text = mPlayer.TempoText;
-
-			if (!mIsSeek) {
-				if (mPlayer.CurrentTime <= hsbSeek.Maximum) {
-					hsbSeek.Value = mPlayer.CurrentTime;
-				}
-				else {
-					hsbSeek.Value = 0;
-					mPlayer.SeekTime = hsbSeek.Value;
-				}
-			}
-
-			if (mIsParamChg) {
-				switch (mKnobX) {
-				case 0:
-					mPlayer.Send(new MIDI.Message(
-						MIDI.CTRL_TYPE.VOLUME,
-						(byte)mKnobY,
-						(byte)mChangeValue
-					));
-					break;
-
-				case 1:
-					mPlayer.Send(new MIDI.Message(
-						MIDI.CTRL_TYPE.EXPRESSION,
-						(byte)mKnobY,
-						(byte)mChangeValue
-					));
-					break;
-
-				case 2:
-					mPlayer.Send(new MIDI.Message(
-						MIDI.CTRL_TYPE.PAN,
-						(byte)mKnobY,
-						(byte)mChangeValue
-					));
-					break;
-
-				case 3:
-					mPlayer.Send(new MIDI.Message(
-						MIDI.CTRL_TYPE.REVERB,
-						(byte)mKnobY,
-						(byte)mChangeValue
-					));
-					break;
-
-				case 4:
-					mPlayer.Send(new MIDI.Message(
-						MIDI.CTRL_TYPE.CHORUS,
-						(byte)mKnobY,
-						(byte)mChangeValue
-					));
-					break;
-
-				case 5:
-					mPlayer.Send(new MIDI.Message(
-						MIDI.CTRL_TYPE.DELAY,
-						(byte)mKnobY,
-						(byte)mChangeValue
-					));
-					break;
-
-				case 6:
-					mPlayer.Send(new MIDI.Message(
-						MIDI.CTRL_TYPE.CUTOFF,
-						(byte)mKnobY,
-						(byte)mChangeValue
-					));
-					break;
-
-				case 7:
-					mPlayer.Send(new MIDI.Message(
-						MIDI.CTRL_TYPE.RESONANCE,
-						(byte)mKnobY,
-						(byte)mChangeValue
-					));
-					break;
-				}
-			}
-
-			Bitmap bmp = new Bitmap(numKey.Width, numKey.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			Graphics g = Graphics.FromImage(bmp);
-
 			var whiteWidth = MIDI.Const.KeyboardPos[0].Width + 1;
+			var g = mBuffer.Graphics;
 
 			for (int ch = 0; ch < mPlayer.Channel.Length; ++ch) {
 				var channel = mPlayer.Channel[ch];
@@ -392,100 +406,90 @@ namespace EasySequencer {
 				}
 			}
 
-			if (null != g) {
-				g.Dispose();
-				g = null;
-			}
-
-			if (null != numKey.Image) {
-				numKey.Image.Dispose();
-				numKey.Image = null;
-			}
-
-			numKey.Image = bmp;
+			mBuffer.Render();
 		}
 
-		private void picKeyboard_MouseDown(Object sender, MouseEventArgs e) {
-			var pos = numKey.PointToClient(Cursor.Position);
-			var knobX = (pos.X - 525) / 24;
-			var knobY = pos.Y / 40;
+		private void timer1_Tick(object sender, EventArgs e) {
+			lblPosition.Text = mPlayer.TimeText;
+			lblTempo.Text = mPlayer.TempoText;
 
-			if (0 <= knobY && knobY <= 15) {
-				if (knobX == 8) {
-					if (e.Button == MouseButtons.Right) {
-						if (mPlayer.Channel[knobY].Enable) {
-							for (int i = 0; i < mPlayer.Channel.Length; ++i) {
-								if (knobY == i) {
-									mPlayer.Channel[i].Enable = false;
-								}
-								else {
-									mPlayer.Channel[i].Enable = true;
-								}
-							}
-						}
-						else {
-							for (int i = 0; i < mPlayer.Channel.Length; ++i) {
-								if (knobY == i) {
-									mPlayer.Channel[i].Enable = true;
-								}
-								else {
-									mPlayer.Channel[i].Enable = false;
-								}
-							}
-						}
-					}
-					else {
-						mPlayer.Channel[knobY].Enable = !mPlayer.Channel[knobY].Enable;
-					}
+			if (!mIsSeek) {
+				if (mPlayer.CurrentTime <= hsbSeek.Maximum) {
+					hsbSeek.Value = mPlayer.CurrentTime;
 				}
-
-				if (0 <= knobX && knobX <= 7) {
-					mIsParamChg = true;
-					mKnobX = knobX;
-					mKnobY = knobY;
+				else {
+					hsbSeek.Value = 0;
+					mPlayer.SeekTime = hsbSeek.Value;
 				}
 			}
-		}
 
-		private void picKeyboard_MouseUp(Object sender, MouseEventArgs e) {
 			if (mIsParamChg) {
-				mIsParamChg = false;
-				mKnobX = 0;
-				mKnobY = 0;
+				switch (mKnobX) {
+				case 0:
+					mPlayer.Send(new MIDI.Message(
+						MIDI.CTRL_TYPE.VOLUME,
+						(byte)mKnobY,
+						(byte)mChangeValue
+					));
+					break;
+
+				case 1:
+					mPlayer.Send(new MIDI.Message(
+						MIDI.CTRL_TYPE.EXPRESSION,
+						(byte)mKnobY,
+						(byte)mChangeValue
+					));
+					break;
+
+				case 2:
+					mPlayer.Send(new MIDI.Message(
+						MIDI.CTRL_TYPE.PAN,
+						(byte)mKnobY,
+						(byte)mChangeValue
+					));
+					break;
+
+				case 3:
+					mPlayer.Send(new MIDI.Message(
+						MIDI.CTRL_TYPE.REVERB,
+						(byte)mKnobY,
+						(byte)mChangeValue
+					));
+					break;
+
+				case 4:
+					mPlayer.Send(new MIDI.Message(
+						MIDI.CTRL_TYPE.CHORUS,
+						(byte)mKnobY,
+						(byte)mChangeValue
+					));
+					break;
+
+				case 5:
+					mPlayer.Send(new MIDI.Message(
+						MIDI.CTRL_TYPE.DELAY,
+						(byte)mKnobY,
+						(byte)mChangeValue
+					));
+					break;
+
+				case 6:
+					mPlayer.Send(new MIDI.Message(
+						MIDI.CTRL_TYPE.CUTOFF,
+						(byte)mKnobY,
+						(byte)mChangeValue
+					));
+					break;
+
+				case 7:
+					mPlayer.Send(new MIDI.Message(
+						MIDI.CTRL_TYPE.RESONANCE,
+						(byte)mKnobY,
+						(byte)mChangeValue
+					));
+					break;
+				}
 			}
-		}
-
-		private void picKeyboard_MouseMove(Object sender, MouseEventArgs e) {
-			if (mIsParamChg) {
-				var pos = numKey.PointToClient(Cursor.Position);
-				var knobCenter = MIDI.Const.KnobPos[mKnobX];
-				knobCenter.Y += mKnobY * 40;
-
-				var sx = pos.X - knobCenter.X;
-				var sy = pos.Y - knobCenter.Y;
-				var th = 0.625 * Math.Atan2(sx, -sy) / Math.PI;
-				if (th < -0.5) {
-					th = -0.5;
-				}
-				if (0.5 < th) {
-					th = 0.5;
-				}
-
-				mChangeValue = (int)((th + 0.5) * 127.0);
-				if (mChangeValue < 0) {
-					mChangeValue = 0;
-				}
-				if (127 < mChangeValue) {
-					mChangeValue = 127;
-				}
-			}
-		}
-
-		private void Form1_SizeChanged(object sender, EventArgs e) {
-			tabControl1.Width = Width - tabControl1.Location.X - 20;
-			tabControl1.Height = Height - tabControl1.Location.Y - 48;
-			pnlKeyboard.Width = tabControl1.Width - 16;
-			pnlKeyboard.Height = tabControl1.Height - 38;
 		}
 	}
 }

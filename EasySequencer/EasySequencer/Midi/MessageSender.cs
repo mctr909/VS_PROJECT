@@ -130,7 +130,7 @@ namespace MIDI {
 		public static extern void WaveOutClose();
 
 		[DllImport("WaveOut.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		unsafe public static extern IntPtr LoadDLS(IntPtr filePath, out uint size);
+		unsafe public static extern IntPtr LoadDLS(IntPtr filePath, out uint size, int sampleRate);
 
 		[DllImport("WaveOut.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern CHANNEL** GetChannelPtr();
@@ -139,7 +139,7 @@ namespace MIDI {
 		public static extern SAMPLER** GetSamplerPtr();
 
 		private const int CHANNEL_COUNT = 16;
-		private const int SAMPLER_COUNT = 128;
+		private const int SAMPLER_COUNT = 256;
 
 		public Channel[] Channel { get; }
 
@@ -148,7 +148,7 @@ namespace MIDI {
 			mppSampler = GetSamplerPtr();
 
 			uint dlsSize;
-			var dlsPtr = LoadDLS(Marshal.StringToHGlobalAuto(dlsPath), out dlsSize);
+			var dlsPtr = LoadDLS(Marshal.StringToHGlobalAuto(dlsPath), out dlsSize, Const.SampleRate);
 			mInst = new Instruments(dlsPtr, dlsSize, Const.SampleRate);
 
 			Channel = new Channel[CHANNEL_COUNT];
@@ -259,7 +259,7 @@ namespace MIDI {
 					pSmpl->index = 0.0;
 					pSmpl->time = 0.0;
 
-					if (ch.No == 9 || ch.InstId.programNo < 33 || 40 < ch.InstId.programNo) {
+					//if (ch.No == 9 || ch.InstId.programNo < 33 || 40 < ch.InstId.programNo) {
 						pSmpl->envEq.levelA = 1.0;
 						pSmpl->envEq.levelD = 1.0;
 						pSmpl->envEq.levelS = 1.0;
@@ -269,18 +269,18 @@ namespace MIDI {
 						pSmpl->envEq.deltaR = 1000;
 						pSmpl->envEq.hold = 0.0;
 						pSmpl->eq.resonance = 0.0;
-					}
-					else {
-						pSmpl->envEq.levelA = 0.5;
-						pSmpl->envEq.levelD = 0.25;
-						pSmpl->envEq.levelS = 0.01;
-						pSmpl->envEq.levelR = 0.01;
-						pSmpl->envEq.deltaA = 100;
-						pSmpl->envEq.deltaD = 20;
-						pSmpl->envEq.deltaR = 20;
-						pSmpl->envEq.hold = 0.03;
-						pSmpl->eq.resonance = 0.25;
-					}
+					//}
+					//else {
+					//	pSmpl->envEq.levelA = 0.5;
+					//	pSmpl->envEq.levelD = 0.25;
+					//	pSmpl->envEq.levelS = 0.01;
+					//	pSmpl->envEq.levelR = 0.01;
+					//	pSmpl->envEq.deltaA = 100;
+					//	pSmpl->envEq.deltaD = 20;
+					//	pSmpl->envEq.deltaR = 20;
+					//	pSmpl->envEq.hold = 0.03;
+					//	pSmpl->eq.resonance = 0.25;
+					//}
 
 					pSmpl->eq.cutoff = pSmpl->envEq.levelA;
 					pSmpl->eq.pole00 = 0.0;
