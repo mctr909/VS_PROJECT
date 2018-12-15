@@ -29,7 +29,7 @@ namespace EasySequencer {
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
-			mDlsFilePath = "C:\\Users\\owner\\Desktop\\gm.dls";
+			mDlsFilePath = "C:\\Users\\user\\Desktop\\dls\\gm1.dls";
 			mMsgSender = new MIDI.MessageSender(mDlsFilePath);
 			mPlayer = new MIDI.Player(mMsgSender);
 
@@ -37,7 +37,7 @@ namespace EasySequencer {
 
 			SetSize();
 
-			timer1.Interval = 25;
+			timer1.Interval = 10;
 			timer1.Enabled = true;
 			timer1.Start();
 
@@ -426,7 +426,7 @@ namespace EasySequencer {
 			if (mIsParamChg) {
 				switch (mKnobX) {
 				case 0:
-					mPlayer.Send(new MIDI.Message(
+					mMsgSender.Send(new MIDI.Message(
 						MIDI.CTRL_TYPE.VOLUME,
 						(byte)mKnobY,
 						(byte)mChangeValue
@@ -434,7 +434,7 @@ namespace EasySequencer {
 					break;
 
 				case 1:
-					mPlayer.Send(new MIDI.Message(
+					mMsgSender.Send(new MIDI.Message(
 						MIDI.CTRL_TYPE.EXPRESSION,
 						(byte)mKnobY,
 						(byte)mChangeValue
@@ -442,7 +442,7 @@ namespace EasySequencer {
 					break;
 
 				case 2:
-					mPlayer.Send(new MIDI.Message(
+					mMsgSender.Send(new MIDI.Message(
 						MIDI.CTRL_TYPE.PAN,
 						(byte)mKnobY,
 						(byte)mChangeValue
@@ -450,7 +450,7 @@ namespace EasySequencer {
 					break;
 
 				case 3:
-					mPlayer.Send(new MIDI.Message(
+					mMsgSender.Send(new MIDI.Message(
 						MIDI.CTRL_TYPE.REVERB,
 						(byte)mKnobY,
 						(byte)mChangeValue
@@ -458,7 +458,7 @@ namespace EasySequencer {
 					break;
 
 				case 4:
-					mPlayer.Send(new MIDI.Message(
+					mMsgSender.Send(new MIDI.Message(
 						MIDI.CTRL_TYPE.CHORUS,
 						(byte)mKnobY,
 						(byte)mChangeValue
@@ -466,7 +466,7 @@ namespace EasySequencer {
 					break;
 
 				case 5:
-					mPlayer.Send(new MIDI.Message(
+					mMsgSender.Send(new MIDI.Message(
 						MIDI.CTRL_TYPE.DELAY,
 						(byte)mKnobY,
 						(byte)mChangeValue
@@ -474,7 +474,7 @@ namespace EasySequencer {
 					break;
 
 				case 6:
-					mPlayer.Send(new MIDI.Message(
+					mMsgSender.Send(new MIDI.Message(
 						MIDI.CTRL_TYPE.CUTOFF,
 						(byte)mKnobY,
 						(byte)mChangeValue
@@ -482,7 +482,7 @@ namespace EasySequencer {
 					break;
 
 				case 7:
-					mPlayer.Send(new MIDI.Message(
+					mMsgSender.Send(new MIDI.Message(
 						MIDI.CTRL_TYPE.RESONANCE,
 						(byte)mKnobY,
 						(byte)mChangeValue

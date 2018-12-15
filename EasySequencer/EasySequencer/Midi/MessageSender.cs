@@ -70,6 +70,8 @@ namespace MIDI {
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	unsafe public struct CHANNEL {
 		public double wave;
+		public double waveL;
+		public double waveR;
 		public double pitch;
 		public double hold;
 		public double delayDepth;
@@ -83,6 +85,9 @@ namespace MIDI {
 		public double panRight;
 
 		public FILTER eq;
+
+		private IntPtr pDelay;
+		private IntPtr pChorus;
 	}
 
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]

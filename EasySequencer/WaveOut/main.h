@@ -11,6 +11,8 @@
 /******************************************************************************/
 #define BUFFER_COUNT		16
 #define DEVICE_LIST_SIZE	1024
+#define CHANNEL_COUNT		16
+#define SAMPLER_COUNT		256
 
 /******************************************************************************/
 __declspec(dllexport) LPWSTR WINAPI WaveOutList();

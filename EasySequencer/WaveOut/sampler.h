@@ -2,18 +2,14 @@
 #include "struct.h"
 
 /******************************************************************************/
-#define CHANNEL_COUNT		16
-#define SAMPLER_COUNT		256
-
-/******************************************************************************/
 LPBYTE loadDLS(LPWSTR filePath, UInt32 *size, UInt32 sampleRate);
-CHANNEL** getChannelPtr();
-SAMPLER** getSamplerPtr();
+CHANNEL** createChannels(UInt32 count);
+SAMPLER** createSamplers(UInt32 count);
 bool isIdle();
 
 /******************************************************************************/
-inline extern void channelStep(UInt32 no, double *waveL, double *waveR);
-inline extern void samplerStep(UInt32 no);
+inline extern void channelStep(CHANNEL *ch, double *waveL, double *waveR);
+inline extern void samplerStep(CHANNEL **chs, SAMPLER *smpl);
 
 /******************************************************************************/
 inline void delayStep(CHANNEL *ch, DELAY_VALUES *delay);

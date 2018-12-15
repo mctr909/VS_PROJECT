@@ -247,7 +247,7 @@
 
 		private void setChorusDepth(byte value) {
 			ctrl.cho = value;
-			mpChannel->chorusDepth = 1.5 * Const.FeedBack[value];
+			mpChannel->chorusDepth = 2.0 * Const.FeedBack[value];
 		}
 
 		private void rpn(byte b1) {

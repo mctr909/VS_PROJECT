@@ -8,19 +8,19 @@ namespace MIDI {
 		private Event[] mEventList;
 
 		private int mTicks;
-		private int mMaxTime;
 		private double mBPM;
 		private double mCurrentTime;
-		private bool mIsPlay;
-
-		public int SoloChannel;
-		public int Transpose;
-		public double Speed;
 
 		#region プロパティ
 		public Channel[] Channel {
 			get { return mSender.Channel; }
 		}
+
+		public int SoloChannel { get; set; }
+
+		public int Transpose { get; set; }
+
+		public double Speed { get; set; }
 
 		public int SeekTime {
 			set {
@@ -28,8 +28,8 @@ namespace MIDI {
 				if (value < 0) {
 					mCurrentTime = 0.0;
 				}
-				else if (mMaxTime < value) {
-					mCurrentTime = mMaxTime;
+				else if (MaxTime < value) {
+					mCurrentTime = MaxTime;
 				}
 				else {
 					mCurrentTime = value;
@@ -38,17 +38,13 @@ namespace MIDI {
 			}
 		}
 
-		public int MaxTime {
-			get { return mMaxTime; }
-		}
+		public int MaxTime { get; private set; }
 
 		public int CurrentTime {
 			get { return (int)mCurrentTime; }
 		}
 
-		public bool IsPlay {
-			get { return mIsPlay; }
-		}
+		public bool IsPlay { get; private set; }
 
 		public string TimeText {
 			get {
@@ -70,12 +66,12 @@ namespace MIDI {
 		}
 		#endregion
 
-		public Player(MessageSender hMessage) {
-			mSender = hMessage;
+		public Player(MessageSender sender) {
+			mSender = sender;
 			mEventList = null;
 			mTask = null;
 			mTicks = 960;
-			mIsPlay = false;
+			IsPlay = false;
 			SoloChannel = -1;
 			Speed = 1.0;
 		}
@@ -83,13 +79,13 @@ namespace MIDI {
 		public void SetEventList(Event[] eventList, int ticks) {
 			mEventList = eventList;
 			mTicks = ticks;
-			mMaxTime = 0;
+			MaxTime = 0;
 
 			foreach (var ev in eventList) {
 				if (EVENT_TYPE.NOTE_OFF == ev.Message.Type || EVENT_TYPE.NOTE_ON == ev.Message.Type) {
 					var time = 1000 * ev.Time / ticks;
-					if (mMaxTime < time) {
-						mMaxTime = (int)time;
+					if (MaxTime < time) {
+						MaxTime = (int)time;
 					}
 				}
 			}
@@ -103,8 +99,8 @@ namespace MIDI {
 				return;
 			}
 
-			mIsPlay = true;
-			mTask = Task.Factory.StartNew(() => Loop());
+			IsPlay = true;
+			mTask = Task.Factory.StartNew(() => MainProc());
 		}
 
 		public void Stop() {
@@ -112,7 +108,7 @@ namespace MIDI {
 				return;
 			}
 
-			mIsPlay = false;
+			IsPlay = false;
 			while (!mTask.IsCompleted) {
 				Task.Delay(100);
 			}
@@ -130,7 +126,7 @@ namespace MIDI {
 			}
 		}
 
-		private void Loop() {
+		private void MainProc() {
 			long current_mSec = 0;
 			long previous_mSec = 0;
 
@@ -138,13 +134,13 @@ namespace MIDI {
 			sw.Start();
 
 			foreach (var ev in mEventList) {
-				if (!mIsPlay) {
+				if (!IsPlay) {
 					break;
 				}
 
 				long eventTime = 1000 * ev.Time / mTicks;
 				while (mCurrentTime < eventTime) {
-					if (!mIsPlay) {
+					if (!IsPlay) {
 						break;
 					}
 
@@ -186,11 +182,7 @@ namespace MIDI {
 				mSender.Send(msg);
 			}
 
-			mIsPlay = false;
-		}
-
-		public void Send(Message msg) {
-			mSender.Send(msg);
+			IsPlay = false;
 		}
 	}
 }

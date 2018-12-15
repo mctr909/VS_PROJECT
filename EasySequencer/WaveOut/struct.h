@@ -58,6 +58,8 @@ typedef struct ENVELOPE {
 #pragma pack(4)
 typedef struct CHANNEL {
 	double wave;
+	double waveL;
+	double waveR;
 	double pitch;
 	double hold;
 	double delayDepth;
@@ -71,6 +73,9 @@ typedef struct CHANNEL {
 	double panRight;
 
 	FILTER eq;
+
+	DELAY_VALUES *pDelay;
+	CHORUS_VALUES *pChorus;
 } CHANNEL;
 #pragma
 

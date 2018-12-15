@@ -10,6 +10,9 @@ Int32			g_bufferLength = 4096;
 Int32			g_deviceListLength = 0;
 WCHAR			g_deviceList[DEVICE_LIST_SIZE] = { '\0' };
 
+CHANNEL			**gpp_channels = NULL;
+SAMPLER			**gpp_samplers = NULL;
+
 bool			g_isStop = true;
 bool			g_isMute = true;
 bool			g_issueMute = false;
@@ -92,11 +95,13 @@ VOID WINAPI WaveOutClose() {
 }
 
 CHANNEL** WINAPI GetChannelPtr() {
-	return getChannelPtr();
+	gpp_channels = createChannels(CHANNEL_COUNT);
+	return gpp_channels;
 }
 
 SAMPLER** WINAPI GetSamplerPtr() {
-	return getSamplerPtr();
+	gpp_samplers = createSamplers(SAMPLER_COUNT);
+	return gpp_samplers;
 }
 
 LPBYTE WINAPI LoadDLS(LPWSTR filePath, UInt32 *size, UInt32 sampleRate) {
@@ -174,13 +179,13 @@ void CALLBACK WaveOutProc(HWAVEOUT hwo, UInt32 uMsg) {
 				pWave = (Int16*)g_waveHdr[b].lpData;
 				for (t = 0; t < g_bufferLength; ++t) {
 					for (s = 0; s < SAMPLER_COUNT; ++s) {
-						samplerStep(s);
+						samplerStep(gpp_channels, gpp_samplers[s]);
 					}
 
 					waveL = 0.0;
 					waveR = 0.0;
 					for (ch = 0; ch < CHANNEL_COUNT; ++ch) {
-						channelStep(ch, &waveL, &waveR);
+						channelStep(gpp_channels[ch], &waveL, &waveR);
 					}
 
 					if (1.0 < waveL) waveL = 1.0;

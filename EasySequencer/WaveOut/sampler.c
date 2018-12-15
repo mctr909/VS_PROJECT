@@ -4,21 +4,11 @@
 #include "sampler.h"
 
 /******************************************************************************/
-DELAY_VALUES	gp_delay[CHANNEL_COUNT] = { 0 };
-CHORUS_VALUES	gp_chorus[CHANNEL_COUNT] = { 0 };
-
 LPBYTE			gp_dlsBuffer = NULL;
-
-CHANNEL			**gpp_channels = NULL;
-SAMPLER			**gpp_samplers = NULL;
 
 Int32			g_sampleRate = 44100;
 Int32			g_delayTaps = 44100;
 Int32			g_chorusPhases = 3;
-
-double			g_chWaveC = 0.0;
-double			g_chWaveL = 0.0;
-double			g_chWaveR = 0.0;
 
 /******************************************************************************/
 LPBYTE loadDLS(LPWSTR filePath, UInt32 *size, UInt32 sampleRate) {
@@ -59,21 +49,24 @@ LPBYTE loadDLS(LPWSTR filePath, UInt32 *size, UInt32 sampleRate) {
 		fclose(fpDLS);
 	}
 
-	//
-	for (UInt32 i = 0; i < CHANNEL_COUNT; ++i) {
-		DELAY_VALUES *delay = &gp_delay[i];
+	return gp_dlsBuffer;
+}
 
+CHANNEL** createChannels(UInt32 count) {
+	CHANNEL **channels = (CHANNEL**)malloc(sizeof(CHANNEL*) * count);
+	for (UInt32 i = 0; i < count; ++i) {
+		channels[i] = (CHANNEL*)malloc(sizeof(CHANNEL));
+		memset(channels[i], 0, sizeof(CHANNEL));
+	}
+
+	//
+	for (UInt32 i = 0; i < count; ++i) {
+		channels[i]->pDelay = (DELAY_VALUES*)malloc(sizeof(DELAY_VALUES));
+		memset(channels[i]->pDelay, 0, sizeof(DELAY_VALUES));
+
+		DELAY_VALUES *delay = channels[i]->pDelay;
 		delay->readIndex = 0;
 		delay->writeIndex = 0;
-
-		if (NULL != delay->pTapL) {
-			free(delay->pTapL);
-			delay->pTapL = NULL;
-		}
-		if (NULL != delay->pTapR) {
-			free(delay->pTapR);
-			delay->pTapR = NULL;
-		}
 
 		delay->pTapL = (double*)malloc(sizeof(double) * g_delayTaps);
 		delay->pTapR = (double*)malloc(sizeof(double) * g_delayTaps);
@@ -82,25 +75,11 @@ LPBYTE loadDLS(LPWSTR filePath, UInt32 *size, UInt32 sampleRate) {
 	}
 
 	//
-	for (UInt32 i = 0; i < CHANNEL_COUNT; ++i) {
-		CHORUS_VALUES *chorus = &gp_chorus[i];
-		if (NULL != chorus->pPanL) {
-			free(chorus->pPanL);
-			chorus->pPanL = NULL;
-		}
-		if (NULL != chorus->pPanR) {
-			free(chorus->pPanR);
-			chorus->pPanR = NULL;
-		}
-		if (NULL != chorus->pLfoRe) {
-			free(chorus->pLfoRe);
-			chorus->pLfoRe = NULL;
-		}
-		if (NULL != chorus->pLfoIm) {
-			free(chorus->pLfoIm);
-			chorus->pLfoIm = NULL;
-		}
+	for (UInt32 i = 0; i < count; ++i) {
+		channels[i]->pChorus = (CHORUS_VALUES*)malloc(sizeof(CHORUS_VALUES));
+		memset(channels[i]->pChorus, 0, sizeof(CHORUS_VALUES));
 
+		CHORUS_VALUES *chorus = channels[i]->pChorus;
 		chorus->lfoK = 6.283 / g_sampleRate;
 		chorus->pPanL = (double*)malloc(sizeof(double) * g_chorusPhases);
 		chorus->pPanR = (double*)malloc(sizeof(double) * g_chorusPhases);
@@ -115,69 +94,52 @@ LPBYTE loadDLS(LPWSTR filePath, UInt32 *size, UInt32 sampleRate) {
 		}
 	}
 
-	return gp_dlsBuffer;
+	return channels;
 }
 
-CHANNEL** getChannelPtr() {
-	if (NULL == gpp_channels) {
-		gpp_channels = (CHANNEL**)malloc(sizeof(CHANNEL*) * CHANNEL_COUNT);
-		for (UInt32 i = 0; i < CHANNEL_COUNT; ++i) {
-			gpp_channels[i] = (CHANNEL*)malloc(sizeof(CHANNEL));
-			memset(gpp_channels[i], 0, sizeof(CHANNEL));
-		}
+SAMPLER** createSamplers(UInt32 count) {
+	SAMPLER** samplers = (SAMPLER**)malloc(sizeof(SAMPLER*) * count);
+	for (UInt32 i = 0; i < count; ++i) {
+		samplers[i] = (SAMPLER*)malloc(sizeof(SAMPLER));
+		memset(samplers[i], 0, sizeof(SAMPLER));
 	}
 
-	return gpp_channels;
-}
-
-SAMPLER** getSamplerPtr() {
-	if (NULL == gpp_samplers) {
-		gpp_samplers = (SAMPLER**)malloc(sizeof(SAMPLER*) * SAMPLER_COUNT);
-		for (UInt32 i = 0; i < SAMPLER_COUNT; ++i) {
-			gpp_samplers[i] = (SAMPLER*)malloc(sizeof(SAMPLER));
-			memset(gpp_samplers[i], 0, sizeof(SAMPLER));
-		}
-	}
-
-	return gpp_samplers;
+	return samplers;
 }
 
 bool isIdle() {
-	return (NULL == gp_dlsBuffer || NULL == gpp_channels || NULL == gpp_samplers);
+	return (NULL == gp_dlsBuffer);
 }
 
 /******************************************************************************/
-inline extern void channelStep(UInt32 no, double *waveL, double *waveR) {
-	CHANNEL *ch = gpp_channels[no];
+inline extern void channelStep(CHANNEL *ch, double *waveL, double *waveR) {
+	//
+	double chWave = 0.0;
+	filterStep(&ch->eq, ch->curAmp * ch->wave, &chWave);
 
 	//
-	g_chWaveC = 0;
-	filterStep(&ch->eq, ch->curAmp * ch->wave, &g_chWaveC);
+	ch->waveL = chWave * ch->panLeft;
+	ch->waveR = chWave * ch->panRight;
 
-	//
-	g_chWaveL = g_chWaveC * ch->panLeft;
-	g_chWaveR = g_chWaveC * ch->panRight;
-
-	delayStep(ch, &gp_delay[no]);
-	chorusStep(ch, &gp_delay[no], &gp_chorus[no]);
+	delayStep(ch, ch->pDelay);
+	chorusStep(ch, ch->pDelay, ch->pChorus);
 
 	ch->curAmp += 100 * (ch->tarAmp - ch->curAmp) / g_sampleRate;
 
 	ch->eq.cutoff += 100 * (ch->tarCutoff - ch->eq.cutoff) / g_sampleRate;
 
 	//
-	*waveL += g_chWaveL;
-	*waveR += g_chWaveR;
+	*waveL += ch->waveL;
+	*waveR += ch->waveR;
 	ch->wave = 0.0;
 }
 
-inline extern void samplerStep(UInt32 no) {
-	SAMPLER *smpl = gpp_samplers[no];
-	if (NULL == smpl || !smpl->isActive) {
+inline extern void samplerStep(CHANNEL **chs, SAMPLER *smpl) {
+	if (NULL == chs || NULL == smpl || !smpl->isActive) {
 		return;
 	}
 
-	CHANNEL *ch = gpp_channels[smpl->channelNo];
+	CHANNEL *ch = chs[smpl->channelNo];
 	if (NULL == ch) {
 		return;
 	}
@@ -264,11 +226,11 @@ inline void delayStep(CHANNEL *ch, DELAY_VALUES *delay) {
 	double delayL = ch->delayDepth * delay->pTapL[delay->readIndex];
 	double delayR = ch->delayDepth * delay->pTapR[delay->readIndex];
 
-	g_chWaveL += (0.7 * delayL + 0.3 * delayR);
-	g_chWaveR += (0.7 * delayR + 0.3 * delayL);
+	ch->waveL += (0.7 * delayL + 0.3 * delayR);
+	ch->waveR += (0.7 * delayR + 0.3 * delayL);
 
-	delay->pTapL[delay->writeIndex] = g_chWaveL;
-	delay->pTapR[delay->writeIndex] = g_chWaveR;
+	delay->pTapL[delay->writeIndex] = ch->waveL;
+	delay->pTapR[delay->writeIndex] = ch->waveR;
 }
 
 inline void chorusStep(CHANNEL *ch, DELAY_VALUES *delay, CHORUS_VALUES *chorus) {
@@ -306,8 +268,8 @@ inline void chorusStep(CHANNEL *ch, DELAY_VALUES *delay, CHORUS_VALUES *chorus) 
 		chorus->pLfoIm[ph] += chorus->lfoK * ch->chorusRate * chorus->pLfoRe[ph];
 	}
 
-	g_chWaveL += chorusL * ch->chorusDepth / g_chorusPhases;
-	g_chWaveR += chorusR * ch->chorusDepth / g_chorusPhases;
+	ch->waveL += chorusL * ch->chorusDepth / g_chorusPhases;
+	ch->waveR += chorusR * ch->chorusDepth / g_chorusPhases;
 }
 
 inline void filterStep(FILTER *filter, double input, double *output) {
