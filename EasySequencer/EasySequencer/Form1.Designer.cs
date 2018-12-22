@@ -55,6 +55,7 @@
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
+			this.音声出力EToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.picKey)).BeginInit();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -122,11 +123,12 @@
 			this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ファイルFToolStripMenuItem,
-            this.編集EToolStripMenuItem});
+            this.編集EToolStripMenuItem,
+            this.音声出力EToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Padding = new System.Windows.Forms.Padding(13, 4, 0, 4);
-			this.menuStrip1.Size = new System.Drawing.Size(2123, 44);
+			this.menuStrip1.Size = new System.Drawing.Size(2123, 46);
 			this.menuStrip1.TabIndex = 26;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -142,7 +144,7 @@
             this.toolStripSeparator3,
             this.wavファイル出力ToolStripMenuItem});
 			this.ファイルFToolStripMenuItem.Name = "ファイルFToolStripMenuItem";
-			this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(121, 36);
+			this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(121, 38);
 			this.ファイルFToolStripMenuItem.Text = "ファイル(F)";
 			// 
 			// 新規作成ToolStripMenuItem
@@ -197,7 +199,7 @@
 			// 編集EToolStripMenuItem
 			// 
 			this.編集EToolStripMenuItem.Name = "編集EToolStripMenuItem";
-			this.編集EToolStripMenuItem.Size = new System.Drawing.Size(101, 36);
+			this.編集EToolStripMenuItem.Size = new System.Drawing.Size(101, 38);
 			this.編集EToolStripMenuItem.Text = "編集(E)";
 			// 
 			// btnPalyStop
@@ -309,6 +311,13 @@
 			// 
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
+			// 音声出力EToolStripMenuItem
+			// 
+			this.音声出力EToolStripMenuItem.Name = "音声出力EToolStripMenuItem";
+			this.音声出力EToolStripMenuItem.Size = new System.Drawing.Size(155, 38);
+			this.音声出力EToolStripMenuItem.Text = "音声出力(O)";
+			this.音声出力EToolStripMenuItem.Click += new System.EventHandler(this.音声出力EToolStripMenuItem_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
@@ -367,6 +376,7 @@
 		private System.Windows.Forms.ToolStripMenuItem wavファイル出力ToolStripMenuItem;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
 		private System.Windows.Forms.Timer timer1;
+		private System.Windows.Forms.ToolStripMenuItem 音声出力EToolStripMenuItem;
 	}
 }
 

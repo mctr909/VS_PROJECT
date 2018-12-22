@@ -1,4 +1,42 @@
 ﻿namespace MIDI {
+	public enum KEY_STATUS : byte {
+		OFF,
+		ON,
+		HOLD
+	};
+
+	public struct CONTROL {
+		public byte vol;
+		public byte exp;
+		public byte pan;
+		public byte reserve1;
+
+		public byte rev;
+		public byte cho;
+		public byte del;
+		public byte reserve2;
+
+		public byte res;
+		public byte cut;
+		public byte atk;
+		public byte rel;
+
+		public byte vibRate;
+		public byte vibDepth;
+		public byte vibDelay;
+		public byte reserve3;
+
+		public byte bendRange;
+		public byte hold;
+		public byte reserve4;
+		public byte reserve5;
+
+		public byte nrpnMSB;
+		public byte nrpnLSB;
+		public byte rpnMSB;
+		public byte rpnLSB;
+	};
+
 	unsafe public class Channel {
 		public CHANNEL* mpChannel = null;
 
@@ -100,8 +138,8 @@
 			setChorusDepth(0);
 			setDelayDepath(0);
 
-			mpChannel->chorusRate = 0.05;
-			mpChannel->delayRate = 0.2;
+			mpChannel->chorus.rate = 0.05;
+			mpChannel->delay.rate = 0.2;
 
 			ctrl.nrpnLSB = 0xFF;
 			ctrl.nrpnMSB = 0xFF;
@@ -242,12 +280,12 @@
 
 		private void setDelayDepath(byte value) {
 			ctrl.del = value;
-			mpChannel->delayDepth = 0.8 * Const.FeedBack[value];
+			mpChannel->delay.depth = 0.8 * Const.FeedBack[value];
 		}
 
 		private void setChorusDepth(byte value) {
 			ctrl.cho = value;
-			mpChannel->chorusDepth = 2.0 * Const.FeedBack[value];
+			mpChannel->chorus.depth = 2.0 * Const.FeedBack[value];
 		}
 
 		private void rpn(byte b1) {

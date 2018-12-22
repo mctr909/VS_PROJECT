@@ -1,81 +1,83 @@
 #pragma once
-typedef unsigned	int		UInt32;
-typedef signed		int		Int32;
-typedef unsigned	short	UInt16;
-typedef signed		short	Int16;
-typedef unsigned	char	bool;
+typedef unsigned    int     UInt32;
+typedef signed      int     Int32;
+typedef unsigned    short   UInt16;
+typedef signed      short   Int16;
+typedef unsigned    char    bool;
 
-#define true	((bool)1)
-#define false	((bool)0)
+#define true    ((bool)1)
+#define false   ((bool)0)
 
 #pragma pack(4)
-typedef struct {
-	Int32 writeIndex;
-	Int32 readIndex;
-	double *pTapL;
-	double *pTapR;
-} DELAY_VALUES;
+typedef struct DELAY {
+    double depth;
+    double rate;
+    double *pTapL;
+    double *pTapR;
+    Int32 writeIndex;
+    Int32 readIndex;
+} DELAY;
 #pragma
 
 #pragma pack(4)
-typedef struct {
-	double lfoK;
-	double *pPanL;
-	double *pPanR;
-	double *pLfoRe;
-	double *pLfoIm;
-} CHORUS_VALUES;
+typedef struct CHORUS {
+    double depth;
+    double rate;
+    double lfoK;
+    double *pPanL;
+    double *pPanR;
+    double *pLfoRe;
+    double *pLfoIm;
+} CHORUS;
 #pragma
 
 #pragma pack(4)
 typedef struct FILTER {
-	double cutoff;
-	double resonance;
-	double pole00;
-	double pole01;
-	double pole02;
-	double pole03;
-	double pole10;
-	double pole11;
-	double pole12;
-	double pole13;
+    double cutoff;
+    double resonance;
+    double pole00;
+    double pole01;
+    double pole02;
+    double pole03;
+    double pole10;
+    double pole11;
+    double pole12;
+    double pole13;
 } FILTER;
 #pragma
 
 #pragma pack(4)
 typedef struct ENVELOPE {
-	double levelA;
-	double levelD;
-	double levelS;
-	double levelR;
-	double deltaA;
-	double deltaD;
-	double deltaR;
-	double hold;
+    double levelA;
+    double levelD;
+    double levelS;
+    double levelR;
+    double deltaA;
+    double deltaD;
+    double deltaR;
+    double hold;
 } ENVELOPE;
 #pragma
 
 #pragma pack(4)
 typedef struct CHANNEL {
-	double wave;
-	double waveL;
-	double waveR;
-	double pitch;
-	double hold;
-	double delayDepth;
-	double delayRate;
-	double chorusDepth;
-	double chorusRate;
-	double tarCutoff;
-	double tarAmp;
-	double curAmp;
-	double panLeft;
-	double panRight;
+    double wave;
+    double waveL;
+    double waveR;
 
-	FILTER eq;
+    double pitch;
+    double hold;
 
-	DELAY_VALUES *pDelay;
-	CHORUS_VALUES *pChorus;
+    double panLeft;
+    double panRight;
+
+    double tarCutoff;
+    double tarAmp;
+    double curAmp;
+
+    FILTER eq;
+    DELAY delay;
+    CHORUS chorus;
 } CHANNEL;
 #pragma
 

@@ -2,12 +2,6 @@
 using System.Runtime.InteropServices;
 
 namespace MIDI {
-	public enum KEY_STATUS : byte {
-		OFF,
-		ON,
-		HOLD
-	};
-
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct FILTER {
 		public double cutoff;
@@ -23,6 +17,27 @@ namespace MIDI {
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+	public struct DELAY {
+		public double depth;
+		public double rate;
+		private IntPtr pTapL;
+		private IntPtr pTapR;
+		private Int32 writeIndex;
+		private Int32 readIndex;
+	};
+
+	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+	public struct CHORUS {
+		public double depth;
+		public double rate;
+		private double lfoK;
+		private IntPtr pPanL;
+		private IntPtr pPanR;
+		private IntPtr pLfoRe;
+		private IntPtr pLfoIm;
+	};
+
+	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct ENVELOPE {
 		public double levelA;
 		public double levelD;
@@ -35,59 +50,24 @@ namespace MIDI {
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public struct CONTROL {
-		public byte vol;
-		public byte exp;
-		public byte pan;
-		public byte reserve1;
-
-		public byte rev;
-		public byte cho;
-		public byte del;
-		public byte reserve2;
-
-		public byte res;
-		public byte cut;
-		public byte atk;
-		public byte rel;
-
-		public byte vibRate;
-		public byte vibDepth;
-		public byte vibDelay;
-		public byte reserve3;
-
-		public byte bendRange;
-		public byte hold;
-		public byte reserve4;
-		public byte reserve5;
-
-		public byte nrpnMSB;
-		public byte nrpnLSB;
-		public byte rpnMSB;
-		public byte rpnLSB;
-	};
-
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	unsafe public struct CHANNEL {
 		public double wave;
 		public double waveL;
 		public double waveR;
+
 		public double pitch;
 		public double hold;
-		public double delayDepth;
-		public double delayRate;
-		public double chorusDepth;
-		public double chorusRate;
-		public double tarCutoff;
-		public double tarAmp;
-		public double curAmp;
+
 		public double panLeft;
 		public double panRight;
 
-		public FILTER eq;
+		public double tarCutoff;
+		public double tarAmp;
+		public double curAmp;
 
-		private IntPtr pDelay;
-		private IntPtr pChorus;
+		public FILTER eq;
+		public DELAY delay;
+		public CHORUS chorus;
 	}
 
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -121,7 +101,7 @@ namespace MIDI {
 	};
 
 	unsafe public class MessageSender {
-		
+
 		private SAMPLER** mppSampler = null;
 		private Instruments mInst = null;
 
@@ -265,15 +245,15 @@ namespace MIDI {
 					pSmpl->time = 0.0;
 
 					//if (ch.No == 9 || ch.InstId.programNo < 33 || 40 < ch.InstId.programNo) {
-						pSmpl->envEq.levelA = 1.0;
-						pSmpl->envEq.levelD = 1.0;
-						pSmpl->envEq.levelS = 1.0;
-						pSmpl->envEq.levelR = 1.0;
-						pSmpl->envEq.deltaA = 1000;
-						pSmpl->envEq.deltaD = 1000;
-						pSmpl->envEq.deltaR = 1000;
-						pSmpl->envEq.hold = 0.0;
-						pSmpl->eq.resonance = 0.0;
+					pSmpl->envEq.levelA = 1.0;
+					pSmpl->envEq.levelD = 1.0;
+					pSmpl->envEq.levelS = 1.0;
+					pSmpl->envEq.levelR = 1.0;
+					pSmpl->envEq.deltaA = 1000;
+					pSmpl->envEq.deltaD = 1000;
+					pSmpl->envEq.deltaR = 1000;
+					pSmpl->envEq.hold = 0.0;
+					pSmpl->eq.resonance = 0.0;
 					//}
 					//else {
 					//	pSmpl->envEq.levelA = 0.5;

@@ -35,7 +35,9 @@ namespace MIDI {
 		public Graphics Graphics {
 			get {
 				mBuffer.Graphics.Clear(Color.Transparent);
-				mBuffer.Graphics.DrawImage(mBackGround, 0, 0);
+				if (null != mBackGround) {
+					mBuffer.Graphics.DrawImage(mBackGround, 0, 0);
+				}
 				return mBuffer.Graphics;
 			}
 		}

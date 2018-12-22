@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace EasySequencer {
 	unsafe public partial class Form1 : Form {
@@ -29,7 +30,7 @@ namespace EasySequencer {
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
-			mDlsFilePath = "C:\\Users\\user\\Desktop\\dls\\gm1.dls";
+			mDlsFilePath = "C:\\Users\\owner\\Desktop\\gm.dls";
 			mMsgSender = new MIDI.MessageSender(mDlsFilePath);
 			mPlayer = new MIDI.Player(mMsgSender);
 
@@ -62,75 +63,18 @@ namespace EasySequencer {
 				btnPalyStop.Text = "再生";
 			}
 
-			mSMF = new MIDI.SMF(filePath);
-			mPlayer.SetEventList(mSMF.EventList, mSMF.Ticks);
-			hsbSeek.Maximum = mPlayer.MaxTime;
-			Text = Path.GetFileNameWithoutExtension(filePath);
+			try {
+				mSMF = new MIDI.SMF(filePath);
+				mPlayer.SetEventList(mSMF.EventList, mSMF.Ticks);
+				hsbSeek.Maximum = mPlayer.MaxTime;
+				Text = Path.GetFileNameWithoutExtension(filePath);
+			}
+			catch (Exception ex) {
+				MessageBox.Show(ex.ToString());
+			}
 		}
 
 		private void wavファイル出力ToolStripMenuItem_Click(Object sender, EventArgs e) {
-			if (null == mSMF || null == mSMF.EventList) {
-				return;
-			}
-
-			saveFileDialog1.Filter = "wavファイル(*.wav)|*.wav";
-			saveFileDialog1.FileName = Text;
-			saveFileDialog1.ShowDialog();
-			var filePath = saveFileDialog1.FileName;
-
-			Task task = Task.Factory.StartNew(() => {
-				//var wavFile = new RiffWave(filePath, MIDI.Const.SampleRate, 2, 16);
-				//var snd = new MIDI.MessageSender(new MIDI.Instruments(mDlsFilePath));
-				var snd = new MIDI.MessageSender(mDlsFilePath);
-				var events = mSMF.EventList;
-
-				var buffSamples = 256;
-				var waveBuff = new short[2 * buffSamples];
-				var eventIdx = 0;
-				var currentTick = 0.0;
-				var delta = 1000.0 / mSMF.Ticks;
-				var bpm = 120.0;
-
-				mCurrentTime = 0.0;
-
-				while (eventIdx < events.Length) {
-					while (currentTick < (events[eventIdx].Time * delta)) {
-						//snd.SetWave(ref waveBuff);
-						//wavFile.Write(ref waveBuff);
-						currentTick += bpm * (1000.0 * buffSamples * MIDI.Const.DeltaTime) / 60.0;
-						mCurrentTime += buffSamples * MIDI.Const.DeltaTime;
-					}
-
-					for (; eventIdx < events.Length && (events[eventIdx].Time * delta) <= currentTick; ++eventIdx) {
-						var ev = events[eventIdx];
-						var msg = ev.Message;
-						var type = msg.Type;
-
-						if (MIDI.EVENT_TYPE.META == type) {
-							if (MIDI.META_TYPE.TEMPO == msg.Meta.Type) {
-								bpm = msg.Meta.BPM;
-							}
-						}
-						//snd.Send(ev.Message);
-					}
-
-					mProgress = 1000 * eventIdx / events.Length;
-				}
-
-				//wavFile.Close();
-			});
-
-			var wndStatus = new StatusWindow();
-			wndStatus.StartPosition = FormStartPosition.CenterParent;
-			wndStatus.Task = task;
-			wndStatus.ProgressMax = 1000;
-			fixed (int* ptr = &mProgress) {
-				wndStatus.Progress = ptr;
-			}
-			fixed (double* ptr = &mCurrentTime) {
-				wndStatus.Time = ptr;
-			}
-			wndStatus.Show();
 		}
 
 		private void btnPalyStop_Click(object sender, EventArgs e) {
@@ -490,6 +434,22 @@ namespace EasySequencer {
 					break;
 				}
 			}
+		}
+
+		private void 音声出力EToolStripMenuItem_Click(object sender, EventArgs e) {
+			var items = 音声出力EToolStripMenuItem.DropDownItems;
+			items.Clear();
+
+			var list = Marshal.PtrToStringAuto(MIDI.MessageSender.WaveOutList())
+				.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+			foreach (string txt in list) {
+				items.Add(txt).Click += new EventHandler(音声出力EToolStripMenuItemItem_Click);
+			}
+		}
+
+		private void 音声出力EToolStripMenuItemItem_Click(object sender, EventArgs e) {
+
 		}
 	}
 }
