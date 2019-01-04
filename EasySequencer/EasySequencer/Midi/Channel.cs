@@ -38,6 +38,7 @@
 	};
 
 	unsafe public class Channel {
+
 		public CHANNEL* mpChannel = null;
 
 		public bool Enable;
