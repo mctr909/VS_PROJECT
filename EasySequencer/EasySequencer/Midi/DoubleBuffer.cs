@@ -5,9 +5,9 @@ using System.Windows.Forms;
 namespace MIDI {
 	public class DoubleBuffer : IDisposable {
 		private BufferedGraphics mBuffer;
-		private Bitmap mBackGround;
+		private Image mBackGround;
 
-		public DoubleBuffer(Control control, Bitmap backGround) {
+		public DoubleBuffer(Control control, Image backGround) {
 			Dispose();
 
 			var currentContext = BufferedGraphicsManager.Current;

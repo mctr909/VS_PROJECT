@@ -29,7 +29,6 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.picKey = new System.Windows.Forms.PictureBox();
 			this.lblPosition = new System.Windows.Forms.Label();
 			this.lblTempo = new System.Windows.Forms.Label();
 			this.hsbSeek = new System.Windows.Forms.HScrollBar();
@@ -45,6 +44,7 @@
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.wavファイル出力ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.編集EToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.音声出力EToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnPalyStop = new System.Windows.Forms.Button();
 			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
 			this.pnlPlayer = new System.Windows.Forms.Panel();
@@ -52,11 +52,10 @@
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.pnlKeyboard = new System.Windows.Forms.Panel();
+			this.picKey = new System.Windows.Forms.PictureBox();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
-			this.音声出力EToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			((System.ComponentModel.ISupportInitialize)(this.picKey)).BeginInit();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
 			this.pnlPlayer.SuspendLayout();
@@ -64,24 +63,8 @@
 			this.tabControl1.SuspendLayout();
 			this.tabPage2.SuspendLayout();
 			this.pnlKeyboard.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.picKey)).BeginInit();
 			this.SuspendLayout();
-			// 
-			// picKey
-			// 
-			this.picKey.BackColor = System.Drawing.Color.Transparent;
-			this.picKey.BackgroundImage = global::EasySequencer.Properties.Resources.panel;
-			this.picKey.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-			this.picKey.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.picKey.InitialImage = null;
-			this.picKey.Location = new System.Drawing.Point(0, 0);
-			this.picKey.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.picKey.Name = "picKey";
-			this.picKey.Size = new System.Drawing.Size(2032, 1284);
-			this.picKey.TabIndex = 0;
-			this.picKey.TabStop = false;
-			this.picKey.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picKeyboard_MouseDown);
-			this.picKey.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picKeyboard_MouseMove);
-			this.picKey.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picKeyboard_MouseUp);
 			// 
 			// lblPosition
 			// 
@@ -128,7 +111,7 @@
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Padding = new System.Windows.Forms.Padding(13, 4, 0, 4);
-			this.menuStrip1.Size = new System.Drawing.Size(2123, 46);
+			this.menuStrip1.Size = new System.Drawing.Size(2425, 44);
 			this.menuStrip1.TabIndex = 26;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -144,7 +127,7 @@
             this.toolStripSeparator3,
             this.wavファイル出力ToolStripMenuItem});
 			this.ファイルFToolStripMenuItem.Name = "ファイルFToolStripMenuItem";
-			this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(121, 38);
+			this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(121, 36);
 			this.ファイルFToolStripMenuItem.Text = "ファイル(F)";
 			// 
 			// 新規作成ToolStripMenuItem
@@ -199,8 +182,15 @@
 			// 編集EToolStripMenuItem
 			// 
 			this.編集EToolStripMenuItem.Name = "編集EToolStripMenuItem";
-			this.編集EToolStripMenuItem.Size = new System.Drawing.Size(101, 38);
+			this.編集EToolStripMenuItem.Size = new System.Drawing.Size(101, 36);
 			this.編集EToolStripMenuItem.Text = "編集(E)";
+			// 
+			// 音声出力EToolStripMenuItem
+			// 
+			this.音声出力EToolStripMenuItem.Name = "音声出力EToolStripMenuItem";
+			this.音声出力EToolStripMenuItem.Size = new System.Drawing.Size(155, 36);
+			this.音声出力EToolStripMenuItem.Text = "音声出力(O)";
+			this.音声出力EToolStripMenuItem.Click += new System.EventHandler(this.音声出力EToolStripMenuItem_Click);
 			// 
 			// btnPalyStop
 			// 
@@ -270,7 +260,7 @@
 			this.tabControl1.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(2076, 1372);
+			this.tabControl1.Size = new System.Drawing.Size(2373, 1372);
 			this.tabControl1.TabIndex = 36;
 			// 
 			// tabPage2
@@ -282,7 +272,7 @@
 			this.tabPage2.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.tabPage2.Name = "tabPage2";
 			this.tabPage2.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tabPage2.Size = new System.Drawing.Size(2060, 1325);
+			this.tabPage2.Size = new System.Drawing.Size(2357, 1325);
 			this.tabPage2.TabIndex = 1;
 			this.tabPage2.Text = "演奏画面";
 			// 
@@ -293,8 +283,25 @@
 			this.pnlKeyboard.Location = new System.Drawing.Point(9, 14);
 			this.pnlKeyboard.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.pnlKeyboard.Name = "pnlKeyboard";
-			this.pnlKeyboard.Size = new System.Drawing.Size(2037, 1294);
+			this.pnlKeyboard.Size = new System.Drawing.Size(2334, 1294);
 			this.pnlKeyboard.TabIndex = 0;
+			// 
+			// picKey
+			// 
+			this.picKey.BackColor = System.Drawing.Color.Transparent;
+			this.picKey.BackgroundImage = global::EasySequencer.Properties.Resources.keyboard;
+			this.picKey.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+			this.picKey.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.picKey.InitialImage = null;
+			this.picKey.Location = new System.Drawing.Point(0, 0);
+			this.picKey.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+			this.picKey.Name = "picKey";
+			this.picKey.Size = new System.Drawing.Size(2168, 1282);
+			this.picKey.TabIndex = 0;
+			this.picKey.TabStop = false;
+			this.picKey.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picKeyboard_MouseDown);
+			this.picKey.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picKeyboard_MouseMove);
+			this.picKey.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picKeyboard_MouseUp);
 			// 
 			// tabPage1
 			// 
@@ -303,7 +310,7 @@
 			this.tabPage1.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.tabPage1.Name = "tabPage1";
 			this.tabPage1.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-			this.tabPage1.Size = new System.Drawing.Size(2060, 1325);
+			this.tabPage1.Size = new System.Drawing.Size(2357, 1325);
 			this.tabPage1.TabIndex = 0;
 			this.tabPage1.Text = "入力画面";
 			// 
@@ -311,18 +318,11 @@
 			// 
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
-			// 音声出力EToolStripMenuItem
-			// 
-			this.音声出力EToolStripMenuItem.Name = "音声出力EToolStripMenuItem";
-			this.音声出力EToolStripMenuItem.Size = new System.Drawing.Size(155, 38);
-			this.音声出力EToolStripMenuItem.Text = "音声出力(O)";
-			this.音声出力EToolStripMenuItem.Click += new System.EventHandler(this.音声出力EToolStripMenuItem_Click);
-			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(2123, 1566);
+			this.ClientSize = new System.Drawing.Size(2425, 1632);
 			this.Controls.Add(this.tabControl1);
 			this.Controls.Add(this.pnlPlayer);
 			this.Controls.Add(this.menuStrip1);
@@ -333,7 +333,6 @@
 			this.Text = "Form1";
 			this.Load += new System.EventHandler(this.Form1_Load);
 			this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
-			((System.ComponentModel.ISupportInitialize)(this.picKey)).EndInit();
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
@@ -343,6 +342,7 @@
 			this.tabControl1.ResumeLayout(false);
 			this.tabPage2.ResumeLayout(false);
 			this.pnlKeyboard.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.picKey)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

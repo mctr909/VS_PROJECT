@@ -34,7 +34,7 @@ namespace EasySequencer {
 			mMsgSender = new MIDI.MessageSender(mDlsFilePath);
 			mPlayer = new MIDI.Player(mMsgSender);
 
-			mBuffer = new MIDI.DoubleBuffer(picKey, Properties.Resources.panel);
+			mBuffer = new MIDI.DoubleBuffer(picKey, (Image)picKey.BackgroundImage.Clone());
 
 			SetSize();
 
@@ -113,7 +113,7 @@ namespace EasySequencer {
 
 		private void picKeyboard_MouseDown(Object sender, MouseEventArgs e) {
 			var pos = picKey.PointToClient(Cursor.Position);
-			var knobX = (pos.X - 525) / 24;
+			var knobX = (pos.X - MIDI.Const.KnobValPos[0].X) / 24;
 			var knobY = pos.Y / 40;
 
 			if (0 <= knobY && knobY <= 15) {
@@ -346,7 +346,7 @@ namespace EasySequencer {
 				);
 
 				if (!channel.Enable) {
-					g.FillRectangle(Brushes.Red, 722, 4 + y_ch, 13, 18);
+					g.FillRectangle(Brushes.Red, 797, 4 + y_ch, 13, 18);
 				}
 			}
 
@@ -437,19 +437,9 @@ namespace EasySequencer {
 		}
 
 		private void 音声出力EToolStripMenuItem_Click(object sender, EventArgs e) {
-			var items = 音声出力EToolStripMenuItem.DropDownItems;
-			items.Clear();
-
-			var list = Marshal.PtrToStringAuto(MIDI.MessageSender.WaveOutList())
-				.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-			foreach (string txt in list) {
-				items.Add(txt).Click += new EventHandler(音声出力EToolStripMenuItemItem_Click);
-			}
 		}
 
 		private void 音声出力EToolStripMenuItemItem_Click(object sender, EventArgs e) {
-
 		}
 	}
 }

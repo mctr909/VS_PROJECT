@@ -274,18 +274,18 @@ namespace MIDI
 		};
 
 		public static readonly DrawPosition [] KeyboardPos = {
-			new DrawPosition( 1, 15, 6,  9),	// C
-			new DrawPosition( 5,  0, 5, 16),	// Db
-			new DrawPosition( 8, 15, 6,  9),	// D
-			new DrawPosition(12,  0, 5, 16),	// Eb
-			new DrawPosition(15, 15, 6,  9),	// E
-			new DrawPosition(22, 15, 6,  9),	// F
-			new DrawPosition(26,  0, 5, 16),	// Gb
-			new DrawPosition(29, 15, 6,  9),	// G
-			new DrawPosition(33,  0, 5, 16),	// Ab
-			new DrawPosition(36, 15, 6,  9),	// A
-			new DrawPosition(40,  0, 5, 16),	// Bb
-			new DrawPosition(43, 15, 6,  9)		// B
+			new DrawPosition( 1, 20, 7, 11),	// C
+			new DrawPosition( 6,  0, 5, 21),	// Db
+			new DrawPosition( 9, 20, 7, 11),	// D
+			new DrawPosition(14,  0, 5, 21),	// Eb
+			new DrawPosition(17, 20, 7, 11),	// E
+			new DrawPosition(25, 20, 7, 11),	// F
+			new DrawPosition(30,  0, 5, 21),	// Gb
+			new DrawPosition(33, 20, 7, 11),	// G
+			new DrawPosition(38,  0, 5, 21),	// Ab
+			new DrawPosition(41, 20, 7, 11),	// A
+			new DrawPosition(46,  0, 5, 21),	// Bb
+			new DrawPosition(49, 20, 7, 11)		// B
 		};
 
 		public static readonly double[][] Knob = {
@@ -356,25 +356,25 @@ namespace MIDI
 		};
 
 		public static readonly Point[] KnobPos = {
-			new Point(536, 9),
-			new Point(560, 9),
-			new Point(584, 9),
-			new Point(608, 9),
-			new Point(632, 9),
-			new Point(656, 9),
-			new Point(680, 9),
-			new Point(704, 9)
+			new Point(611, 9),
+			new Point(635, 9),
+			new Point(659, 9),
+			new Point(683, 9),
+			new Point(707, 9),
+			new Point(731, 9),
+			new Point(755, 9),
+			new Point(779, 9)
 		};
 
 		public static readonly Point[] KnobValPos = {
-			new Point(527, 28),
-			new Point(551, 28),
-			new Point(575, 28),
-			new Point(599, 28),
-			new Point(623, 28),
-			new Point(647, 28),
-			new Point(671, 28),
-			new Point(695, 28)
+			new Point(602, 28),
+			new Point(626, 28),
+			new Point(650, 28),
+			new Point(674, 28),
+			new Point(698, 28),
+			new Point(722, 28),
+			new Point(746, 28),
+			new Point(770, 28)
 		};
 
 		public static readonly int SampleRate = 44100;

@@ -19,16 +19,7 @@ bool            g_isMute = true;
 bool            g_issueMute = false;
 
 /******************************************************************************/
-LPWSTR WINAPI WaveOutList() {
-    g_deviceListLength = 0;
-    memset(g_deviceList, '\0', sizeof(g_deviceList));
-
-    DirectSoundEnumerate((LPDSENUMCALLBACK)DSEnumProc, NULL);
-
-    return g_deviceList;
-}
-
-BOOL WINAPI WaveOutOpen(UInt32 deviceId, UInt32 sampleRate, UInt32 bufferLength) {
+BOOL WINAPI WaveOutOpen(UInt32 sampleRate, UInt32 bufferLength) {
     if (NULL != g_hWaveOut) {
         WaveOutClose();
     }
@@ -47,7 +38,7 @@ BOOL WINAPI WaveOutOpen(UInt32 deviceId, UInt32 sampleRate, UInt32 bufferLength)
     //
     if (MMSYSERR_NOERROR != waveOutOpen(
         &g_hWaveOut,
-        deviceId,
+        WAVE_MAPPER,
         &g_waveFmt,
         (DWORD_PTR)WaveOutProc,
         (DWORD_PTR)g_waveHdr,
@@ -121,12 +112,6 @@ LPBYTE WINAPI LoadDLS(LPWSTR filePath, UInt32 *size, UInt32 sampleRate) {
 }
 
 /******************************************************************************/
-void CALLBACK DSEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, LPCTSTR lpszDrvName, LPVOID lpContext) {
-    if (g_deviceListLength + _mbstrlen((const char*)lpszDesc) < DEVICE_LIST_SIZE) {
-        g_deviceListLength += wsprintf(&g_deviceList[g_deviceListLength], TEXT("%s\n"), lpszDesc);
-    }
-}
-
 void CALLBACK WaveOutProc(HWAVEOUT hwo, UInt32 uMsg) {
     static Int32 b, t, s, ch;
     static Int16* pWave = NULL;

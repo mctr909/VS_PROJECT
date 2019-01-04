@@ -106,10 +106,7 @@ namespace MIDI {
 		private Instruments mInst = null;
 
 		[DllImport("WaveOut.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		public static extern IntPtr WaveOutList();
-
-		[DllImport("WaveOut.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		public static extern bool WaveOutOpen(uint deviceId, uint sampleRate, uint bufferLength);
+		public static extern bool WaveOutOpen(uint sampleRate, uint bufferLength);
 
 		[DllImport("WaveOut.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern void WaveOutClose();
@@ -141,7 +138,7 @@ namespace MIDI {
 				Channel[i] = new Channel(mInst, ppChannel[i], i);
 			}
 
-			WaveOutOpen(0xFFFF, (uint)Const.SampleRate, 256);
+			WaveOutOpen((uint)Const.SampleRate, 256);
 		}
 
 		public void Send(Message msg) {
