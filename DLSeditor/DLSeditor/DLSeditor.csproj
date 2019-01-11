@@ -57,6 +57,8 @@
     <Compile Include="DLS\Lrgn.cs" />
     <Compile Include="DLS\structs.cs" />
     <Compile Include="DLS\wvpl.cs" />
+    <Compile Include="DoubleBufferBitmap.cs" />
+    <Compile Include="DoubleBufferGraphic.cs" />
     <Compile Include="FFT.cs" />
     <Compile Include="Form\MainForm.cs">
       <SubType>Form</SubType>

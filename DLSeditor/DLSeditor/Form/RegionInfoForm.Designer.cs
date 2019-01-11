@@ -43,6 +43,7 @@
 			this.lblUnityNote = new System.Windows.Forms.Label();
 			this.grbVolume = new System.Windows.Forms.GroupBox();
 			this.numVolume = new System.Windows.Forms.NumericUpDown();
+			this.chkLoop = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.numKeyLow)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numKeyHigh)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numVelocityHigh)).BeginInit();
@@ -298,11 +299,22 @@
             0,
             0});
 			// 
+			// chkLoop
+			// 
+			this.chkLoop.AutoSize = true;
+			this.chkLoop.Location = new System.Drawing.Point(12, 298);
+			this.chkLoop.Name = "chkLoop";
+			this.chkLoop.Size = new System.Drawing.Size(148, 28);
+			this.chkLoop.TabIndex = 7;
+			this.chkLoop.Text = "ループ有効";
+			this.chkLoop.UseVisualStyleBackColor = true;
+			// 
 			// RegionInfoForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(605, 365);
+			this.ClientSize = new System.Drawing.Size(586, 351);
+			this.Controls.Add(this.chkLoop);
 			this.Controls.Add(this.grbVolume);
 			this.Controls.Add(this.grbFineTune);
 			this.Controls.Add(this.grbUnityNote);
@@ -330,6 +342,7 @@
 			this.grbVolume.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.numVolume)).EndInit();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -355,5 +368,6 @@
 		private System.Windows.Forms.Label lblUnityNote;
 		private System.Windows.Forms.GroupBox grbVolume;
 		private System.Windows.Forms.NumericUpDown numVolume;
+		private System.Windows.Forms.CheckBox chkLoop;
 	}
 }

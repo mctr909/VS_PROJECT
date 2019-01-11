@@ -78,6 +78,11 @@ namespace DLSeditor {
 				mRegion.Header.Velocity.High = (ushort)numVelocityHigh.Value;
 			}
 
+			if (!chkLoop.Checked) {
+				mRegion.Loops.Clear();
+				mRegion.Sampler.LoopCount = 0;
+			}
+
 			mRegion.Sampler.UnityNote = (ushort)numUnityNote.Value;
 			mRegion.Sampler.FineTune = (short)numFineTune.Value;
 			mRegion.Sampler.Gain = (double)numVolume.Value / 100.0;
@@ -118,7 +123,9 @@ namespace DLSeditor {
 			grbVolume.Top = grbUnityNote.Top;
 			grbVolume.Left = grbFineTune.Left + grbFineTune.Width + 6;
 
-			btnAdd.Top = grbVolume.Top + grbVolume.Height + 6;
+			chkLoop.Top = grbVolume.Top + grbVolume.Height + 6;
+
+			btnAdd.Top = chkLoop.Top;
 			btnAdd.Left = grbWave.Right - btnAdd.Width;
 
 			Width = grbWave.Left + grbWave.Width + 24;
@@ -186,6 +193,13 @@ namespace DLSeditor {
 						mRegion.WaveLink.TableIndex.ToString("0000"),
 						waveName
 					);
+				}
+
+				if(0 < mRegion.Loops.Count) {
+					chkLoop.Checked = true;
+				}
+				else {
+					chkLoop.Checked = false;
 				}
 
 				numUnityNote.Value = mRegion.Sampler.UnityNote;

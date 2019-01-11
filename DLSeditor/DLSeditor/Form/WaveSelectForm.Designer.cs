@@ -25,6 +25,8 @@
 		private void InitializeComponent() {
 			this.lstWave = new System.Windows.Forms.ListBox();
 			this.btnSelect = new System.Windows.Forms.Button();
+			this.txtSearch = new System.Windows.Forms.TextBox();
+			this.btnSearch = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// lstWave
@@ -43,16 +45,35 @@
 			this.btnSelect.Location = new System.Drawing.Point(644, 379);
 			this.btnSelect.Name = "btnSelect";
 			this.btnSelect.Size = new System.Drawing.Size(97, 35);
-			this.btnSelect.TabIndex = 1;
+			this.btnSelect.TabIndex = 3;
 			this.btnSelect.Text = "選択";
 			this.btnSelect.UseVisualStyleBackColor = true;
 			this.btnSelect.Click += new System.EventHandler(this.btnSelect_Click);
+			// 
+			// txtSearch
+			// 
+			this.txtSearch.Location = new System.Drawing.Point(81, 382);
+			this.txtSearch.Name = "txtSearch";
+			this.txtSearch.Size = new System.Drawing.Size(100, 31);
+			this.txtSearch.TabIndex = 1;
+			// 
+			// btnSearch
+			// 
+			this.btnSearch.Location = new System.Drawing.Point(212, 378);
+			this.btnSearch.Name = "btnSearch";
+			this.btnSearch.Size = new System.Drawing.Size(97, 35);
+			this.btnSearch.TabIndex = 2;
+			this.btnSearch.Text = "検索";
+			this.btnSearch.UseVisualStyleBackColor = true;
+			this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
 			// 
 			// WaveSelectForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.Controls.Add(this.btnSearch);
+			this.Controls.Add(this.txtSearch);
 			this.Controls.Add(this.btnSelect);
 			this.Controls.Add(this.lstWave);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
@@ -61,6 +82,7 @@
 			this.Load += new System.EventHandler(this.WaveSelectForm_Load);
 			this.SizeChanged += new System.EventHandler(this.WaveSelectForm_SizeChanged);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -68,5 +90,7 @@
 
 		private System.Windows.Forms.ListBox lstWave;
 		private System.Windows.Forms.Button btnSelect;
+		private System.Windows.Forms.TextBox txtSearch;
+		private System.Windows.Forms.Button btnSearch;
 	}
 }

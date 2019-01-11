@@ -51,6 +51,7 @@
 			this.tsbAddWave = new System.Windows.Forms.ToolStripButton();
 			this.tsbDeleteWave = new System.Windows.Forms.ToolStripButton();
 			this.tsbOutputWave = new System.Windows.Forms.ToolStripButton();
+			this.txtWaveSearch = new System.Windows.Forms.ToolStripTextBox();
 			this.tbpInstList = new System.Windows.Forms.TabPage();
 			this.lstInst = new System.Windows.Forms.ListBox();
 			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
@@ -248,12 +249,13 @@
 			this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbAddWave,
             this.tsbDeleteWave,
-            this.tsbOutputWave});
+            this.tsbOutputWave,
+            this.txtWaveSearch});
 			this.toolStrip3.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip3.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
 			this.toolStrip3.Name = "toolStrip3";
 			this.toolStrip3.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-			this.toolStrip3.Size = new System.Drawing.Size(82, 38);
+			this.toolStrip3.Size = new System.Drawing.Size(446, 41);
 			this.toolStrip3.TabIndex = 0;
 			this.toolStrip3.Text = "toolStrip3";
 			// 
@@ -292,6 +294,12 @@
 			this.tsbOutputWave.Size = new System.Drawing.Size(23, 35);
 			this.tsbOutputWave.Text = "波形ファイル出力";
 			this.tsbOutputWave.Click += new System.EventHandler(this.tsbOutputWave_Click);
+			// 
+			// txtWaveSearch
+			// 
+			this.txtWaveSearch.Name = "txtWaveSearch";
+			this.txtWaveSearch.Size = new System.Drawing.Size(300, 41);
+			this.txtWaveSearch.Leave += new System.EventHandler(this.txtWaveSearch_Leave);
 			// 
 			// tbpInstList
 			// 
@@ -625,6 +633,7 @@
 		private System.Windows.Forms.ToolStripTextBox tstRegion;
 		private System.Windows.Forms.Timer timer1;
 		private AmpEnvelope ampEnvelope1;
+		private System.Windows.Forms.ToolStripTextBox txtWaveSearch;
 	}
 }
 

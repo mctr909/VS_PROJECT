@@ -186,6 +186,10 @@ namespace DLSeditor {
 			WaveFileOut();
 		}
 
+		private void txtWaveSearch_Leave(object sender, EventArgs e) {
+			DispWaveList();
+		}
+
 		private void tsbAddRange_Click(object sender, EventArgs e) {
 			AddRegion();
 		}
@@ -432,7 +436,8 @@ namespace DLSeditor {
 				return;
 			}
 
-			var idx = lstWave.SelectedIndex;
+			var cols = lstWave.SelectedItem.ToString().Split('\t');
+			var idx = int.Parse(cols[0]);
 			var fm = new WaveInfoForm(mDLS, idx);
 			var index = lstWave.SelectedIndex;
 			fm.ShowDialog();
@@ -449,7 +454,8 @@ namespace DLSeditor {
 
 			var indices = lstWave.SelectedIndices;
 			foreach (var idx in indices) {
-				var wave = mDLS.WavePool.List[(int)idx];
+				var cols = lstWave.Items[(int)idx].ToString().Split('\t');
+				var wave = mDLS.WavePool.List[int.Parse(cols[0])];
 				if (null == wave.Info || string.IsNullOrWhiteSpace(wave.Info.Name)) {
 					wave.ToFile(Path.Combine(folderPath, string.Format("Wave{0}.wav", idx)));
 				}
@@ -545,6 +551,10 @@ namespace DLSeditor {
 				}
 				else {
 					name = wave.Value.Info.Name;
+				}
+
+				if (!string.IsNullOrEmpty(txtWaveSearch.Text) && name.IndexOf(txtWaveSearch.Text) < 0) {
+					continue;
 				}
 
 				var use = false;

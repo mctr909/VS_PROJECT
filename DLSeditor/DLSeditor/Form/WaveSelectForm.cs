@@ -14,7 +14,7 @@ namespace DLSeditor {
 		}
 
 		private void WaveSelectForm_Load(object sender, EventArgs e) {
-			DispWaveList();
+			DispWaveList("");
 			SetSize();
 		}
 
@@ -27,19 +27,25 @@ namespace DLSeditor {
 				return;
 			}
 
-			var idx = lstWave.SelectedIndex;
+			var cols = lstWave.SelectedItem.ToString().Split('\t');
+			var idx = int.Parse(cols[0]);
 			var fm = new WaveInfoForm(mDLS, idx);
 			var index = lstWave.SelectedIndex;
 			fm.ShowDialog();
-			DispWaveList();
+			DispWaveList(txtSearch.Text);
 			lstWave.SelectedIndex = index;
 		}
 
 		private void btnSelect_Click(object sender, EventArgs e) {
 			if (0 <= lstWave.SelectedIndex) {
-				mRegion.WaveLink.TableIndex = (uint)lstWave.SelectedIndex;
+				var cols = lstWave.SelectedItem.ToString().Split('\t');
+				mRegion.WaveLink.TableIndex = uint.Parse(cols[0]);
 			}
 			Close();
+		}
+
+		private void btnSearch_Click(object sender, EventArgs e) {
+			DispWaveList(txtSearch.Text);
 		}
 
 		private void SetSize() {
@@ -54,11 +60,19 @@ namespace DLSeditor {
 			lstWave.Width = Width - offsetX;
 			lstWave.Height = Height - btnSelect.Height - 6 - offsetY;
 
-			btnSelect.Top = lstWave.Top + lstWave.Height + 6;
+			txtSearch.Top = lstWave.Top + lstWave.Height + 6;
+			txtSearch.Left = lstWave.Left;
+			txtSearch.Width = 200;
+
+			btnSearch.Top = txtSearch.Top;
+			btnSearch.Left = txtSearch.Right + 6;
+			btnSearch.Height = 21;
+
+			btnSelect.Top = txtSearch.Top;
 			btnSelect.Left = Width - btnSelect.Width - offsetX;
 		}
 
-		private void DispWaveList() {
+		private void DispWaveList(string keyword) {
 			lstWave.Items.Clear();
 			int count = 0;
 			foreach (var wave in mDLS.WavePool.List) {
@@ -68,6 +82,10 @@ namespace DLSeditor {
 				}
 				else {
 					name = wave.Value.Info.Name;
+				}
+
+				if(!string.IsNullOrEmpty(keyword) && name.IndexOf(keyword) < 0) {
+					continue;
 				}
 
 				var use = false;
