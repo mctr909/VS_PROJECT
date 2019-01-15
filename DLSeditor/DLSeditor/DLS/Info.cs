@@ -8,23 +8,23 @@ namespace DLS {
 		private Encoding mEnc = Encoding.GetEncoding("shift-jis");
 		private CK_INFO mInfo;
 
-		public string ArchivalLocation;
-		public string Artists;
-		public string Commissioned;
-		public string Comments;
-		public string Copyright;
-		public string CreationDate;
-		public string Engineer;
-		public string Genre;
-		public string Keywords;
-		public string Medium;
-		public string Name;
-		public string Product;
-		public string Software;
-		public string Source;
-		public string SourceForm;
-		public string Subject;
-		public string Technician;
+		public string ArchivalLocation = "";
+		public string Artists = "";
+		public string Commissioned = "";
+		public string Comments = "";
+		public string Copyright = "";
+		public string CreationDate = "";
+		public string Engineer = "";
+		public string Genre = "";
+		public string Keywords = "";
+		public string Medium = "";
+		public string Name = "";
+		public string Product = "";
+		public string Software = "";
+		public string Source = "";
+		public string SourceForm = "";
+		public string Subject = "";
+		public string Technician = "";
 
 		public INFO() { }
 
