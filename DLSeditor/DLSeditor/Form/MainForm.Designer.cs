@@ -65,11 +65,11 @@
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.txtInstSearch = new System.Windows.Forms.ToolStripTextBox();
             this.tbpInstInfo = new System.Windows.Forms.TabPage();
-            this.label3 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.txtInstComment = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.txtInstKeyword = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.txtInstName = new System.Windows.Forms.TextBox();
             this.tbpInstAttribute = new System.Windows.Forms.TabPage();
             this.ampEnvelope = new DLSeditor.Envelope();
@@ -94,6 +94,9 @@
             this.tbpInstList.SuspendLayout();
             this.toolStrip2.SuspendLayout();
             this.tbpInstInfo.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.tbpInstAttribute.SuspendLayout();
             this.tbpRegion.SuspendLayout();
             this.pnlRegion.SuspendLayout();
@@ -272,7 +275,7 @@
             this.toolStrip3.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.toolStrip3.Name = "toolStrip3";
             this.toolStrip3.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip3.Size = new System.Drawing.Size(508, 38);
+            this.toolStrip3.Size = new System.Drawing.Size(608, 38);
             this.toolStrip3.TabIndex = 0;
             this.toolStrip3.Text = "toolStrip3";
             // 
@@ -328,7 +331,7 @@
             // 
             this.txtWaveSearch.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F);
             this.txtWaveSearch.Name = "txtWaveSearch";
-            this.txtWaveSearch.Size = new System.Drawing.Size(300, 38);
+            this.txtWaveSearch.Size = new System.Drawing.Size(400, 38);
             this.txtWaveSearch.Leave += new System.EventHandler(this.txtWaveSearch_Leave);
             this.txtWaveSearch.TextChanged += new System.EventHandler(this.txtWaveSearch_TextChanged);
             // 
@@ -374,7 +377,7 @@
             this.toolStrip2.Location = new System.Drawing.Point(0, 0);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip2.Size = new System.Drawing.Size(531, 38);
+            this.toolStrip2.Size = new System.Drawing.Size(693, 38);
             this.toolStrip2.TabIndex = 2;
             this.toolStrip2.Text = "toolStrip2";
             // 
@@ -446,18 +449,15 @@
             // 
             this.txtInstSearch.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F);
             this.txtInstSearch.Name = "txtInstSearch";
-            this.txtInstSearch.Size = new System.Drawing.Size(300, 38);
+            this.txtInstSearch.Size = new System.Drawing.Size(400, 38);
             this.txtInstSearch.Leave += new System.EventHandler(this.txtInstSearch_Leave);
             this.txtInstSearch.TextChanged += new System.EventHandler(this.txtInstSearch_TextChanged);
             // 
             // tbpInstInfo
             // 
-            this.tbpInstInfo.Controls.Add(this.label3);
-            this.tbpInstInfo.Controls.Add(this.txtInstComment);
-            this.tbpInstInfo.Controls.Add(this.label2);
-            this.tbpInstInfo.Controls.Add(this.txtInstKeyword);
-            this.tbpInstInfo.Controls.Add(this.label1);
-            this.tbpInstInfo.Controls.Add(this.txtInstName);
+            this.tbpInstInfo.Controls.Add(this.groupBox3);
+            this.tbpInstInfo.Controls.Add(this.groupBox2);
+            this.tbpInstInfo.Controls.Add(this.groupBox1);
             this.tbpInstInfo.Location = new System.Drawing.Point(8, 39);
             this.tbpInstInfo.Name = "tbpInstInfo";
             this.tbpInstInfo.Size = new System.Drawing.Size(1624, 687);
@@ -465,59 +465,65 @@
             this.tbpInstInfo.Text = "音色情報";
             this.tbpInstInfo.UseVisualStyleBackColor = true;
             // 
-            // label3
+            // groupBox3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(18, 165);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(106, 24);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "コメント";
+            this.groupBox3.BackColor = System.Drawing.SystemColors.Control;
+            this.groupBox3.Controls.Add(this.txtInstComment);
+            this.groupBox3.Location = new System.Drawing.Point(3, 175);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(828, 353);
+            this.groupBox3.TabIndex = 9;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "コメント";
             // 
             // txtInstComment
             // 
             this.txtInstComment.Font = new System.Drawing.Font("ＭＳ ゴシック", 11F);
-            this.txtInstComment.Location = new System.Drawing.Point(22, 192);
+            this.txtInstComment.Location = new System.Drawing.Point(9, 30);
             this.txtInstComment.Multiline = true;
             this.txtInstComment.Name = "txtInstComment";
             this.txtInstComment.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtInstComment.Size = new System.Drawing.Size(808, 309);
+            this.txtInstComment.Size = new System.Drawing.Size(806, 312);
             this.txtInstComment.TabIndex = 5;
             this.txtInstComment.Leave += new System.EventHandler(this.txtInstComment_Leave);
             // 
-            // label2
+            // groupBox2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(18, 83);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(130, 24);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "キーワード";
+            this.groupBox2.BackColor = System.Drawing.SystemColors.Control;
+            this.groupBox2.Controls.Add(this.txtInstKeyword);
+            this.groupBox2.Location = new System.Drawing.Point(3, 89);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(500, 80);
+            this.groupBox2.TabIndex = 8;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "キーワード";
             // 
             // txtInstKeyword
             // 
             this.txtInstKeyword.Font = new System.Drawing.Font("ＭＳ ゴシック", 11F);
-            this.txtInstKeyword.Location = new System.Drawing.Point(22, 110);
+            this.txtInstKeyword.Location = new System.Drawing.Point(6, 30);
             this.txtInstKeyword.Name = "txtInstKeyword";
-            this.txtInstKeyword.Size = new System.Drawing.Size(333, 37);
+            this.txtInstKeyword.Size = new System.Drawing.Size(482, 37);
             this.txtInstKeyword.TabIndex = 3;
             this.txtInstKeyword.Leave += new System.EventHandler(this.txtInstKeyword_Leave);
             // 
-            // label1
+            // groupBox1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 6);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 24);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "名称";
+            this.groupBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.groupBox1.Controls.Add(this.txtInstName);
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(500, 80);
+            this.groupBox1.TabIndex = 7;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "名称";
             // 
             // txtInstName
             // 
             this.txtInstName.Font = new System.Drawing.Font("ＭＳ ゴシック", 11F);
-            this.txtInstName.Location = new System.Drawing.Point(22, 33);
+            this.txtInstName.Location = new System.Drawing.Point(6, 30);
             this.txtInstName.Name = "txtInstName";
-            this.txtInstName.Size = new System.Drawing.Size(333, 37);
+            this.txtInstName.Size = new System.Drawing.Size(482, 37);
             this.txtInstName.TabIndex = 1;
             this.txtInstName.Leave += new System.EventHandler(this.txtInstName_Leave);
             // 
@@ -702,7 +708,12 @@
             this.toolStrip2.ResumeLayout(false);
             this.toolStrip2.PerformLayout();
             this.tbpInstInfo.ResumeLayout(false);
-            this.tbpInstInfo.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.tbpInstAttribute.ResumeLayout(false);
             this.tbpRegion.ResumeLayout(false);
             this.tbpRegion.PerformLayout();
@@ -762,11 +773,8 @@
 		private System.Windows.Forms.ToolStripTextBox tstRegion;
 		private System.Windows.Forms.Timer timer1;
 		private System.Windows.Forms.ToolStripTextBox txtWaveSearch;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtInstName;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtInstKeyword;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtInstComment;
         private System.Windows.Forms.TabPage tbpInstAttribute;
         private Envelope ampEnvelope;
@@ -775,6 +783,9 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripLabel toolStripLabel2;
         private System.Windows.Forms.ToolStripTextBox txtInstSearch;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
 

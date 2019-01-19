@@ -9,166 +9,167 @@ namespace DLSeditor {
         public Envelope() {
             InitializeComponent();
 
+            #region AMP
             picAttack.Width = picAttack.Image.Width;
-            picAttack.Height = picAttack.Image.Height;
+            picAttack.Height = picAttack.Image.Height + 4;
             picHold.Width = picHold.Image.Width;
-            picHold.Height = picHold.Image.Height;
+            picHold.Height = picHold.Image.Height + 4;
             picDecay.Width = picDecay.Image.Width;
-            picDecay.Height = picDecay.Image.Height;
+            picDecay.Height = picDecay.Image.Height + 4;
             picSustain.Width = picSustain.Image.Width;
-            picSustain.Height = picSustain.Image.Height;
+            picSustain.Height = picSustain.Image.Height + 4;
             picReleace.Width = picReleace.Image.Width;
-            picReleace.Height = picReleace.Image.Height;
+            picReleace.Height = picReleace.Image.Height + 4;
 
-            picHold.Top = picAttack.Top + picAttack.Height + 4;
-            picDecay.Top = picHold.Top + picHold.Height + 4;
-            picSustain.Top = picDecay.Top + picDecay.Height + 4;
-            picReleace.Top = picSustain.Top + picSustain.Height + 4;
-
-
-            hsbAttack.Left = picAttack.Right + 4;
-            hsbAttack.Top = picAttack.Top;
-            hsbAttack.Width = 400;
-            hsbAttack.Height = picAttack.Height;
-
-            hsbHold.Left = picHold.Right + 4;
-            hsbHold.Top = picHold.Top;
-            hsbHold.Width = 400;
-            hsbHold.Height = picHold.Height;
-
-            hsbDecay.Left = picDecay.Right + 4;
-            hsbDecay.Top = picDecay.Top;
-            hsbDecay.Width = 400;
-            hsbDecay.Height = picDecay.Height;
-
-            hsbSustain.Left = picSustain.Right + 4;
-            hsbSustain.Top = picSustain.Top;
-            hsbSustain.Width = 400;
-            hsbSustain.Height = picSustain.Height;
-
-            hsbReleace.Left = picReleace.Right + 4;
-            hsbReleace.Top = picReleace.Top;
-            hsbReleace.Width = 400;
-            hsbReleace.Height = picReleace.Height;
+            picHold.Top = picAttack.Top + picAttack.Height;
+            picDecay.Top = picHold.Top + picHold.Height;
+            picSustain.Top = picDecay.Top + picDecay.Height;
+            picReleace.Top = picSustain.Top + picSustain.Height;
 
 
-            chkAttack.Left = hsbAttack.Right + 4;
-            chkAttack.Top = hsbAttack.Top + (hsbAttack.Height - chkAttack.Height) / 2;
+            trbAmpAttack.Left = picAttack.Right + 4;
+            trbAmpAttack.Top = picAttack.Top - 4;
+            trbAmpAttack.Width = 400;
+            trbAmpAttack.Height = picAttack.Height;
 
-            chkHold.Left = hsbHold.Right + 4;
-            chkHold.Top = hsbHold.Top + (hsbHold.Height - chkHold.Height) / 2;
+            trbAmpHold.Left = picHold.Right + 4;
+            trbAmpHold.Top = picHold.Top - 4;
+            trbAmpHold.Width = 400;
+            trbAmpHold.Height = picHold.Height;
 
-            chkDecay.Left = hsbDecay.Right + 4;
-            chkDecay.Top = hsbDecay.Top + (hsbDecay.Height - chkDecay.Height) / 2;
+            trbAmpDecay.Left = picDecay.Right + 4;
+            trbAmpDecay.Top = picDecay.Top - 4;
+            trbAmpDecay.Width = 400;
+            trbAmpDecay.Height = picDecay.Height;
 
-            chkSustain.Left = hsbSustain.Right + 4;
-            chkSustain.Top = hsbSustain.Top + (hsbSustain.Height - chkSustain.Height) / 2;
+            trbAmpSustain.Left = picSustain.Right + 4;
+            trbAmpSustain.Top = picSustain.Top - 4;
+            trbAmpSustain.Width = 400;
+            trbAmpSustain.Height = picSustain.Height;
 
-            chkReleace.Left = hsbReleace.Right + 4;
-            chkReleace.Top = hsbReleace.Top + (hsbReleace.Height - chkReleace.Height) / 2;
+            trbAmpReleace.Left = picReleace.Right + 4;
+            trbAmpReleace.Top = picReleace.Top - 4;
+            trbAmpReleace.Width = 400;
+            trbAmpReleace.Height = picReleace.Height;
 
 
-            lblAttack.Left = chkAttack.Right + 4;
-            lblAttack.Top = hsbAttack.Top + (hsbAttack.Height - lblAttack.Height) / 2;
+            chkAmpAttack.Left = trbAmpAttack.Right + 4;
+            chkAmpAttack.Top = trbAmpAttack.Top + (trbAmpAttack.Height - chkAmpAttack.Height) / 2;
 
-            lblHold.Left = chkHold.Right + 4;
-            lblHold.Top = hsbHold.Top + (hsbHold.Height - lblHold.Height) / 2;
+            chkAmpHold.Left = trbAmpHold.Right + 4;
+            chkAmpHold.Top = trbAmpHold.Top + (trbAmpHold.Height - chkAmpHold.Height) / 2;
 
-            lblDecay.Left = chkDecay.Right + 4;
-            lblDecay.Top = hsbDecay.Top + (hsbDecay.Height - lblDecay.Height) / 2;
+            chkAmpDecay.Left = trbAmpDecay.Right + 4;
+            chkAmpDecay.Top = trbAmpDecay.Top + (trbAmpDecay.Height - chkAmpDecay.Height) / 2;
 
-            lblSustain.Left = chkSustain.Right + 4;
-            lblSustain.Top = hsbSustain.Top + (hsbSustain.Height - lblSustain.Height) / 2;
+            chkAmpSustain.Left = trbAmpSustain.Right + 4;
+            chkAmpSustain.Top = trbAmpSustain.Top + (trbAmpSustain.Height - chkAmpSustain.Height) / 2;
 
-            lblReleace.Left = chkReleace.Right + 4;
-            lblReleace.Top = hsbReleace.Top + (hsbReleace.Height - lblReleace.Height) / 2;
+            chkAmpReleace.Left = trbAmpReleace.Right + 4;
+            chkAmpReleace.Top = trbAmpReleace.Top + (trbAmpReleace.Height - chkAmpReleace.Height) / 2;
+
+
+            lblAttack.Left = chkAmpAttack.Right + 4;
+            lblAttack.Top = trbAmpAttack.Top + (trbAmpAttack.Height - lblAttack.Height) / 2;
+
+            lblHold.Left = chkAmpHold.Right + 4;
+            lblHold.Top = trbAmpHold.Top + (trbAmpHold.Height - lblHold.Height) / 2;
+
+            lblDecay.Left = chkAmpDecay.Right + 4;
+            lblDecay.Top = trbAmpDecay.Top + (trbAmpDecay.Height - lblDecay.Height) / 2;
+
+            lblSustain.Left = chkAmpSustain.Right + 4;
+            lblSustain.Top = trbAmpSustain.Top + (trbAmpSustain.Height - lblSustain.Height) / 2;
+
+            lblReleace.Left = chkAmpReleace.Right + 4;
+            lblReleace.Top = trbAmpReleace.Top + (trbAmpReleace.Height - lblReleace.Height) / 2;
 
 
             grpAmp.Width = lblReleace.Location.X + lblReleace.Width + 8;
             grpAmp.Height = lblReleace.Location.Y + lblReleace.Height + 16;
+            #endregion
 
-
-            //
+            #region EQ
             grpEq.Top = grpAmp.Bottom + 8;
 
             picEqAttack.Width = picEqAttack.Image.Width;
-            picEqAttack.Height = picEqAttack.Image.Height;
+            picEqAttack.Height = picEqAttack.Image.Height + 4;
             picEqHold.Width = picEqHold.Image.Width;
-            picEqHold.Height = picEqHold.Image.Height;
+            picEqHold.Height = picEqHold.Image.Height + 4;
             picEqDecay.Width = picEqDecay.Image.Width;
-            picEqDecay.Height = picEqDecay.Image.Height;
+            picEqDecay.Height = picEqDecay.Image.Height + 4;
             picEqSustain.Width = picEqSustain.Image.Width;
-            picEqSustain.Height = picEqSustain.Image.Height;
+            picEqSustain.Height = picEqSustain.Image.Height + 4;
             picEqReleace.Width = picEqReleace.Image.Width;
-            picEqReleace.Height = picEqReleace.Image.Height;
+            picEqReleace.Height = picEqReleace.Image.Height + 4;
 
-            picEqHold.Top = picEqAttack.Top + picEqAttack.Height + 4;
-            picEqDecay.Top = picEqHold.Top + picEqHold.Height + 4;
-            picEqSustain.Top = picEqDecay.Top + picEqDecay.Height + 4;
-            picEqReleace.Top = picEqSustain.Top + picEqSustain.Height + 4;
-
-
-            hsbEqAttack.Left = picEqAttack.Right + 4;
-            hsbEqAttack.Top = picEqAttack.Top;
-            hsbEqAttack.Width = 400;
-            hsbEqAttack.Height = picEqAttack.Height;
-
-            hsbEqHold.Left = picEqHold.Right + 4;
-            hsbEqHold.Top = picEqHold.Top;
-            hsbEqHold.Width = 400;
-            hsbEqHold.Height = picEqHold.Height;
-
-            hsbEqDecay.Left = picEqDecay.Right + 4;
-            hsbEqDecay.Top = picEqDecay.Top;
-            hsbEqDecay.Width = 400;
-            hsbEqDecay.Height = picEqDecay.Height;
-
-            hsbEqSustain.Left = picEqSustain.Right + 4;
-            hsbEqSustain.Top = picEqSustain.Top;
-            hsbEqSustain.Width = 400;
-            hsbEqSustain.Height = picEqSustain.Height;
-
-            hsbEqReleace.Left = picEqReleace.Right + 4;
-            hsbEqReleace.Top = picEqReleace.Top;
-            hsbEqReleace.Width = 400;
-            hsbEqReleace.Height = picEqReleace.Height;
+            picEqHold.Top = picEqAttack.Top + picEqAttack.Height;
+            picEqDecay.Top = picEqHold.Top + picEqHold.Height;
+            picEqSustain.Top = picEqDecay.Top + picEqDecay.Height;
+            picEqReleace.Top = picEqSustain.Top + picEqSustain.Height;
 
 
-            chkEqAttack.Left = hsbEqAttack.Right + 4;
-            chkEqAttack.Top = hsbEqAttack.Top + (hsbEqAttack.Height - chkEqAttack.Height) / 2;
+            trbEqAttack.Left = picEqAttack.Right + 4;
+            trbEqAttack.Top = picEqAttack.Top - 4;
+            trbEqAttack.Width = 400;
+            trbEqAttack.Height = picEqAttack.Height;
 
-            chkEqHold.Left = hsbEqHold.Right + 4;
-            chkEqHold.Top = hsbEqHold.Top + (hsbEqHold.Height - chkEqHold.Height) / 2;
+            trbEqHold.Left = picEqHold.Right + 4;
+            trbEqHold.Top = picEqHold.Top - 4;
+            trbEqHold.Width = 400;
+            trbEqHold.Height = picEqHold.Height;
 
-            chkEqDecay.Left = hsbEqDecay.Right + 4;
-            chkEqDecay.Top = hsbEqDecay.Top + (hsbEqDecay.Height - chkEqDecay.Height) / 2;
+            trbEqDecay.Left = picEqDecay.Right + 4;
+            trbEqDecay.Top = picEqDecay.Top - 4;
+            trbEqDecay.Width = 400;
+            trbEqDecay.Height = picEqDecay.Height;
 
-            chkEqSustain.Left = hsbEqSustain.Right + 4;
-            chkEqSustain.Top = hsbEqSustain.Top + (hsbEqSustain.Height - chkEqSustain.Height) / 2;
+            trbEqSustain.Left = picEqSustain.Right + 4;
+            trbEqSustain.Top = picEqSustain.Top - 4;
+            trbEqSustain.Width = 400;
+            trbEqSustain.Height = picEqSustain.Height;
 
-            chkEqReleace.Left = hsbEqReleace.Right + 4;
-            chkEqReleace.Top = hsbEqReleace.Top + (hsbEqReleace.Height - chkEqReleace.Height) / 2;
+            trbEqReleace.Left = picEqReleace.Right + 4;
+            trbEqReleace.Top = picEqReleace.Top - 4;
+            trbEqReleace.Width = 400;
+            trbEqReleace.Height = picEqReleace.Height;
+
+
+            chkEqAttack.Left = trbEqAttack.Right + 4;
+            chkEqAttack.Top = trbEqAttack.Top + (trbEqAttack.Height - chkEqAttack.Height) / 2;
+
+            chkEqHold.Left = trbEqHold.Right + 4;
+            chkEqHold.Top = trbEqHold.Top + (trbEqHold.Height - chkEqHold.Height) / 2;
+
+            chkEqDecay.Left = trbEqDecay.Right + 4;
+            chkEqDecay.Top = trbEqDecay.Top + (trbEqDecay.Height - chkEqDecay.Height) / 2;
+
+            chkEqSustain.Left = trbEqSustain.Right + 4;
+            chkEqSustain.Top = trbEqSustain.Top + (trbEqSustain.Height - chkEqSustain.Height) / 2;
+
+            chkEqReleace.Left = trbEqReleace.Right + 4;
+            chkEqReleace.Top = trbEqReleace.Top + (trbEqReleace.Height - chkEqReleace.Height) / 2;
 
 
             lblEqAttack.Left = chkEqAttack.Right + 4;
-            lblEqAttack.Top = hsbEqAttack.Top + (hsbEqAttack.Height - lblEqAttack.Height) / 2;
+            lblEqAttack.Top = trbEqAttack.Top + (trbEqAttack.Height - lblEqAttack.Height) / 2;
 
             lblEqHold.Left = chkEqHold.Right + 4;
-            lblEqHold.Top = hsbEqHold.Top + (hsbEqHold.Height - lblEqHold.Height) / 2;
+            lblEqHold.Top = trbEqHold.Top + (trbEqHold.Height - lblEqHold.Height) / 2;
 
             lblEqDecay.Left = chkEqDecay.Right + 4;
-            lblEqDecay.Top = hsbEqDecay.Top + (hsbEqDecay.Height - lblEqDecay.Height) / 2;
+            lblEqDecay.Top = trbEqDecay.Top + (trbEqDecay.Height - lblEqDecay.Height) / 2;
 
             lblEqSustain.Left = chkEqSustain.Right + 4;
-            lblEqSustain.Top = hsbEqSustain.Top + (hsbEqSustain.Height - lblEqSustain.Height) / 2;
+            lblEqSustain.Top = trbEqSustain.Top + (trbEqSustain.Height - lblEqSustain.Height) / 2;
 
             lblEqReleace.Left = chkEqReleace.Right + 4;
-            lblEqReleace.Top = hsbEqReleace.Top + (hsbEqReleace.Height - lblEqReleace.Height) / 2;
+            lblEqReleace.Top = trbEqReleace.Top + (trbEqReleace.Height - lblEqReleace.Height) / 2;
 
 
             grpEq.Width = lblEqReleace.Location.X + lblEqReleace.Width + 8;
             grpEq.Height = lblEqReleace.Location.Y + lblEqReleace.Height + 16;
-
+            #endregion
 
             Width = grpEq.Width + 4;
             Height = grpEq.Location.Y + grpEq.Height + 8;
@@ -185,7 +186,7 @@ namespace DLSeditor {
         }
 
         public void SetList(Dictionary<int, DLS.Connection> list) {
-            if (chkAttack.Checked) {
+            if (chkAmpAttack.Checked) {
                 var v = new DLS.Connection();
                 v.Source = DLS.Connection.SRC_TYPE.NONE;
                 v.Control = DLS.Connection.SRC_TYPE.NONE;
@@ -194,7 +195,7 @@ namespace DLSeditor {
                 list.Add(list.Count, v);
             }
 
-            if (chkHold.Checked) {
+            if (chkAmpHold.Checked) {
                 var v = new DLS.Connection();
                 v.Source = DLS.Connection.SRC_TYPE.NONE;
                 v.Control = DLS.Connection.SRC_TYPE.NONE;
@@ -203,7 +204,7 @@ namespace DLSeditor {
                 list.Add(list.Count, v);
             }
 
-            if (chkDecay.Checked) {
+            if (chkAmpDecay.Checked) {
                 var v = new DLS.Connection();
                 v.Source = DLS.Connection.SRC_TYPE.NONE;
                 v.Control = DLS.Connection.SRC_TYPE.NONE;
@@ -212,7 +213,7 @@ namespace DLSeditor {
                 list.Add(list.Count, v);
             }
 
-            if (chkSustain.Checked) {
+            if (chkAmpSustain.Checked) {
                 var v = new DLS.Connection();
                 v.Source = DLS.Connection.SRC_TYPE.NONE;
                 v.Control = DLS.Connection.SRC_TYPE.NONE;
@@ -221,7 +222,7 @@ namespace DLSeditor {
                 list.Add(list.Count, v);
             }
 
-            if (chkReleace.Checked) {
+            if (chkAmpReleace.Checked) {
                 var v = new DLS.Connection();
                 v.Source = DLS.Connection.SRC_TYPE.NONE;
                 v.Control = DLS.Connection.SRC_TYPE.NONE;
@@ -276,212 +277,220 @@ namespace DLSeditor {
             }
         }
 
-        #region Amp
+        #region AMP
         private double ampAttack {
-            get { return hsbToValue(hsbAttack.Value); }
-            set { setValue(hsbAttack, chkAttack, lblAttack, value); }
+            get { return trbToValue(trbAmpAttack.Value); }
+            set { setValue(trbAmpAttack, chkAmpAttack, lblAttack, value); }
         }
 
         private double ampHold {
-            get { return hsbToValue(hsbHold.Value); }
-            set { setValue(hsbHold, chkHold, lblHold, value); }
+            get { return trbToValue(trbAmpHold.Value); }
+            set { setValue(trbAmpHold, chkAmpHold, lblHold, value); }
         }
 
         private double ampDecay {
-            get { return hsbToValue(hsbDecay.Value); }
-            set { setValue(hsbDecay, chkDecay, lblDecay, value); }
+            get { return trbToValue(trbAmpDecay.Value); }
+            set { setValue(trbAmpDecay, chkAmpDecay, lblDecay, value); }
         }
 
         private double ampSustain {
-            get { return hsbSustain.Value * 0.1; }
-            set { hsbSustain.Value = (int)(value * 10); }
+            get { return trbAmpSustain.Value * 0.1; }
+            set {
+                chkAmpSustain.Checked = true;
+                trbAmpSustain.Enabled = true;
+                trbAmpSustain.Value = (int)(value * 10);
+            }
         }
 
         private double ampReleace {
-            get { return hsbToValue(hsbReleace.Value); }
-            set { setValue(hsbReleace, chkReleace, lblReleace, value); }
+            get { return trbToValue(trbAmpReleace.Value); }
+            set { setValue(trbAmpReleace, chkAmpReleace, lblReleace, value); }
         }
 
-        private void hsbAmpAttack_ValueChanged(object sender, System.EventArgs e) {
-            lblAttack.Text = hsbToText(hsbAttack.Value);
+        private void trbAmpAttack_ValueChanged(object sender, EventArgs e) {
+            lblAttack.Text = trbToText(trbAmpAttack.Value);
         }
 
-        private void hsbAmpHold_ValueChanged(object sender, System.EventArgs e) {
-            lblHold.Text = hsbToText(hsbHold.Value);
+        private void trbAmpHold_ValueChanged(object sender, EventArgs e) {
+            lblHold.Text = trbToText(trbAmpHold.Value);
         }
 
-        private void hsbAmpDecay_ValueChanged(object sender, System.EventArgs e) {
-            lblDecay.Text = hsbToText(hsbDecay.Value);
+        private void trbAmpDecay_ValueChanged(object sender, EventArgs e) {
+            lblDecay.Text = trbToText(trbAmpDecay.Value);
         }
 
-        private void hsbAmpSustain_ValueChanged(object sender, System.EventArgs e) {
-            lblSustain.Text = string.Format("{0}%", hsbSustain.Value * 0.1);
+        private void trbAmpSustain_ValueChanged(object sender, EventArgs e) {
+            lblSustain.Text = string.Format("{0}%", trbAmpSustain.Value * 0.1);
         }
 
-        private void hsbAmpReleace_ValueChanged(object sender, System.EventArgs e) {
-            lblReleace.Text = hsbToText(hsbReleace.Value);
+        private void trbAmpReleace_ValueChanged(object sender, EventArgs e) {
+            lblReleace.Text = trbToText(trbAmpReleace.Value);
         }
 
         private void chkAttack_CheckedChanged(object sender, EventArgs e) {
-            if (chkAttack.Checked) {
-                hsbAttack.Enabled = true;
-                lblAttack.Text = hsbToText(hsbAttack.Value);
+            if (chkAmpAttack.Checked) {
+                trbAmpAttack.Enabled = true;
+                lblAttack.Text = trbToText(trbAmpAttack.Value);
             }
             else {
-                hsbAttack.Enabled = false;
+                trbAmpAttack.Enabled = false;
                 lblAttack.Text = "----";
             }
         }
 
         private void chkHold_CheckedChanged(object sender, EventArgs e) {
-            if (chkHold.Checked) {
-                hsbHold.Enabled = true;
-                lblHold.Text = hsbToText(hsbHold.Value);
+            if (chkAmpHold.Checked) {
+                trbAmpHold.Enabled = true;
+                lblHold.Text = trbToText(trbAmpHold.Value);
             }
             else {
-                hsbHold.Enabled = false;
+                trbAmpHold.Enabled = false;
                 lblHold.Text = "----";
             }
         }
 
         private void chkDecay_CheckedChanged(object sender, EventArgs e) {
-            if (chkDecay.Checked) {
-                hsbDecay.Enabled = true;
-                lblDecay.Text = hsbToText(hsbDecay.Value);
+            if (chkAmpDecay.Checked) {
+                trbAmpDecay.Enabled = true;
+                lblDecay.Text = trbToText(trbAmpDecay.Value);
             }
             else {
-                hsbDecay.Enabled = false;
+                trbAmpDecay.Enabled = false;
                 lblDecay.Text = "----";
             }
         }
 
         private void chkSustain_CheckedChanged(object sender, EventArgs e) {
-            if (chkSustain.Checked) {
-                hsbSustain.Enabled = true;
-                lblSustain.Text = string.Format("{0}%", hsbSustain.Value * 0.1);
+            if (chkAmpSustain.Checked) {
+                trbAmpSustain.Enabled = true;
+                lblSustain.Text = string.Format("{0}%", trbAmpSustain.Value * 0.1);
             }
             else {
-                hsbSustain.Enabled = false;
+                trbAmpSustain.Enabled = false;
                 lblSustain.Text = "----";
             }
         }
 
         private void chkReleace_CheckedChanged(object sender, EventArgs e) {
-            if (chkReleace.Checked) {
-                hsbReleace.Enabled = true;
-                lblReleace.Text = hsbToText(hsbReleace.Value);
+            if (chkAmpReleace.Checked) {
+                trbAmpReleace.Enabled = true;
+                lblReleace.Text = trbToText(trbAmpReleace.Value);
             }
             else {
-                hsbReleace.Enabled = false;
+                trbAmpReleace.Enabled = false;
                 lblReleace.Text = "----";
             }
         }
         #endregion
 
-        #region Eq
+        #region EQ
         private double eqAttack {
-            get { return hsbToValue(hsbEqAttack.Value); }
-            set { setValue(hsbEqAttack, chkEqAttack, lblEqAttack, value); }
+            get { return trbToValue(trbEqAttack.Value); }
+            set { setValue(trbEqAttack, chkEqAttack, lblEqAttack, value); }
         }
 
         private double eqHold {
-            get { return hsbToValue(hsbEqHold.Value); }
-            set { setValue(hsbEqHold, chkEqHold, lblEqHold, value); }
+            get { return trbToValue(trbEqHold.Value); }
+            set { setValue(trbEqHold, chkEqHold, lblEqHold, value); }
         }
 
         private double eqDecay {
-            get { return hsbToValue(hsbEqDecay.Value); }
-            set { setValue(hsbEqDecay, chkEqDecay, lblEqDecay, value); }
+            get { return trbToValue(trbEqDecay.Value); }
+            set { setValue(trbEqDecay, chkEqDecay, lblEqDecay, value); }
         }
 
         private double eqSustain {
-            get { return hsbEqSustain.Value * 0.1; }
-            set { hsbEqSustain.Value = (int)(value * 10); }
+            get { return trbEqSustain.Value * 0.1; }
+            set {
+                chkEqSustain.Checked = true;
+                trbEqSustain.Enabled = true;
+                trbEqSustain.Value = (int)(value * 10);
+            }
         }
 
         private double eqReleace {
-            get { return hsbToValue(hsbEqReleace.Value); }
-            set { setValue(hsbEqReleace, chkEqReleace, lblEqReleace, value); }
+            get { return trbToValue(trbEqReleace.Value); }
+            set { setValue(trbEqReleace, chkEqReleace, lblEqReleace, value); }
         }
 
-        private void hsbEqAttack_ValueChanged(object sender, EventArgs e) {
-            lblEqAttack.Text = hsbToText(hsbEqAttack.Value);
+        private void trbEqAttack_ValueChanged(object sender, EventArgs e) {
+            lblEqAttack.Text = trbToText(trbEqAttack.Value);
         }
 
-        private void hsbEqHold_ValueChanged(object sender, EventArgs e) {
-            lblEqHold.Text = hsbToText(hsbEqHold.Value);
+        private void trbEqHold_ValueChanged(object sender, EventArgs e) {
+            lblEqHold.Text = trbToText(trbEqHold.Value);
         }
 
-        private void hsbEqDecay_ValueChanged(object sender, EventArgs e) {
-            lblEqDecay.Text = hsbToText(hsbEqDecay.Value);
+        private void trbEqDecay_ValueChanged(object sender, EventArgs e) {
+            lblEqDecay.Text = trbToText(trbEqDecay.Value);
         }
 
-        private void hsbEqSustain_ValueChanged(object sender, EventArgs e) {
-            lblEqSustain.Text = string.Format("{0}%", hsbEqSustain.Value * 0.1);
+        private void trbEqSustain_ValueChanged(object sender, EventArgs e) {
+            lblEqSustain.Text = string.Format("{0}%", trbEqSustain.Value * 0.1);
         }
 
-        private void hsbEqReleace_ValueChanged(object sender, EventArgs e) {
-            lblEqReleace.Text = hsbToText(hsbEqReleace.Value);
+        private void trbEqReleace_ValueChanged(object sender, EventArgs e) {
+            lblEqReleace.Text = trbToText(trbEqReleace.Value);
         }
 
         private void chkEqAttack_CheckedChanged(object sender, EventArgs e) {
             if (chkEqAttack.Checked) {
-                hsbEqAttack.Enabled = true;
-                lblEqAttack.Text = hsbToText(hsbEqAttack.Value);
+                trbEqAttack.Enabled = true;
+                lblEqAttack.Text = trbToText(trbEqAttack.Value);
             }
             else {
-                hsbEqAttack.Enabled = false;
+                trbEqAttack.Enabled = false;
                 lblEqAttack.Text = "----";
             }
         }
 
         private void chkEqHold_CheckedChanged(object sender, EventArgs e) {
             if (chkEqHold.Checked) {
-                hsbEqHold.Enabled = true;
-                lblEqHold.Text = hsbToText(hsbEqHold.Value);
+                trbEqHold.Enabled = true;
+                lblEqHold.Text = trbToText(trbEqHold.Value);
             }
             else {
-                hsbEqHold.Enabled = false;
+                trbEqHold.Enabled = false;
                 lblEqHold.Text = "----";
             }
         }
 
         private void chkEqDecay_CheckedChanged(object sender, EventArgs e) {
             if (chkEqDecay.Checked) {
-                hsbEqDecay.Enabled = true;
-                lblEqDecay.Text = hsbToText(hsbEqDecay.Value);
+                trbEqDecay.Enabled = true;
+                lblEqDecay.Text = trbToText(trbEqDecay.Value);
             }
             else {
-                hsbEqDecay.Enabled = false;
+                trbEqDecay.Enabled = false;
                 lblEqDecay.Text = "----";
             }
         }
 
         private void chkEqSustain_CheckedChanged(object sender, EventArgs e) {
             if (chkEqSustain.Checked) {
-                hsbEqSustain.Enabled = true;
-                lblEqSustain.Text = string.Format("{0}%", hsbEqSustain.Value * 0.1);
+                trbEqSustain.Enabled = true;
+                lblEqSustain.Text = string.Format("{0}%", trbEqSustain.Value * 0.1);
             }
             else {
-                hsbEqSustain.Enabled = false;
+                trbEqSustain.Enabled = false;
                 lblEqSustain.Text = "----";
             }
         }
 
         private void chkEqReleace_CheckedChanged(object sender, EventArgs e) {
             if (chkEqReleace.Checked) {
-                hsbEqReleace.Enabled = true;
-                lblEqReleace.Text = hsbToText(hsbEqReleace.Value);
+                trbEqReleace.Enabled = true;
+                lblEqReleace.Text = trbToText(trbEqReleace.Value);
             }
             else {
-                hsbEqReleace.Enabled = false;
+                trbEqReleace.Enabled = false;
                 lblEqReleace.Text = "----";
             }
         }
         #endregion
 
-        private string hsbToText(int value) {
-            var v = hsbToValue(value);
+        private string trbToText(int value) {
+            var v = trbToValue(value);
 
             if (v < 1.0) {
                 return string.Format("{0}ms", (int)(1000 * v));
@@ -494,72 +503,72 @@ namespace DLSeditor {
             }
         }
 
-        private double hsbToValue(int value) {
-            return 40 * Math.Pow(64, value / 4096.0) / 64 - 0.626;
+        private double trbToValue(int value) {
+            return 40 * Math.Pow(64, value / 2500.0) / 64 - 0.626;
         }
 
         private int valueToHsb(double hsb) {
-            return (int)(Math.Log((hsb * 1000 + 626) * 64 / 40000, 64) * 4096 + 1);
+            return (int)(Math.Log((hsb * 1000 + 626) * 64 / 40000, 64) * 2500 + 1);
         }
 
-        private void setValue(HScrollBar hsb, CheckBox chk, Label lbl, double value) {
+        private void setValue(TrackBar tkb, CheckBox chk, Label lbl, double value) {
             if (value <= 0) {
-                hsb.Value = 1;
-                hsb.Enabled = false;
+                tkb.Value = 1;
+                tkb.Enabled = false;
                 chk.Checked = false;
                 lbl.Text = "----";
             }
             else if (39 < value) {
-                hsb.Value = valueToHsb(39);
-                hsb.Enabled = true;
+                tkb.Value = valueToHsb(39);
+                tkb.Enabled = true;
                 chk.Checked = true;
             }
             else {
-                hsb.Value = valueToHsb(value);
-                hsb.Enabled = true;
+                tkb.Value = valueToHsb(value);
+                tkb.Enabled = true;
                 chk.Checked = true;
             }
         }
 
         private void disp() {
-            hsbAttack.Enabled = false;
-            chkAttack.Checked = false;
+            trbAmpAttack.Enabled = false;
+            chkAmpAttack.Checked = false;
             lblAttack.Text = "----";
 
-            hsbHold.Enabled = false;
-            chkHold.Checked = false;
+            trbAmpHold.Enabled = false;
+            chkAmpHold.Checked = false;
             lblHold.Text = "----";
 
-            hsbDecay.Enabled = false;
-            chkDecay.Checked = false;
+            trbAmpDecay.Enabled = false;
+            chkAmpDecay.Checked = false;
             lblDecay.Text = "----";
 
-            hsbSustain.Enabled = false;
-            chkSustain.Checked = false;
+            trbAmpSustain.Enabled = false;
+            chkAmpSustain.Checked = false;
             lblSustain.Text = "----";
 
-            hsbReleace.Enabled = false;
-            chkReleace.Checked = false;
+            trbAmpReleace.Enabled = false;
+            chkAmpReleace.Checked = false;
             lblReleace.Text = "----";
 
 
-            hsbEqAttack.Enabled = false;
+            trbEqAttack.Enabled = false;
             chkEqAttack.Checked = false;
             lblEqAttack.Text = "----";
 
-            hsbEqHold.Enabled = false;
+            trbEqHold.Enabled = false;
             chkEqHold.Checked = false;
             lblEqHold.Text = "----";
 
-            hsbEqDecay.Enabled = false;
+            trbEqDecay.Enabled = false;
             chkEqDecay.Checked = false;
             lblEqDecay.Text = "----";
 
-            hsbEqSustain.Enabled = false;
+            trbEqSustain.Enabled = false;
             chkEqSustain.Checked = false;
             lblEqSustain.Text = "----";
 
-            hsbEqReleace.Enabled = false;
+            trbEqReleace.Enabled = false;
             chkEqReleace.Checked = false;
             lblEqReleace.Text = "----";
 
@@ -567,13 +576,11 @@ namespace DLSeditor {
             ampAttack = 0;
             ampHold = 0;
             ampDecay = 0;
-            ampSustain = 0;
             ampReleace = 0;
 
             eqAttack = 0;
             eqHold = 0;
             eqDecay = 0;
-            eqSustain = 0;
             eqReleace = 0;
 
             if (null != mArt) {

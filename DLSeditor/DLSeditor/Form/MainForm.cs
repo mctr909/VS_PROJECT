@@ -78,9 +78,18 @@ namespace DLSeditor {
                 fs.Close();
             }
 
-            DispInstList();
+            txtInstSearch.Text = "";
+            txtWaveSearch.Text = "";
+
             DispWaveList();
+            DispInstList();
             DispRegionInfo();
+            DispInstAttr();
+
+            if(0 < lstInst.Items.Count) {
+                lstInst.SelectedIndex = 0;
+            }
+
             tabControl.SelectedIndex = 0;
             mFilePath = filePath;
         }
@@ -466,6 +475,7 @@ namespace DLSeditor {
         #region 音色一覧
         private void lstInst_DoubleClick(object sender, EventArgs e) {
             DispRegionInfo();
+            DispInstAttr();
         }
 
         private void AddInst() {
@@ -488,6 +498,7 @@ namespace DLSeditor {
             DispInstList();
             DispWaveList();
             DispRegionInfo();
+            DispInstAttr();
 
             if (index < lstInst.Items.Count) {
                 lstInst.SelectedIndex = index;
@@ -562,6 +573,8 @@ namespace DLSeditor {
             fm.ShowDialog();
 
             DispInstList();
+            DispRegionInfo();
+            DispInstAttr();
         }
 
         private void DispInstList() {
@@ -636,9 +649,19 @@ namespace DLSeditor {
         #endregion
 
         #region 音色属性
+        private void DispInstAttr() {
+            var inst = GetSelectedInst();
+            if (null == inst || null == inst.Articulations || null == inst.Articulations.ART) {
+                ampEnvelope.Visible = false;
+            }
+            else {
+                ampEnvelope.Visible = true;
+            }
+        }
+
         private void tbpInstAttribute_Leave(object sender, EventArgs e) {
             var inst = GetSelectedInst();
-            if (null == inst || null == inst.Articulations) {
+            if (null == inst || null == inst.Articulations || null == inst.Articulations.ART) {
                 return;
             }
 
@@ -801,8 +824,6 @@ namespace DLSeditor {
                     picRegion.Image.Dispose();
                     picRegion.Image = null;
                 }
-                tbpInstInfo.Text = "音色設定"; ;
-                tbpRegion.Text = "レイヤー設定";
                 return;
             }
 
