@@ -202,7 +202,7 @@
             // btnAdd
             // 
             this.btnAdd.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnAdd.Location = new System.Drawing.Point(459, 680);
+            this.btnAdd.Location = new System.Drawing.Point(473, 700);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(119, 63);
             this.btnAdd.TabIndex = 6;
@@ -324,7 +324,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(657, 771);
+            this.ClientSize = new System.Drawing.Size(657, 777);
             this.Controls.Add(this.envelope1);
             this.Controls.Add(this.chkLoop);
             this.Controls.Add(this.grbVolume);

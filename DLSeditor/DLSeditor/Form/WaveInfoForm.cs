@@ -329,7 +329,7 @@ namespace DLSeditor {
             var ms = new MemoryStream(wave.Data);
             var br = new BinaryReader(ms);
             var samples = 8 * wave.Data.Length / wave.Format.Bits;
-            var packSize = 32;
+            var packSize = 16;
             samples += packSize * 2 - (samples % (packSize * 2));
 
             mWaveData = new float[samples];
@@ -360,10 +360,7 @@ namespace DLSeditor {
             var time = 0.0;
             for (var s = 0; s < mSpecData.Length; ++s) {
                 for (var i = 0; i < packSize && time < mWaveData.Length; ++i) {
-                    var w = mWaveData[(int)time];
-                    for (uint b = 0; b < sp.Banks; ++b) {
-                        sp.Filtering(b, w);
-                    }
+                    sp.Filtering(mWaveData[(int)time]);
                     time += delta;
                 }
 
