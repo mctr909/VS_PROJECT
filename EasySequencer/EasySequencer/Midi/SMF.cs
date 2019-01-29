@@ -58,7 +58,7 @@ namespace MIDI {
 
 				while (stream.Position < stream.Length) {
 					time.Step(ReadDelta(stream));
-					Events.Add(new Event(time, ReadMessage(stream, ref currentStatus)));
+					Events.Add(new Event(time, No, ReadMessage(stream, ref currentStatus)));
 				}
 			}
 
@@ -296,20 +296,23 @@ namespace MIDI {
 		}
 
 		public Event[] EventList {
-			get {
-				HashSet<Event> hash = new HashSet<Event>();
-				foreach (var tr in mTracks) {
-					foreach (var ev in tr.Value.Events) {
-						hash.Add(ev);
-					}
-				}
+            get {
+                HashSet<Event> hash = new HashSet<Event>();
+                foreach (var tr in mTracks) {
+                    foreach (var ev in tr.Value.Events) {
+                        hash.Add(ev);
+                    }
+                }
 
-				Event[] evList = new Event[hash.Count];
-				hash.CopyTo(evList);
-				Array.Sort(evList, (a, b) => (((int)a.Time << 8) | (byte)a.Message.Type) - (((int)b.Time << 8) | (byte)b.Message.Type));
-				return evList;
-			}
-		}
+                Event[] evList = new Event[hash.Count];
+                hash.CopyTo(evList);
+                Array.Sort(evList, new Comparison<Event>((a, b) => (
+                    0 == ((((long)a.Time << 16) | (a.Track << 8) | a.Index) - (((long)b.Time << 16) | (b.Track << 8) | b.Index)) ? 0 :
+                    0 < ((((long)a.Time << 16) | (a.Track << 8) | a.Index) - (((long)b.Time << 16) | (b.Track << 8) | b.Index)) ? 1 : -1
+                )));
+                return evList;
+            }
+        }
 
 		public SMF(FORMAT format = FORMAT.FORMAT1, ushort ticks = 960) {
 			mHead = new Head(format, 0, ticks);

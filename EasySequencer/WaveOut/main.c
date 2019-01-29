@@ -7,9 +7,6 @@ WAVEFORMATEX    g_waveFmt = { 0 };
 WAVEHDR         g_waveHdr[BUFFER_COUNT] = { NULL };
 
 Int32           g_bufferLength = 4096;
-Int32           g_deviceListLength = 0;
-WCHAR           g_deviceList[DEVICE_LIST_SIZE] = { '\0' };
-
 LPBYTE          gp_dlsBuffer = NULL;
 CHANNEL         **gpp_channels = NULL;
 SAMPLER         **gpp_samplers = NULL;
@@ -87,12 +84,16 @@ VOID WINAPI WaveOutClose() {
 }
 
 CHANNEL** WINAPI GetChannelPtr() {
-    gpp_channels = createChannels(CHANNEL_COUNT);
+    if (NULL == gpp_channels) {
+        gpp_channels = createChannels(CHANNEL_COUNT);
+    }
     return gpp_channels;
 }
 
 SAMPLER** WINAPI GetSamplerPtr() {
-    gpp_samplers = createSamplers(SAMPLER_COUNT);
+    if (NULL == gpp_samplers) {
+        gpp_samplers = createSamplers(SAMPLER_COUNT);
+    }
     return gpp_samplers;
 }
 
@@ -113,10 +114,12 @@ LPBYTE WINAPI LoadDLS(LPWSTR filePath, UInt32 *size, UInt32 sampleRate) {
 
 /******************************************************************************/
 void CALLBACK WaveOutProc(HWAVEOUT hwo, UInt32 uMsg) {
-    static Int32 b, t, s, ch;
-    static Int16* pWave = NULL;
+    static Int32 b;
     static double waveL;
     static double waveR;
+
+    register Int16* pWave;
+    register t, s, c;
 
     switch (uMsg) {
     case MM_WOM_OPEN:
@@ -134,7 +137,7 @@ void CALLBACK WaveOutProc(HWAVEOUT hwo, UInt32 uMsg) {
         }
 
         //
-        if (g_issueMute) {
+        if (g_issueMute || NULL == gpp_channels || NULL == gpp_samplers || NULL == gp_dlsBuffer) {
             for (b = 0; b < BUFFER_COUNT; ++b) {
                 if (0 == (g_waveHdr[b].dwFlags & WHDR_INQUEUE)) {
                     memset(g_waveHdr[b].lpData, 0, g_waveFmt.nBlockAlign * g_bufferLength);
@@ -144,20 +147,8 @@ void CALLBACK WaveOutProc(HWAVEOUT hwo, UInt32 uMsg) {
             g_isMute = true;
             break;
         }
-        else {
-            g_isMute = false;
-        }
 
-        //
-        if (NULL == gpp_channels || NULL == gpp_samplers || NULL == gp_dlsBuffer) {
-            for (b = 0; b < BUFFER_COUNT; ++b) {
-                if (0 == (g_waveHdr[b].dwFlags & WHDR_INQUEUE)) {
-                    memset(g_waveHdr[b].lpData, 0, g_waveFmt.nBlockAlign * g_bufferLength);
-                    waveOutWrite(g_hWaveOut, &g_waveHdr[b], sizeof(WAVEHDR));
-                }
-            }
-            break;
-        }
+        g_isMute = false;
 
         //
         for (b = 0; b < BUFFER_COUNT; ++b) {
@@ -165,13 +156,13 @@ void CALLBACK WaveOutProc(HWAVEOUT hwo, UInt32 uMsg) {
                 pWave = (Int16*)g_waveHdr[b].lpData;
                 for (t = 0; t < g_bufferLength; ++t) {
                     for (s = 0; s < SAMPLER_COUNT; ++s) {
-                        samplerStep(gpp_channels, gpp_samplers[s]);
+                        sampler(gpp_channels, gpp_samplers[s]);
                     }
 
                     waveL = 0.0;
                     waveR = 0.0;
-                    for (ch = 0; ch < CHANNEL_COUNT; ++ch) {
-                        channelStep(gpp_channels[ch], &waveL, &waveR);
+                    for (c = 0; c < CHANNEL_COUNT; ++c) {
+                        channel(gpp_channels[c], &waveL, &waveR);
                     }
 
                     if (1.0 < waveL) waveL = 1.0;

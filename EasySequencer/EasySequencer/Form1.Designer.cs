@@ -109,7 +109,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(13, 4, 0, 4);
-            this.menuStrip1.Size = new System.Drawing.Size(2425, 46);
+            this.menuStrip1.Size = new System.Drawing.Size(2425, 44);
             this.menuStrip1.TabIndex = 26;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -125,7 +125,7 @@
             this.toolStripSeparator3,
             this.wavファイル出力ToolStripMenuItem});
             this.ファイルFToolStripMenuItem.Name = "ファイルFToolStripMenuItem";
-            this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(121, 38);
+            this.ファイルFToolStripMenuItem.Size = new System.Drawing.Size(121, 36);
             this.ファイルFToolStripMenuItem.Text = "ファイル(F)";
             // 
             // 新規作成ToolStripMenuItem
@@ -180,7 +180,7 @@
             // 編集EToolStripMenuItem
             // 
             this.編集EToolStripMenuItem.Name = "編集EToolStripMenuItem";
-            this.編集EToolStripMenuItem.Size = new System.Drawing.Size(101, 38);
+            this.編集EToolStripMenuItem.Size = new System.Drawing.Size(101, 36);
             this.編集EToolStripMenuItem.Text = "編集(E)";
             // 
             // btnPalyStop

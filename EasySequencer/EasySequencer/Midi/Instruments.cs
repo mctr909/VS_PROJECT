@@ -1,140 +1,173 @@
 ﻿using System;
 using System.Collections.Generic;
 using DLS;
+using System.Runtime.InteropServices;
 
 namespace MIDI {
-	unsafe public class Instruments {
-		public Dictionary<INST_ID, WaveInfo[]> List;
+    unsafe public class Instruments {
+        [DllImport("WaveOut.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        unsafe public static extern IntPtr LoadDLS(IntPtr filePath, out uint size, int sampleRate);
 
-		public Instruments(IntPtr dlsPtr, uint dlsSize, int sampleRate) {
-			var dls = new File(dlsPtr, dlsSize);
-			var deltaTime = 1.0 / sampleRate;
+        public Dictionary<INST_ID, WaveInfo[]> List;
 
-			List = new Dictionary<INST_ID, WaveInfo[]>();
+        public Instruments(string dlsPath, int sampleRate) {
+            uint dlsSize = 0;
+            var dlsPtr = LoadDLS(Marshal.StringToHGlobalAuto(dlsPath), out dlsSize, Const.SampleRate);
+            var dls = new File(dlsPtr, dlsSize);
+            var deltaTime = 1.0 / sampleRate;
 
-			foreach (var inst in dls.instruments.List) {
-				var envAmp = new Envelope();
-				if (null != inst.articulations) {
-					envAmp.attackTime = 1.0;
-					envAmp.decayTime = 1.0;
-					envAmp.releaceTime = 1.0;
-					envAmp.sustainLevel = 1.0;
-					envAmp.holdTime = 0.0;
-					var holdTime = 1.0;
-					foreach (var conn in inst.articulations.art.List) {
-						if (SRC_TYPE.NONE != conn.source)
-							continue;
-						switch (conn.destination) {
-						case DST_TYPE.EG1_ATTACK_TIME:
-							envAmp.attackTime = ART.GetValue(conn);
-							holdTime += ART.GetValue(conn);
-							break;
-						case DST_TYPE.EG1_DECAY_TIME:
-							envAmp.decayTime = ART.GetValue(conn);
-							break;
-						case DST_TYPE.EG1_RELEASE_TIME:
-							envAmp.releaceTime = ART.GetValue(conn);
-							break;
-						case DST_TYPE.EG1_SUSTAIN_LEVEL:
-							envAmp.sustainLevel = (0.0 == ART.GetValue(conn)) ? 1.0 : (ART.GetValue(conn) * 0.01);
-							break;
-						case DST_TYPE.EG1_HOLD_TIME:
-							holdTime += ART.GetValue(conn);
-							break;
-						}
-					}
-					envAmp.holdTime += holdTime;
-				}
+            List = new Dictionary<INST_ID, WaveInfo[]>();
 
-				var waveInfo = new WaveInfo[128];
-				for (var noteNo = 0; noteNo < waveInfo.Length; ++noteNo) {
-					RGN_ region = null;
-					foreach (var rgn in inst.regions.List) {
-						if (rgn.pHeader->key.low <= noteNo && noteNo <= rgn.pHeader->key.high) {
-							region = rgn;
-							break;
-						}
-					}
+            foreach (var inst in dls.instruments.List) {
+                var envAmp = new Envelope();
+                if (null != inst.articulations) {
+                    envAmp.attackTime = 0.0;
+                    envAmp.decayTime = 0.0;
+                    envAmp.releaceTime = 0.0;
+                    envAmp.sustainLevel = 1.0;
+                    envAmp.holdTime = 0.0;
+                    var holdTime = 0.0;
+                    foreach (var conn in inst.articulations.art.List) {
+                        if (SRC_TYPE.NONE != conn.source)
+                            continue;
+                        switch (conn.destination) {
+                            case DST_TYPE.EG1_ATTACK_TIME:
+                                envAmp.attackTime = ART.GetValue(conn);
+                                holdTime += ART.GetValue(conn);
+                                break;
+                            case DST_TYPE.EG1_DECAY_TIME:
+                                envAmp.decayTime = ART.GetValue(conn);
+                                break;
+                            case DST_TYPE.EG1_RELEASE_TIME:
+                                envAmp.releaceTime = ART.GetValue(conn);
+                                break;
+                            case DST_TYPE.EG1_SUSTAIN_LEVEL:
+                                envAmp.sustainLevel = (0.0 == ART.GetValue(conn)) ? 1.0 : (ART.GetValue(conn) * 0.01);
+                                break;
+                            case DST_TYPE.EG1_HOLD_TIME:
+                                holdTime += ART.GetValue(conn);
+                                break;
+                        }
+                    }
+                    envAmp.holdTime += holdTime;
 
-					if (null == region) {
-						continue;
-					}
+                    if (envAmp.attackTime < 0.001) {
+                        envAmp.attackTime = 0.001;
+                    }
+                    if (envAmp.holdTime < 0.001) {
+                        envAmp.holdTime = 0.001;
+                    }
+                    if (envAmp.decayTime < 0.001) {
+                        envAmp.decayTime = 0.001;
+                    }
+                    if (envAmp.releaceTime < 0.001) {
+                        envAmp.releaceTime = 0.001;
+                    }
+                }
 
-					if (null != region.articulations) {
-						envAmp.attackTime = 1.0;
-						envAmp.decayTime = 1.0;
-						envAmp.releaceTime = 1.0;
-						envAmp.sustainLevel = 1.0;
-						envAmp.holdTime = 0.0;
-						var holdTime = 1.0;
-						foreach (var conn in region.articulations.art.List) {
-							if (SRC_TYPE.NONE != conn.source)
-								continue;
-							switch (conn.destination) {
-							case DST_TYPE.EG1_ATTACK_TIME:
-								envAmp.attackTime = ART.GetValue(conn);
-								holdTime += ART.GetValue(conn);
-								break;
-							case DST_TYPE.EG1_DECAY_TIME:
-								envAmp.decayTime = ART.GetValue(conn);
-								break;
-							case DST_TYPE.EG1_RELEASE_TIME:
-								envAmp.releaceTime = ART.GetValue(conn);
-								break;
-							case DST_TYPE.EG1_SUSTAIN_LEVEL:
-								envAmp.sustainLevel = (0.0 == ART.GetValue(conn)) ? 1.0 : (ART.GetValue(conn) * 0.01);
-								break;
-							case DST_TYPE.EG1_HOLD_TIME:
-								holdTime += ART.GetValue(conn);
-								break;
-							}
-						}
-						envAmp.holdTime += holdTime;
-					}
+                var waveInfo = new WaveInfo[128];
+                for (var noteNo = 0; noteNo < waveInfo.Length; ++noteNo) {
+                    RGN_ region = null;
+                    foreach (var rgn in inst.regions.List) {
+                        if (rgn.pHeader->key.low <= noteNo && noteNo <= rgn.pHeader->key.high) {
+                            region = rgn;
+                            break;
+                        }
+                    }
 
-					waveInfo[noteNo].envAmp = envAmp;
-					var wave = dls.wavePool.List[(int)region.pWaveLink->tableIndex];
+                    if (null == region) {
+                        waveInfo[noteNo].pcmAddr = uint.MaxValue;
+                        continue;
+                    }
 
-					if (0 < wave.pSampler->loopCount) {
-						waveInfo[noteNo].loop.start = wave.pLoops[0].start;
-						waveInfo[noteNo].loop.length = wave.pLoops[0].length;
-						waveInfo[noteNo].loopEnable = true;
-					}
-					else {
-						waveInfo[noteNo].loop.start = 0;
-						waveInfo[noteNo].loop.length = wave.pLoops->length;
-						waveInfo[noteNo].loopEnable = false;
-					}
+                    if (null != region.articulations) {
+                        envAmp.attackTime = 0.0;
+                        envAmp.decayTime = 0.0;
+                        envAmp.releaceTime = 0.0;
+                        envAmp.sustainLevel = 1.0;
+                        envAmp.holdTime = 0.0;
+                        var holdTime = 0.0;
+                        foreach (var conn in region.articulations.art.List) {
+                            if (SRC_TYPE.NONE != conn.source)
+                                continue;
+                            switch (conn.destination) {
+                                case DST_TYPE.EG1_ATTACK_TIME:
+                                    envAmp.attackTime = ART.GetValue(conn);
+                                    holdTime += ART.GetValue(conn);
+                                    break;
+                                case DST_TYPE.EG1_DECAY_TIME:
+                                    envAmp.decayTime = ART.GetValue(conn);
+                                    break;
+                                case DST_TYPE.EG1_RELEASE_TIME:
+                                    envAmp.releaceTime = ART.GetValue(conn);
+                                    break;
+                                case DST_TYPE.EG1_SUSTAIN_LEVEL:
+                                    envAmp.sustainLevel = (0.0 == ART.GetValue(conn)) ? 1.0 : (ART.GetValue(conn) * 0.01);
+                                    break;
+                                case DST_TYPE.EG1_HOLD_TIME:
+                                    holdTime += ART.GetValue(conn);
+                                    break;
+                            }
+                        }
+                        envAmp.holdTime += holdTime;
 
-					if (null == region.pSampler) {
-						waveInfo[noteNo].unityNote = (byte)wave.pSampler->unityNote;
-						waveInfo[noteNo].delta
-							= Math.Pow(2.0, wave.pSampler->fineTune / 1200.0)
-							* wave.pFormat->sampleRate / sampleRate
-						;
-						waveInfo[noteNo].gain = wave.pSampler->Gain;
-					}
-					else {
-						waveInfo[noteNo].unityNote = (byte)region.pSampler->unityNote;
-						waveInfo[noteNo].delta
-							= Math.Pow(2.0, region.pSampler->fineTune / 1200.0)
-							* wave.pFormat->sampleRate / sampleRate
-						;
-						waveInfo[noteNo].gain = region.pSampler->Gain;
-					}
+                        if (envAmp.attackTime < 0.001) {
+                            envAmp.attackTime = 0.001;
+                        }
+                        if (envAmp.holdTime < 0.001) {
+                            envAmp.holdTime = 0.001;
+                        }
+                        if (envAmp.decayTime < 0.001) {
+                            envAmp.decayTime = 0.001;
+                        }
+                        if (envAmp.releaceTime < 0.001) {
+                            envAmp.releaceTime = 0.001;
+                        }
+                    }
 
-					waveInfo[noteNo].pcmAddr = wave.pcmAddr - (uint)dlsPtr.ToInt32();
-					waveInfo[noteNo].pcmLength = wave.dataSize / wave.pFormat->blockAlign;
-				}
+                    waveInfo[noteNo].envAmp = envAmp;
+                    var wave = dls.wavePool.List[(int)region.pWaveLink->tableIndex];
 
-				var id = new INST_ID();
-				id.isDrum = inst.pHeader->locale.bankFlags;
-				id.programNo = inst.pHeader->locale.programNo;
-				id.bankMSB = inst.pHeader->locale.bankMSB;
-				id.bankLSB = inst.pHeader->locale.bankLSB;
+                    if (0 < wave.pSampler->loopCount) {
+                        waveInfo[noteNo].loop.start = wave.pLoops[0].start;
+                        waveInfo[noteNo].loop.length = wave.pLoops[0].length;
+                        waveInfo[noteNo].loopEnable = true;
+                    }
+                    else {
+                        waveInfo[noteNo].loop.start = 0;
+                        waveInfo[noteNo].loop.length = wave.pLoops->length;
+                        waveInfo[noteNo].loopEnable = false;
+                    }
 
-				List.Add(id, waveInfo);
-			}
-		}
-	}
+                    if (null == region.pSampler) {
+                        waveInfo[noteNo].unityNote = (byte)wave.pSampler->unityNote;
+                        waveInfo[noteNo].delta
+                            = Math.Pow(2.0, wave.pSampler->fineTune / 1200.0)
+                            * wave.pFormat->sampleRate / sampleRate
+                        ;
+                        waveInfo[noteNo].gain = wave.pSampler->Gain;
+                    }
+                    else {
+                        waveInfo[noteNo].unityNote = (byte)region.pSampler->unityNote;
+                        waveInfo[noteNo].delta
+                            = Math.Pow(2.0, region.pSampler->fineTune / 1200.0)
+                            * wave.pFormat->sampleRate / sampleRate
+                        ;
+                        waveInfo[noteNo].gain = region.pSampler->Gain;
+                    }
+
+                    waveInfo[noteNo].pcmAddr = wave.pcmAddr - (uint)dlsPtr.ToInt32();
+                    waveInfo[noteNo].pcmLength = wave.dataSize / wave.pFormat->blockAlign;
+                }
+
+                var id = new INST_ID();
+                id.isDrum = inst.pHeader->locale.bankFlags;
+                id.programNo = inst.pHeader->locale.programNo;
+                id.bankMSB = inst.pHeader->locale.bankMSB;
+                id.bankLSB = inst.pHeader->locale.bankLSB;
+
+                List.Add(id, waveInfo);
+            }
+        }
+    }
 }

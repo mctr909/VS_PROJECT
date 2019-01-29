@@ -1,4 +1,6 @@
-﻿namespace MIDI {
+﻿using System;
+
+namespace MIDI {
 	public enum KEY_STATUS : byte {
 		OFF,
 		ON,
@@ -266,18 +268,18 @@
 				}
 			}
 			ctrl.hold = value;
-			mpChannel->hold = (value < 64 ? 10.0 : 1.0);
+			mpChannel->holdDelta = (value < 64 ? 1.0 : 1.0 * Const.DeltaTime);
 		}
 
-		private void setRes(byte value) {
-			ctrl.res = value;
-			mpChannel->eq.resonance = (value < 64) ? 0.0 : ((value-64) / 64.0);
-		}
+        private void setRes(byte value) {
+            ctrl.res = value;
+            mpChannel->eq.resonance = (value < 64) ? 0.0 : ((value - 64) / 64.0);
+        }
 
-		private void setCut(byte value) {
-			ctrl.cut = value;
-			mpChannel->tarCutoff = (value < 64) ? Const.Level[2 * value] : 1.0;
-		}
+        private void setCut(byte value) {
+            ctrl.cut = value;
+            mpChannel->tarCutoff = (value < 80) ? Const.Level[(int)(1.6 * value)] : 1.0;
+        }
 
 		private void setDelayDepath(byte value) {
 			ctrl.del = value;

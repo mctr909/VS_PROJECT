@@ -165,15 +165,17 @@
 		}
 	}
 
-	public struct Event {
-		public readonly uint Time;
-		public readonly uint Index;
-		public readonly Message Message;
+    public struct Event {
+        public readonly uint Time;
+        public readonly uint Track;
+        public readonly uint Index;
+        public readonly Message Message;
 
-		public Event(Time time, Message message) {
-			Time = time.Value;
-			Index = time.Index;
-			Message = message;
-		}
-	}
+        public Event(Time time, uint trackNo, Message message) {
+            Time = time.Value;
+            Track = trackNo;
+            Index = time.Index;
+            Message = message;
+        }
+    }
 }

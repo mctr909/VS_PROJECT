@@ -153,11 +153,11 @@ namespace MIDI {
 				var msg = ev.Message;
 				var type = msg.Type;
 
-				if (EVENT_TYPE.META == type) {
-					if (META_TYPE.TEMPO == msg.Meta.Type) {
-						mBPM = msg.Meta.BPM;
-					}
-				}
+                if (EVENT_TYPE.META == type) {
+                    if (META_TYPE.TEMPO == msg.Meta.Type) {
+                        mBPM = msg.Meta.BPM;
+                    }
+                }
 
 				if (EVENT_TYPE.NOTE_OFF == type || EVENT_TYPE.NOTE_ON == type) {
 					if (mTicks < (mCurrentTime - eventTime)) {
