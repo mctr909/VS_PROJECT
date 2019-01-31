@@ -80,7 +80,7 @@ CHANNEL** createChannels(UInt32 count) {
         memset(&channels[i]->chorus, 0, sizeof(CHORUS));
 
         CHORUS *chorus = &channels[i]->chorus;
-        chorus->lfoK = 0.5 * 6.283 / __sampleRate;
+        chorus->lfoK = 6.283 / __sampleRate;
         chorus->pPanL = (double*)malloc(sizeof(double) * CHORUS_PHASES);
         chorus->pPanR = (double*)malloc(sizeof(double) * CHORUS_PHASES);
         chorus->pLfoRe = (double*)malloc(sizeof(double) * CHORUS_PHASES);
@@ -110,18 +110,19 @@ SAMPLER** createSamplers(UInt32 count) {
 /******************************************************************************/
 inline extern void channel(CHANNEL *ch, double *waveL, double *waveR) {
     //
-    double chWave = 0.0;
-    filter(&ch->eq, ch->curAmp * ch->wave, &chWave);
+    filter(&ch->eq, ch->curAmp * ch->wave);
+    ch->wave = ch->eq.pole03;
 
     //
-    ch->waveL = chWave * ch->panLeft;
-    ch->waveR = chWave * ch->panRight;
+    ch->waveL = ch->wave * ch->panLeft;
+    ch->waveR = ch->wave * ch->panRight;
 
+    //
     delay(ch, &ch->delay);
     chorus(ch, &ch->delay, &ch->chorus);
 
+    //
     ch->curAmp += 200 * (ch->tarAmp - ch->curAmp) * __deltaTime;
-
     ch->eq.cutoff += 200 * (ch->tarCutoff - ch->eq.cutoff) * __deltaTime;
 
     //
@@ -135,7 +136,7 @@ inline extern void sampler(CHANNEL **chs, SAMPLER *smpl) {
         return;
     }
 
-    register CHANNEL *ch = chs[smpl->channelNo];
+    CHANNEL *ch = chs[smpl->channelNo];
     if (NULL == ch) {
         return;
     }
@@ -171,10 +172,10 @@ inline extern void sampler(CHANNEL **chs, SAMPLER *smpl) {
     }
 
     //
-    register Int16 *pcm = (Int16*)(__pBuffer + smpl->pcmAddr);
-    register Int32 cur = (Int32)smpl->index;
-    register Int32 pre = cur - 1;
-    register double dt = smpl->index - cur;
+    Int16 *pcm = (Int16*)(__pBuffer + smpl->pcmAddr);
+    Int32 cur = (Int32)smpl->index;
+    Int32 pre = cur - 1;
+    double dt = smpl->index - cur;
     if (pre < 0) {
         pre = 0;
     }
@@ -188,11 +189,8 @@ inline extern void sampler(CHANNEL **chs, SAMPLER *smpl) {
     }
 
     //
-    filter(
-        &smpl->eq,
-        (pcm[cur] * dt + pcm[pre] * (1.0 - dt)) * smpl->gain * smpl->tarAmp * smpl->curAmp,
-        &ch->wave
-    );
+    filter(&smpl->eq, (pcm[cur] * dt + pcm[pre] * (1.0 - dt)) * smpl->gain * smpl->tarAmp * smpl->curAmp);
+    ch->wave += smpl->eq.pole03;
 
     //
     smpl->index += smpl->delta * ch->pitch;
@@ -219,8 +217,8 @@ inline void delay(CHANNEL *ch, DELAY *delay) {
         delay->readIndex += DELAY_TAPS;
     }
 
-    register double delayL = delay->depth * delay->pTapL[delay->readIndex];
-    register double delayR = delay->depth * delay->pTapR[delay->readIndex];
+    double delayL = delay->depth * delay->pTapL[delay->readIndex];
+    double delayR = delay->depth * delay->pTapR[delay->readIndex];
 
     ch->waveL += (0.7 * delayL + 0.3 * delayR);
     ch->waveR += (0.7 * delayR + 0.3 * delayL);
@@ -230,12 +228,12 @@ inline void delay(CHANNEL *ch, DELAY *delay) {
 }
 
 inline void chorus(CHANNEL *ch, DELAY *delay, CHORUS *chorus) {
-    register double chorusL = 0.0;
-    register double chorusR = 0.0;
-    register double index;
-    register double dt;
-    register Int32 indexCur;
-    register Int32 indexPre;
+    double chorusL = 0.0;
+    double chorusR = 0.0;
+    double index;
+    double dt;
+    Int32 indexCur;
+    Int32 indexPre;
 
     for (register ph = 0; ph < CHORUS_PHASES; ++ph) {
         index = delay->writeIndex - (0.5 - 0.45 * chorus->pLfoRe[ph]) * __sampleRate * 0.1;
@@ -268,10 +266,10 @@ inline void chorus(CHANNEL *ch, DELAY *delay, CHORUS *chorus) {
     ch->waveR += chorusR * chorus->depth / CHORUS_PHASES;
 }
 
-inline void filter(FILTER *filter, double input, double *output) {
-    register double k1 = 3.6*filter->cutoff - 1.60*filter->cutoff*filter->cutoff - 1.0;
-    register double k2 = 3.0*filter->cutoff - 1.15*filter->cutoff*filter->cutoff - 2.0;
-    register double p = (k1 + 1)*0.5;
+inline void filter(FILTER *filter, double input) {
+    double k1 = 3.6*filter->cutoff - 1.60*filter->cutoff*filter->cutoff - 1.0;
+    double k2 = 3.0*filter->cutoff - 1.15*filter->cutoff*filter->cutoff - 2.0;
+    double p = (k1 + 1.0) * 0.5;
 
     input -= filter->pole03 * filter->resonance * (k2*k2*0.75 + 1.0);
 
@@ -280,12 +278,10 @@ inline void filter(FILTER *filter, double input, double *output) {
     filter->pole02 = filter->pole01 * p + filter->pole12 * p - filter->pole02 * k1;
     filter->pole03 = filter->pole02 * p + filter->pole13 * p - filter->pole03 * k1;
 
-    filter->pole03 -= (filter->pole03 * filter->pole03 * filter->pole03) / 6.0;
-
     filter->pole10 = input;
     filter->pole11 = filter->pole00;
     filter->pole12 = filter->pole01;
     filter->pole13 = filter->pole02;
 
-    *output += filter->pole03;
+    filter->pole03 -= (filter->pole03 * filter->pole03 * filter->pole03) / 6.0;
 }

@@ -118,7 +118,7 @@ namespace MIDI {
         public static extern SAMPLER** GetSamplerPtr();
 
         private const int CHANNEL_COUNT = 16;
-        private const int SAMPLER_COUNT = 256;
+        private const int SAMPLER_COUNT = 64;
 
         public Channel[] Channel { get; }
 
@@ -133,7 +133,7 @@ namespace MIDI {
                 Channel[i] = new Channel(mInst, ppChannel[i], i);
             }
 
-            WaveOutOpen((uint)Const.SampleRate, 256);
+            WaveOutOpen((uint)Const.SampleRate, 128);
         }
 
         public void Send(Message msg) {

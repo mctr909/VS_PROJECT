@@ -155,14 +155,14 @@ namespace EasySequencer {
 
             setSize();
 
-            timer1.Interval = 10;
+            timer1.Interval = 20;
             timer1.Enabled = true;
             timer1.Start();
 
             Task.Run(() => {
                 while (true) {
                     draw();
-                    Thread.Sleep(10);
+                    Thread.Sleep(20);
                 }
             });
         }

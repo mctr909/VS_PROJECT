@@ -7,10 +7,9 @@
 #pragma comment (lib, "winmm.lib")
 
 /******************************************************************************/
-#define BUFFER_COUNT        16
-#define DEVICE_LIST_SIZE    1024
+#define BUFFER_COUNT        32
 #define CHANNEL_COUNT       16
-#define SAMPLER_COUNT       256
+#define SAMPLER_COUNT       64
 
 /******************************************************************************/
 __declspec(dllexport) BOOL WINAPI WaveOutOpen(UInt32 sampleRate, UInt32 bufferLength);
