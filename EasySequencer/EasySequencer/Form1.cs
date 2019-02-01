@@ -139,7 +139,7 @@ namespace EasySequencer {
         private int mChangeValue = 0;
 
         private MIDI.SMF mSMF;
-        private MIDI.MessageSender mMsgSender;
+        private MIDI.Sender mMidiSender;
         private MIDI.Player mPlayer;
 
         public Form1() {
@@ -148,8 +148,8 @@ namespace EasySequencer {
 
         private void Form1_Load(object sender, EventArgs e) {
             mDlsFilePath = "C:\\Users\\owner\\Desktop\\gm.dls";
-            mMsgSender = new MIDI.MessageSender(mDlsFilePath);
-            mPlayer = new MIDI.Player(mMsgSender);
+            mMidiSender = new MIDI.Sender(mDlsFilePath);
+            mPlayer = new MIDI.Player(mMidiSender);
 
             mBuffer = new MIDI.DoubleBuffer(picKey, (Image)picKey.BackgroundImage.Clone());
 
@@ -487,69 +487,69 @@ namespace EasySequencer {
 
             if (mIsParamChg) {
                 switch (mKnobX) {
-                    case 0:
-                        mMsgSender.Send(new MIDI.Message(
-                            MIDI.CTRL_TYPE.VOLUME,
-                            (byte)mKnobY,
-                            (byte)mChangeValue
-                        ));
-                        break;
+                case 0:
+                    mMidiSender.Send(new MIDI.Message(
+                        MIDI.CTRL_TYPE.VOLUME,
+                        (byte)mKnobY,
+                        (byte)mChangeValue
+                    ));
+                    break;
 
-                    case 1:
-                        mMsgSender.Send(new MIDI.Message(
-                            MIDI.CTRL_TYPE.EXPRESSION,
-                            (byte)mKnobY,
-                            (byte)mChangeValue
-                        ));
-                        break;
+                case 1:
+                    mMidiSender.Send(new MIDI.Message(
+                        MIDI.CTRL_TYPE.EXPRESSION,
+                        (byte)mKnobY,
+                        (byte)mChangeValue
+                    ));
+                    break;
 
-                    case 2:
-                        mMsgSender.Send(new MIDI.Message(
-                            MIDI.CTRL_TYPE.PAN,
-                            (byte)mKnobY,
-                            (byte)mChangeValue
-                        ));
-                        break;
+                case 2:
+                    mMidiSender.Send(new MIDI.Message(
+                        MIDI.CTRL_TYPE.PAN,
+                        (byte)mKnobY,
+                        (byte)mChangeValue
+                    ));
+                    break;
 
-                    case 3:
-                        mMsgSender.Send(new MIDI.Message(
-                            MIDI.CTRL_TYPE.REVERB,
-                            (byte)mKnobY,
-                            (byte)mChangeValue
-                        ));
-                        break;
+                case 3:
+                    mMidiSender.Send(new MIDI.Message(
+                        MIDI.CTRL_TYPE.REVERB,
+                        (byte)mKnobY,
+                        (byte)mChangeValue
+                    ));
+                    break;
 
-                    case 4:
-                        mMsgSender.Send(new MIDI.Message(
-                            MIDI.CTRL_TYPE.CHORUS,
-                            (byte)mKnobY,
-                            (byte)mChangeValue
-                        ));
-                        break;
+                case 4:
+                    mMidiSender.Send(new MIDI.Message(
+                        MIDI.CTRL_TYPE.CHORUS,
+                        (byte)mKnobY,
+                        (byte)mChangeValue
+                    ));
+                    break;
 
-                    case 5:
-                        mMsgSender.Send(new MIDI.Message(
-                            MIDI.CTRL_TYPE.DELAY,
-                            (byte)mKnobY,
-                            (byte)mChangeValue
-                        ));
-                        break;
+                case 5:
+                    mMidiSender.Send(new MIDI.Message(
+                        MIDI.CTRL_TYPE.DELAY,
+                        (byte)mKnobY,
+                        (byte)mChangeValue
+                    ));
+                    break;
 
-                    case 6:
-                        mMsgSender.Send(new MIDI.Message(
-                            MIDI.CTRL_TYPE.CUTOFF,
-                            (byte)mKnobY,
-                            (byte)mChangeValue
-                        ));
-                        break;
+                case 6:
+                    mMidiSender.Send(new MIDI.Message(
+                        MIDI.CTRL_TYPE.CUTOFF,
+                        (byte)mKnobY,
+                        (byte)mChangeValue
+                    ));
+                    break;
 
-                    case 7:
-                        mMsgSender.Send(new MIDI.Message(
-                            MIDI.CTRL_TYPE.RESONANCE,
-                            (byte)mKnobY,
-                            (byte)mChangeValue
-                        ));
-                        break;
+                case 7:
+                    mMidiSender.Send(new MIDI.Message(
+                        MIDI.CTRL_TYPE.RESONANCE,
+                        (byte)mKnobY,
+                        (byte)mChangeValue
+                    ));
+                    break;
                 }
             }
         }

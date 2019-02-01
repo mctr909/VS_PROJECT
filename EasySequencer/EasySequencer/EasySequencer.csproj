@@ -62,12 +62,13 @@
     </Compile>
     <Compile Include="Midi\Channel.cs" />
     <Compile Include="Midi\Const.cs" />
-    <Compile Include="Midi\DoubleBuffer.cs" />
+    <Compile Include="Player\DoubleBuffer.cs" />
     <Compile Include="Midi\Instruments.cs" />
-    <Compile Include="Midi\MessageSender.cs" />
-    <Compile Include="Midi\Player.cs" />
+    <Compile Include="Midi\Message.cs" />
+    <Compile Include="Player\Player.cs" />
+    <Compile Include="Midi\Sender.cs" />
     <Compile Include="Midi\SMF.cs" />
-    <Compile Include="Midi\Structure.cs" />
+    <Compile Include="Midi\Struct.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatusWindow.cs">

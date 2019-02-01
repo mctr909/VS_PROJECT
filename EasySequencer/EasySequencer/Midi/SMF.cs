@@ -1,301 +1,302 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+
 namespace MIDI {
-	public class SMF {
-		#region 構造体
-		private struct Head {
-			public readonly FORMAT Format;
-			public UInt16 Tracks;
-			public readonly UInt16 Ticks;
+    public class SMF {
+        #region 構造体
+        private struct Head {
+            public readonly FORMAT Format;
+            public UInt16 Tracks;
+            public readonly UInt16 Ticks;
 
-			public Head(FORMAT format, UInt16 tracks, UInt16 ticks) {
-				Format = format;
-				Tracks = tracks;
-				Ticks = ticks;
-			}
+            public Head(FORMAT format, UInt16 tracks, UInt16 ticks) {
+                Format = format;
+                Tracks = tracks;
+                Ticks = ticks;
+            }
 
-			public Head(BinaryReader br) {
-				ReadUInt32(br);
-				ReadUInt32(br);
-				Format = (FORMAT)ReadUInt16(br);
-				Tracks = ReadUInt16(br);
-				Ticks = ReadUInt16(br);
+            public Head(BinaryReader br) {
+                ReadUInt32(br);
+                ReadUInt32(br);
+                Format = (FORMAT)ReadUInt16(br);
+                Tracks = ReadUInt16(br);
+                Ticks = ReadUInt16(br);
 
-				if (!Enum.IsDefined(typeof(FORMAT), Format)) {
-					Format = FORMAT.INVALID;
-				}
-			}
+                if (!Enum.IsDefined(typeof(FORMAT), Format)) {
+                    Format = FORMAT.INVALID;
+                }
+            }
 
-			public void Write(MemoryStream ms) {
-				WriteUInt32(ms, 0x4D546864);
-				WriteUInt32(ms, 6);
-				WriteUInt16(ms, (UInt16)Format);
-				WriteUInt16(ms, Tracks);
-				WriteUInt16(ms, Ticks);
-			}
-		}
+            public void Write(MemoryStream ms) {
+                WriteUInt32(ms, 0x4D546864);
+                WriteUInt32(ms, 6);
+                WriteUInt16(ms, (UInt16)Format);
+                WriteUInt16(ms, Tracks);
+                WriteUInt16(ms, Ticks);
+            }
+        }
 
-		private class Track {
-			public readonly UInt16 No;
-			public HashSet<Event> Events;
+        private class Track {
+            public readonly UInt16 No;
+            public HashSet<Event> Events;
 
-			public Track(int no) {
-				No = (UInt16)no;
-				Events = new HashSet<Event>();
-			}
+            public Track(int no) {
+                No = (UInt16)no;
+                Events = new HashSet<Event>();
+            }
 
-			public Track(BinaryReader br, int no) {
-				No = (UInt16)no;
-				Events = new HashSet<Event>();
+            public Track(BinaryReader br, int no) {
+                No = (UInt16)no;
+                Events = new HashSet<Event>();
 
-				ReadUInt32(br);
-				int size = (int)ReadUInt32(br);
+                ReadUInt32(br);
+                int size = (int)ReadUInt32(br);
 
-				MemoryStream stream = new MemoryStream(br.ReadBytes(size), false);
-				Time time = new Time(0, 0);
-				int currentStatus = 0;
+                MemoryStream stream = new MemoryStream(br.ReadBytes(size), false);
+                Time time = new Time(0, 0);
+                int currentStatus = 0;
 
-				while (stream.Position < stream.Length) {
-					time.Step(ReadDelta(stream));
-					Events.Add(new Event(time, No, ReadMessage(stream, ref currentStatus)));
-				}
-			}
+                while (stream.Position < stream.Length) {
+                    time.Step(ReadDelta(stream));
+                    Events.Add(new Event(time, No, ReadMessage(stream, ref currentStatus)));
+                }
+            }
 
-			public void Write(MemoryStream ms) {
-				MemoryStream temp = new MemoryStream();
-				WriteUInt32(temp, 0);
-				WriteUInt32(temp, 0);
+            public void Write(MemoryStream ms) {
+                MemoryStream temp = new MemoryStream();
+                WriteUInt32(temp, 0);
+                WriteUInt32(temp, 0);
 
-				UInt32 currentTime = 0;
-				foreach (var ev in Events) {
-					WriteDelta(temp, ev.Time - currentTime);
-					WriteMessage(temp, ev.Message);
-					currentTime = ev.Time;
-				}
+                UInt32 currentTime = 0;
+                foreach (var ev in Events) {
+                    WriteDelta(temp, ev.Time - currentTime);
+                    WriteMessage(temp, ev.Message);
+                    currentTime = ev.Time;
+                }
 
-				temp.Seek(0, SeekOrigin.Begin);
-				WriteUInt32(temp, 0x4D54726B);
-				WriteUInt32(temp, (UInt32)(temp.Length - 8));
+                temp.Seek(0, SeekOrigin.Begin);
+                WriteUInt32(temp, 0x4D54726B);
+                WriteUInt32(temp, (UInt32)(temp.Length - 8));
 
-				temp.WriteTo(ms);
-			}
-		}
-		#endregion
+                temp.WriteTo(ms);
+            }
+        }
+        #endregion
 
-		#region メンバ変数
-		private string mPath;
-		private Head mHead;
-		private Dictionary<int, Track> mTracks;
-		#endregion
+        #region メンバ変数
+        private string mPath;
+        private Head mHead;
+        private Dictionary<int, Track> mTracks;
+        #endregion
 
-		#region privateメソッド
-		private static UInt16 ReadUInt16(BinaryReader br) {
-			return (UInt16)((br.ReadByte() << 8) | br.ReadByte());
-		}
+        #region privateメソッド
+        private static UInt16 ReadUInt16(BinaryReader br) {
+            return (UInt16)((br.ReadByte() << 8) | br.ReadByte());
+        }
 
-		private static UInt32 ReadUInt32(BinaryReader br) {
-			return (UInt32)((br.ReadByte() << 24) | (br.ReadByte() << 16) | (br.ReadByte() << 8) | br.ReadByte());
-		}
+        private static UInt32 ReadUInt32(BinaryReader br) {
+            return (UInt32)((br.ReadByte() << 24) | (br.ReadByte() << 16) | (br.ReadByte() << 8) | br.ReadByte());
+        }
 
-		private static UInt32 ReadDelta(MemoryStream ms) {
-			UInt32 temp = (UInt32)ms.ReadByte();
-			UInt32 retVal = temp & 0x7F;
+        private static UInt32 ReadDelta(MemoryStream ms) {
+            UInt32 temp = (UInt32)ms.ReadByte();
+            UInt32 retVal = temp & 0x7F;
 
-			while (0x7F < temp) {
-				temp = (UInt32)ms.ReadByte();
-				retVal <<= 7;
-				retVal |= temp & 0x7F;
-			}
+            while (0x7F < temp) {
+                temp = (UInt32)ms.ReadByte();
+                retVal <<= 7;
+                retVal |= temp & 0x7F;
+            }
 
-			return retVal;
-		}
+            return retVal;
+        }
 
-		private static void WriteUInt16(MemoryStream ms, UInt16 value) {
-			ms.WriteByte((byte)(value >> 8));
-			ms.WriteByte((byte)(value & 0xFF));
-		}
+        private static void WriteUInt16(MemoryStream ms, UInt16 value) {
+            ms.WriteByte((byte)(value >> 8));
+            ms.WriteByte((byte)(value & 0xFF));
+        }
 
-		private static void WriteUInt32(MemoryStream ms, UInt32 value) {
-			ms.WriteByte((byte)((value >> 24) & 0xFF));
-			ms.WriteByte((byte)((value >> 16) & 0xFF));
-			ms.WriteByte((byte)((value >> 8) & 0xFF));
-			ms.WriteByte((byte)(value & 0xFF));
-		}
+        private static void WriteUInt32(MemoryStream ms, UInt32 value) {
+            ms.WriteByte((byte)((value >> 24) & 0xFF));
+            ms.WriteByte((byte)((value >> 16) & 0xFF));
+            ms.WriteByte((byte)((value >> 8) & 0xFF));
+            ms.WriteByte((byte)(value & 0xFF));
+        }
 
-		private static void WriteDelta(MemoryStream ms, UInt32 value) {
-			if (0 < (value >> 21)) {
-				ms.WriteByte((byte)(0x80 | ((value >> 21) & 0x7F)));
-				ms.WriteByte((byte)(0x80 | ((value >> 14) & 0x7F)));
-				ms.WriteByte((byte)(0x80 | ((value >> 7) & 0x7F)));
-				ms.WriteByte((byte)(value & 0x7F));
-				return;
-			}
+        private static void WriteDelta(MemoryStream ms, UInt32 value) {
+            if (0 < (value >> 21)) {
+                ms.WriteByte((byte)(0x80 | ((value >> 21) & 0x7F)));
+                ms.WriteByte((byte)(0x80 | ((value >> 14) & 0x7F)));
+                ms.WriteByte((byte)(0x80 | ((value >> 7) & 0x7F)));
+                ms.WriteByte((byte)(value & 0x7F));
+                return;
+            }
 
-			if (0 < (value >> 14)) {
-				ms.WriteByte((byte)(0x80 | ((value >> 14) & 0x7F)));
-				ms.WriteByte((byte)(0x80 | ((value >> 7) & 0x7F)));
-				ms.WriteByte((byte)(value & 0x7F));
-				return;
-			}
+            if (0 < (value >> 14)) {
+                ms.WriteByte((byte)(0x80 | ((value >> 14) & 0x7F)));
+                ms.WriteByte((byte)(0x80 | ((value >> 7) & 0x7F)));
+                ms.WriteByte((byte)(value & 0x7F));
+                return;
+            }
 
-			if (0 < (value >> 7)) {
-				ms.WriteByte((byte)(0x80 | ((value >> 7) & 0x7F)));
-				ms.WriteByte((byte)(value & 0x7F));
-				return;
-			}
+            if (0 < (value >> 7)) {
+                ms.WriteByte((byte)(0x80 | ((value >> 7) & 0x7F)));
+                ms.WriteByte((byte)(value & 0x7F));
+                return;
+            }
 
-			ms.WriteByte((byte)value);
-			return;
-		}
+            ms.WriteByte((byte)value);
+            return;
+        }
 
-		private static byte[] ToDelta(UInt32 value) {
-			if (0 < (value >> 21)) {
-				return new byte[] {
-					(byte)(0x80 | ((value >> 21) & 0x7F)),
-					(byte)(0x80 | ((value >> 14) & 0x7F)),
-					(byte)(0x80 | ((value >> 7) & 0x7F)),
-					(byte)(value & 0x7F)
-				};
-			}
+        private static byte[] ToDelta(UInt32 value) {
+            if (0 < (value >> 21)) {
+                return new byte[] {
+                    (byte)(0x80 | ((value >> 21) & 0x7F)),
+                    (byte)(0x80 | ((value >> 14) & 0x7F)),
+                    (byte)(0x80 | ((value >> 7) & 0x7F)),
+                    (byte)(value & 0x7F)
+                };
+            }
 
-			if (0 < (value >> 14)) {
-				return new byte[] {
-					(byte)(0x80 | ((value >> 14) & 0x7F)),
-					(byte)(0x80 | ((value >> 7) & 0x7F)),
-					(byte)(value & 0x7F)
-				};
-			}
+            if (0 < (value >> 14)) {
+                return new byte[] {
+                    (byte)(0x80 | ((value >> 14) & 0x7F)),
+                    (byte)(0x80 | ((value >> 7) & 0x7F)),
+                    (byte)(value & 0x7F)
+                };
+            }
 
-			if (0 < (value >> 7)) {
-				return new byte[] {
-					(byte)(0x80 | ((value >> 7) & 0x7F)),
-					(byte)(value & 0x7F)
-				};
-			}
+            if (0 < (value >> 7)) {
+                return new byte[] {
+                    (byte)(0x80 | ((value >> 7) & 0x7F)),
+                    (byte)(value & 0x7F)
+                };
+            }
 
-			return new byte[] { (byte)value };
-		}
+            return new byte[] { (byte)value };
+        }
 
-		private static Message ReadMessage(MemoryStream ms, ref int currentStatus) {
-			EVENT_TYPE type;
-			byte ch;
+        private static Message ReadMessage(MemoryStream ms, ref int currentStatus) {
+            EVENT_TYPE type;
+            byte ch;
 
-			var inputStatus = ms.ReadByte();
+            var inputStatus = ms.ReadByte();
 
-			if (inputStatus < 0x80) {
-				// ランニングステータス
-				ms.Seek(-1, SeekOrigin.Current);
-				inputStatus = currentStatus;
-			}
-			else {
-				// ステータスの更新
-				currentStatus = inputStatus;
-			}
+            if (inputStatus < 0x80) {
+                // ランニングステータス
+                ms.Seek(-1, SeekOrigin.Current);
+                inputStatus = currentStatus;
+            }
+            else {
+                // ステータスの更新
+                currentStatus = inputStatus;
+            }
 
-			if (inputStatus < 0xF0) {
-				// チャンネルメッセージ
-				type = (EVENT_TYPE)(inputStatus & 0xF0);
-				ch = (byte)(inputStatus & 0x0F);
-			}
-			else {
-				// システムメッセージ
-				type = (EVENT_TYPE)inputStatus;
-				ch = 0xF0;
-			}
+            if (inputStatus < 0xF0) {
+                // チャンネルメッセージ
+                type = (EVENT_TYPE)(inputStatus & 0xF0);
+                ch = (byte)(inputStatus & 0x0F);
+            }
+            else {
+                // システムメッセージ
+                type = (EVENT_TYPE)inputStatus;
+                ch = 0xF0;
+            }
 
-			switch (type) {
-			// 2バイトメッセージ
-			case EVENT_TYPE.NOTE_ON: {
-					var v1 = (byte)ms.ReadByte();
-					var v2 = (byte)ms.ReadByte();
-					if (0 == v2) {
-						return new Message(EVENT_TYPE.NOTE_OFF, ch, v1, v2);
-					}
-					else {
-						return new Message(EVENT_TYPE.NOTE_ON, ch, v1, v2);
-					}
-				}
+            switch (type) {
+            // 2バイトメッセージ
+            case EVENT_TYPE.NOTE_ON: {
+                    var v1 = (byte)ms.ReadByte();
+                    var v2 = (byte)ms.ReadByte();
+                    if (0 == v2) {
+                        return new Message(EVENT_TYPE.NOTE_OFF, ch, v1, v2);
+                    }
+                    else {
+                        return new Message(EVENT_TYPE.NOTE_ON, ch, v1, v2);
+                    }
+                }
 
-			case EVENT_TYPE.NOTE_OFF:
-			case EVENT_TYPE.POLY_KEY:
-			case EVENT_TYPE.CTRL_CHG:
-			case EVENT_TYPE.PITCH:
-				return new Message(type, ch, (byte)ms.ReadByte(), (byte)ms.ReadByte());
+            case EVENT_TYPE.NOTE_OFF:
+            case EVENT_TYPE.POLY_KEY:
+            case EVENT_TYPE.CTRL_CHG:
+            case EVENT_TYPE.PITCH:
+                return new Message(type, ch, (byte)ms.ReadByte(), (byte)ms.ReadByte());
 
-			// 1バイトメッセージ
-			case EVENT_TYPE.PRGM_CHG:
-			case EVENT_TYPE.CH_PRESS:
-				return new Message(type, ch, (byte)ms.ReadByte());
+            // 1バイトメッセージ
+            case EVENT_TYPE.PRGM_CHG:
+            case EVENT_TYPE.CH_PRESS:
+                return new Message(type, ch, (byte)ms.ReadByte());
 
-			// システムエクスクルーシブ
-			case EVENT_TYPE.SYS_EX: {
-					var temp = new byte[ReadDelta(ms)];
-					ms.Read(temp, 0, temp.Length);
-					return new Message(new SystemEx(temp));
-				}
+            // システムエクスクルーシブ
+            case EVENT_TYPE.SYS_EX: {
+                    var temp = new byte[ReadDelta(ms)];
+                    ms.Read(temp, 0, temp.Length);
+                    return new Message(EVENT_TYPE.SYS_EX, 0, temp);
+                }
 
-			// メタデータ
-			case EVENT_TYPE.META: {
-					var meta = (META_TYPE)ms.ReadByte();
-					var data = new byte[ReadDelta(ms)];
-					ms.Read(data, 0, data.Length);
-					return new Message(new Meta(meta, data));
-				}
+            // メタデータ
+            case EVENT_TYPE.META: {
+                    var meta = (META_TYPE)ms.ReadByte();
+                    var data = new byte[ReadDelta(ms)];
+                    ms.Read(data, 0, data.Length);
+                    return new Message(meta, data);
+                }
 
-			default:
-				return new Message();
-			}
-		}
+            default:
+                return new Message();
+            }
+        }
 
-		private static void WriteMessage(MemoryStream ms, Message msg) {
-			switch (msg.Type) {
-			// 2バイトメッセージ
-			case EVENT_TYPE.NOTE_ON:
-			case EVENT_TYPE.NOTE_OFF:
-			case EVENT_TYPE.POLY_KEY:
-			case EVENT_TYPE.CTRL_CHG:
-			case EVENT_TYPE.PITCH:
-				ms.WriteByte((byte)((byte)msg.Type | msg.Channel));
-				ms.WriteByte(msg.Byte1);
-				ms.WriteByte(msg.Byte2);
-				return;
+        private static void WriteMessage(MemoryStream ms, Message msg) {
+            switch (msg.Type) {
+            // 2バイトメッセージ
+            case EVENT_TYPE.NOTE_ON:
+            case EVENT_TYPE.NOTE_OFF:
+            case EVENT_TYPE.POLY_KEY:
+            case EVENT_TYPE.CTRL_CHG:
+            case EVENT_TYPE.PITCH:
+                ms.WriteByte((byte)((byte)msg.Type | msg.Channel));
+                ms.WriteByte(msg.Data[1]);
+                ms.WriteByte(msg.Data[2]);
+                return;
 
-			// 1バイトメッセージ
-			case EVENT_TYPE.PRGM_CHG:
-			case EVENT_TYPE.CH_PRESS:
-				ms.WriteByte((byte)((byte)msg.Type | msg.Channel));
-				ms.WriteByte(msg.Byte1);
-				return;
+            // 1バイトメッセージ
+            case EVENT_TYPE.PRGM_CHG:
+            case EVENT_TYPE.CH_PRESS:
+                ms.WriteByte((byte)((byte)msg.Type | msg.Channel));
+                ms.WriteByte(msg.Data[1]);
+                return;
 
-			// システムエクスクルーシブ
-			case EVENT_TYPE.SYS_EX:
-				ms.WriteByte((byte)EVENT_TYPE.SYS_EX);
-				WriteDelta(ms, msg.SystemEx.Length);
-				ms.Write(msg.SystemEx.Data, 0, (int)msg.SystemEx.Length);
-				return;
+            // システムエクスクルーシブ
+            case EVENT_TYPE.SYS_EX:
+                //ms.WriteByte((byte)EVENT_TYPE.SYS_EX);
+                //WriteDelta(ms, msg.SystemEx.Length);
+                //ms.Write(msg.SystemEx.Data, 0, (int)msg.SystemEx.Length);
+                return;
 
-			// メタデータ
-			case EVENT_TYPE.META:
-				ms.WriteByte((byte)EVENT_TYPE.META);
-				ms.WriteByte((byte)msg.Meta.Type);
-				WriteDelta(ms, (UInt32)msg.Meta.Data.Length);
-				ms.Write(msg.Meta.Data, 0, msg.Meta.Data.Length);
-				return;
+            // メタデータ
+            case EVENT_TYPE.META:
+                ms.WriteByte((byte)EVENT_TYPE.META);
+                ms.WriteByte((byte)msg.Meta.Type);
+                WriteDelta(ms, (uint)msg.Meta.Length);
+                ms.Write(msg.Meta.Data, 0, msg.Meta.Length);
+                return;
 
-			default:
-				return;
-			}
-		}
-		#endregion
+            default:
+                return;
+            }
+        }
+        #endregion
 
-		public int Ticks {
-			get {
-				return mHead.Ticks;
-			}
-		}
+        public int Ticks {
+            get {
+                return mHead.Ticks;
+            }
+        }
 
-		public Event[] EventList {
+        public Event[] EventList {
             get {
                 HashSet<Event> hash = new HashSet<Event>();
                 foreach (var tr in mTracks) {
@@ -310,28 +311,29 @@ namespace MIDI {
                     0 == ((((long)a.Time << 16) | (a.Track << 8) | a.Index) - (((long)b.Time << 16) | (b.Track << 8) | b.Index)) ? 0 :
                     0 < ((((long)a.Time << 16) | (a.Track << 8) | a.Index) - (((long)b.Time << 16) | (b.Track << 8) | b.Index)) ? 1 : -1
                 )));
+
                 return evList;
             }
         }
 
-		public SMF(FORMAT format = FORMAT.FORMAT1, ushort ticks = 960) {
-			mHead = new Head(format, 0, ticks);
-			mTracks = new Dictionary<int, Track>();
-		}
+        public SMF(FORMAT format = FORMAT.FORMAT1, ushort ticks = 960) {
+            mHead = new Head(format, 0, ticks);
+            mTracks = new Dictionary<int, Track>();
+        }
 
-		public SMF(string filePath) {
-			FileStream fs = new FileStream(filePath, FileMode.Open);
-			BinaryReader br = new BinaryReader(fs);
+        public SMF(string filePath) {
+            FileStream fs = new FileStream(filePath, FileMode.Open);
+            BinaryReader br = new BinaryReader(fs);
 
-			mPath = filePath;
-			mHead = new Head(br);
-			mTracks = new Dictionary<int, Track>();
+            mPath = filePath;
+            mHead = new Head(br);
+            mTracks = new Dictionary<int, Track>();
 
-			for (int i = 0; i < mHead.Tracks; ++i) {
-				mTracks.Add(i, new Track(br, i));
-			}
+            for (int i = 0; i < mHead.Tracks; ++i) {
+                mTracks.Add(i, new Track(br, i));
+            }
 
-			br.Close();
-		}
-	}
+            br.Close();
+        }
+    }
 }
