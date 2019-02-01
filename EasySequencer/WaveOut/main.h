@@ -9,7 +9,7 @@
 /******************************************************************************/
 #define BUFFER_COUNT        32
 #define CHANNEL_COUNT       16
-#define SAMPLER_COUNT       64
+#define SAMPLER_COUNT       128
 
 /******************************************************************************/
 __declspec(dllexport) BOOL WINAPI WaveOutOpen(UInt32 sampleRate, UInt32 bufferLength);

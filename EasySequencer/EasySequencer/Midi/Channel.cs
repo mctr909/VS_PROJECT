@@ -99,7 +99,7 @@
             setChorusDepth(0);
             setDelayDepath(0);
 
-            mpChannel->chorus.rate = 0.05;
+            mpChannel->chorus.rate = 0.01;
             mpChannel->delay.rate = 0.2;
 
             ctrl.nrpnLSB = 0xFF;
@@ -238,25 +238,19 @@
                     }
                 }
             }
-            else {
-                for (byte k = 0; k < 128; ++k) {
-                    if (KEY_STATUS.ON == KeyBoard[k]) {
-                        KeyBoard[k] = KEY_STATUS.HOLD;
-                    }
-                }
-            }
+
             ctrl.hold = value;
             mpChannel->holdDelta = (value < 64 ? 1.0 : 1.0 * Const.DeltaTime);
         }
 
         private void setRes(byte value) {
             ctrl.res = value;
-            mpChannel->eq.resonance = (value < 64) ? 0.0 : ((value - 64) / 64.0);
+            mpChannel->tarResonance = (value < 64) ? 0.0 : ((value - 64) / 64.0);
         }
 
         private void setCut(byte value) {
             ctrl.cut = value;
-            mpChannel->tarCutoff = (value < 80) ? Const.Level[(int)(1.6 * value)] : 1.0;
+            mpChannel->tarCutoff = (value < 80) ? Const.Amp[(int)(1.6 * value)] : 1.0;
         }
 
         private void setDelayDepath(byte value) {

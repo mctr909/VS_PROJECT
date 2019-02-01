@@ -18,7 +18,7 @@ namespace MIDI {
         private static extern SAMPLER** GetSamplerPtr();
 
         private const int CHANNEL_COUNT = 16;
-        private const int SAMPLER_COUNT = 64;
+        private const int SAMPLER_COUNT = 128;
 
         public Channel[] Channel { get; private set; }
 
@@ -38,35 +38,35 @@ namespace MIDI {
 
         public void Send(Message msg) {
             switch (msg.Type) {
-                case EVENT_TYPE.NOTE_OFF:
-                    noteOff(Channel[msg.Channel], msg.Data[1]);
-                    break;
+            case EVENT_TYPE.NOTE_OFF:
+                noteOff(Channel[msg.Channel], msg.Data[1]);
+                break;
 
-                case EVENT_TYPE.NOTE_ON:
-                    noteOn(Channel[msg.Channel], msg.Data[1], msg.Data[2]);
-                    break;
+            case EVENT_TYPE.NOTE_ON:
+                noteOn(Channel[msg.Channel], msg.Data[1], msg.Data[2]);
+                break;
 
-                case EVENT_TYPE.CTRL_CHG:
-                    Channel[msg.Channel].CtrlChange(msg.Data[1], msg.Data[2]);
-                    break;
+            case EVENT_TYPE.CTRL_CHG:
+                Channel[msg.Channel].CtrlChange(msg.Data[1], msg.Data[2]);
+                break;
 
-                case EVENT_TYPE.PRGM_CHG:
-                    Channel[msg.Channel].ProgramChange(msg.Data[1]);
-                    break;
+            case EVENT_TYPE.PRGM_CHG:
+                Channel[msg.Channel].ProgramChange(msg.Data[1]);
+                break;
 
-                case EVENT_TYPE.PITCH:
-                    Channel[msg.Channel].PitchBend(msg.Data[1], msg.Data[2]);
-                    break;
+            case EVENT_TYPE.PITCH:
+                Channel[msg.Channel].PitchBend(msg.Data[1], msg.Data[2]);
+                break;
 
-                default:
-                    break;
+            default:
+                break;
             }
         }
 
         private void noteOff(Channel ch, byte noteNo) {
             for (var i = 0; i < SAMPLER_COUNT; ++i) {
                 if (mppSampler[i]->channelNo == ch.No && mppSampler[i]->noteNo == noteNo) {
-                    if (ch.Hld < 64) {
+                    if (!ch.Enable || ch.Hld < 64) {
                         ch.KeyBoard[noteNo] = KEY_STATUS.OFF;
                     }
                     else {
@@ -78,8 +78,9 @@ namespace MIDI {
         }
 
         private void noteOn(Channel ch, byte noteNo, byte velocity) {
+            noteOff(ch, noteNo);
+
             if (0 == velocity) {
-                noteOff(ch, noteNo);
                 return;
             }
 
@@ -100,14 +101,6 @@ namespace MIDI {
                 pSmpl->pcmAddr = wave.pcmAddr;
                 pSmpl->pcmLength = wave.pcmLength;
 
-                pSmpl->loopEnable = wave.loop.enable;
-                pSmpl->loopBegin = wave.loop.start;
-                pSmpl->loopLength = wave.loop.length;
-
-                pSmpl->tarAmp = velocity / 127.0;
-                pSmpl->curAmp = 0.0;
-
-                pSmpl->envAmp = wave.envAmp;
                 pSmpl->gain = wave.gain;
 
                 var diffNote = noteNo - wave.unityNote;
@@ -120,6 +113,13 @@ namespace MIDI {
 
                 pSmpl->index = 0.0;
                 pSmpl->time = 0.0;
+
+                pSmpl->tarAmp = velocity / 127.0;
+                pSmpl->curAmp = 0.0;
+
+                pSmpl->loop = wave.loop;
+
+                pSmpl->envAmp = wave.envAmp;
 
                 pSmpl->envEq.levelA = 1.0;
                 pSmpl->envEq.levelD = 1.0;

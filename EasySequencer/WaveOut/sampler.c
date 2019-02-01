@@ -124,6 +124,7 @@ inline extern void channel(CHANNEL *ch, double *waveL, double *waveR) {
     //
     ch->curAmp += 200 * (ch->tarAmp - ch->curAmp) * __deltaTime;
     ch->eq.cutoff += 200 * (ch->tarCutoff - ch->eq.cutoff) * __deltaTime;
+    ch->eq.resonance += 200 * (ch->tarResonance - ch->eq.resonance) * __deltaTime;
 
     //
     *waveL += ch->waveL;
@@ -183,7 +184,7 @@ inline extern void sampler(CHANNEL **chs, SAMPLER *smpl) {
         cur = 0;
         pre = 0;
         smpl->index = 0.0;
-        if (!smpl->loopEnable) {
+        if (!smpl->loop.enable) {
             smpl->isActive = false;
         }
     }
@@ -197,9 +198,9 @@ inline extern void sampler(CHANNEL **chs, SAMPLER *smpl) {
     smpl->time += __deltaTime;
 
     //
-    if ((smpl->loopBegin + smpl->loopLength) < smpl->index) {
-        smpl->index -= smpl->loopLength;
-        if (!smpl->loopEnable) {
+    if ((smpl->loop.start + smpl->loop.length) < smpl->index) {
+        smpl->index -= smpl->loop.length;
+        if (!smpl->loop.enable) {
             smpl->isActive = false;
         }
     }

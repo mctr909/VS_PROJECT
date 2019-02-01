@@ -113,6 +113,8 @@ namespace MIDI {
         public double panRight;
 
         public double tarCutoff;
+        public double tarResonance;
+
         public double tarAmp;
         public double curAmp;
 
@@ -123,18 +125,13 @@ namespace MIDI {
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     unsafe public struct SAMPLER {
-        public ushort channelNo;
+        public uint channelNo;
         public ushort noteNo;
-
         public bool onKey;
         public bool isActive;
 
         public uint pcmAddr;
         public uint pcmLength;
-
-        public bool loopEnable;
-        public uint loopBegin;
-        public uint loopLength;
 
         public double gain;
         public double delta;
@@ -145,9 +142,9 @@ namespace MIDI {
         public double tarAmp;
         public double curAmp;
 
+        public WAVE_LOOP loop;
         public ENVELOPE envAmp;
         public ENVELOPE envEq;
-
         public FILTER eq;
     };
 

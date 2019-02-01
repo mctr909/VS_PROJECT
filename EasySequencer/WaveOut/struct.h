@@ -60,6 +60,17 @@ typedef struct ENVELOPE {
 #pragma
 
 #pragma pack(4)
+typedef struct WAVE_LOOP {
+    UInt32 start;
+    UInt32 length;
+    bool enable;
+    byte reserved1;
+    byte reserved2;
+    byte reserved3;
+} WAVE_LOOP;
+#pragma
+
+#pragma pack(4)
 typedef struct CHANNEL {
     double wave;
     double waveL;
@@ -72,6 +83,8 @@ typedef struct CHANNEL {
     double panRight;
 
     double tarCutoff;
+    double tarResonance;
+
     double tarAmp;
     double curAmp;
 
@@ -83,31 +96,26 @@ typedef struct CHANNEL {
 
 #pragma pack(4)
 typedef struct SAMPLER {
-	UInt16 channelNo;
-	UInt16 noteNo;
+    UInt32 channelNo;
+    UInt16 noteNo;
+    bool onKey;
+    bool isActive;
 
-	bool onKey;
-	bool isActive;
+    UInt32 pcmAddr;
+    UInt32 pcmLength;
 
-	UInt32 pcmAddr;
-	UInt32 pcmLength;
+    double gain;
+    double delta;
 
-	bool loopEnable;
-	UInt32 loopBegin;
-	UInt32 loopLength;
+    double index;
+    double time;
 
-	double gain;
-	double delta;
+    double tarAmp;
+    double curAmp;
 
-	double index;
-	double time;
-
-	double tarAmp;
-	double curAmp;
-
-	ENVELOPE envAmp;
-	ENVELOPE envEq;
-
-	FILTER eq;
+    WAVE_LOOP loop;
+    ENVELOPE envAmp;
+    ENVELOPE envEq;
+    FILTER eq;
 } SAMPLER;
 #pragma
