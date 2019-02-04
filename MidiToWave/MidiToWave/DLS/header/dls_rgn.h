@@ -11,10 +11,11 @@ namespace DLS {
 		CK_WSMP *mp_sampler = NULL;
 		CK_WLNK *mp_waveLink = NULL;
 		LART *mp_articulations = NULL;
-		std::vector<WaveLoop*> m_loops;
+		WaveLoop *mp_loops = NULL;
 
 	public:
 		RGN(LPBYTE ptr, UINT size) { Load(ptr, size); }
+		~RGN();
 
 	protected:
 		void LoadChunk(LPBYTE ptr) override;
@@ -23,7 +24,8 @@ namespace DLS {
 
 	class LRGN : Chunk {
 	public:
-		std::vector<RGN*> m_list;
+		UINT m_listCount = 0;
+		RGN **mpp_list = NULL;
 
 	public:
 		LRGN(LPBYTE ptr, UINT size) { Load(ptr, size); }

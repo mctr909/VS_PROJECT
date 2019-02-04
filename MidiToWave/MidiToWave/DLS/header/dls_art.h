@@ -1,15 +1,16 @@
 #pragma once
 #include <windows.h>
-#include <vector>
 #include "dls_chunk.h"
 
 namespace DLS {
 	class ART {
 	public:
-		std::vector<Connection*> m_list;
+		UINT m_listCount = 0;
+		Connection* mp_list = NULL;
 
 	public:
 		ART(LPBYTE ptr);
+		~ART();
 	};
 
 	class LART : Chunk {

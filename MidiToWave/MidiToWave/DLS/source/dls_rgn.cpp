@@ -48,11 +48,10 @@ DLS::LRGN::GetRegion(BYTE note, BYTE velocity) {
 		auto v = rgn->mp_header->Velocity;
 		if (k.Low <= note && note <= k.High &&
 			v.Low <= velocity && velocity <= v.High
-			) {
+		) {
 			return rgn;
 		}
 	}
-
 	return NULL;
 }
 

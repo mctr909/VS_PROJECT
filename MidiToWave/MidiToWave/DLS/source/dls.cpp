@@ -34,6 +34,10 @@ DLS::DLS::~DLS() {
 
 DLS::INS*
 DLS::DLS::GetInst(MidiLocale &locale) {
+	if (NULL == mp_instruments) {
+		return NULL;
+	}
+
 	for (auto ins : mp_instruments->m_list) {
 		auto hdLocale = ins->mp_header->Locale;
 
@@ -51,6 +55,10 @@ DLS::DLS::GetInst(MidiLocale &locale) {
 
 DLS::WAVE*
 DLS::DLS::GetWave(RGN &region) {
+	if (NULL == mp_wavePool) {
+		return NULL;
+	}
+
 	return mp_wavePool->m_list[region.mp_waveLink->TableIndex];
 }
 

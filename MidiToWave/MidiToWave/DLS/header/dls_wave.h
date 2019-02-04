@@ -1,6 +1,5 @@
 #pragma once
 #include <windows.h>
-#include <vector>
 #include "dls_chunk.h"
 
 namespace DLS {
@@ -10,10 +9,11 @@ namespace DLS {
 		CK_WSMP *mp_sampler = NULL;
 		LPBYTE mp_data = NULL;
 		UINT m_dataSize = 0;
-		std::vector<WaveLoop*> m_loops;
+		WaveLoop *mp_loops = NULL;
 
 	public:
 		WAVE(LPBYTE ptr, UINT size) { Load(ptr, size); }
+		~WAVE();
 
 	protected:
 		void LoadChunk(LPBYTE ptr) override;
@@ -22,10 +22,12 @@ namespace DLS {
 
 	class WVPL : Chunk {
 	public:
-		std::vector<WAVE*> m_list;
+		UINT m_listCount = 0;
+		WAVE **mpp_list = NULL;
 
 	public:
 		WVPL(LPBYTE ptr, UINT size) { Load(ptr, size); }
+		~WVPL();
 
 	protected:
 		void LoadList(LPBYTE ptr, UINT size) override;

@@ -1,4 +1,5 @@
 ﻿#include "main.h"
+#include "const.h"
 
 /******************************************************************************/
 LPWSTR WINAPI WaveOutList() {
@@ -132,11 +133,9 @@ BOOL WINAPI DlsLoad(LPWSTR filePath) {
 
 	gp_dls = new DLS::DLS(filePath);
 
-	DLS::MidiLocale l = { 0 };
-	l.ProgramNo = 2;
-	auto b = gp_dls->GetInst(l);
-	auto c = b->mp_regions->GetRegion(20, 60);
-	//auto d = gp_dls->GetWave(*c);
+	for (UINT i = 0; i < CHANNEL_COUNT; ++i) {
+		initChannel(gp_channels[i], i);
+	}
 
 	//
 	g_issueMute = false;
@@ -145,7 +144,7 @@ BOOL WINAPI DlsLoad(LPWSTR filePath) {
 }
 
 VOID WINAPI SendMidi(LPBYTE message) {
-	if (g_issueMute || g_isStop) {
+	if (NULL == gp_dls || g_issueMute || g_isStop) {
 		return;
 	}
 
@@ -186,11 +185,10 @@ VOID WINAPI Panic() {
 		smpl->onKey = false;
 		smpl->isActive = false;
 
-		CHANNEL *ch = gp_channels[smpl->channelNo];
-		if (NULL == ch) {
+		if (NULL == smpl->pChannel) {
 			continue;
 		}
-		ch->keyBoard[smpl->noteNo] = KEY_STATUS_OFF;
+		smpl->pChannel->keyBoard[smpl->noteNo] = KEY_STATUS_OFF;
 	}
 }
 
@@ -279,26 +277,46 @@ inline void samplerStep(SAMPLER *pSmpl) {
 	}
 
 	if (pSmpl->onKey) {
-		pSmpl->curAmp += (pSmpl->tarAmp - pSmpl->curAmp) * 2.718 / g_sampleRate;
+		pSmpl->curAmp += (pSmpl->tarAmp - pSmpl->curAmp) * 440.0 / g_sampleRate;
 	}
 	else {
-		pSmpl->curAmp -= pSmpl->curAmp * 2.718 / g_sampleRate;
+		pSmpl->curAmp -= pSmpl->curAmp * 440.0 / g_sampleRate;
 		if (pSmpl->curAmp < 0.0001) {
 			pSmpl->isActive = false;
 		}
 	}
 
-	pSmpl->re -= 6.283 * pSmpl->delta * pSmpl->im;
-	pSmpl->im += 6.283 * pSmpl->delta * pSmpl->re;
+	//
+	auto pcm = (short*)pSmpl->pWave->mp_data;
+	auto cur = (int)pSmpl->index;
+	auto pre = cur - 1;
+	auto dt = pSmpl->index - cur;
+	if (pre < 0) {
+		pre += pSmpl->loop.Start + pSmpl->loop.Length;
+	}
 
-	pSmpl->index += pSmpl->delta;
-	pSmpl->time += 1.0 / 44100.0;
+	//
+	pSmpl->pChannel->wave += (pcm[cur] * dt + pcm[pre] * (1.0 - dt)) * pSmpl->curAmp * pSmpl->pChannel->amp / 32768.0;
 
-	gp_channels[pSmpl->channelNo]->wave += pSmpl->im * pSmpl->curAmp;
+	//
+	pSmpl->index += pSmpl->delta * pSmpl->pChannel->pitch;
+	pSmpl->time += 1.0 / g_sampleRate;
+
+	//
+	if ((pSmpl->loop.Start + pSmpl->loop.Length) < pSmpl->index) {
+		pSmpl->index -= pSmpl->loop.Length;
+		if (!pSmpl->hasLoop) {
+			pSmpl->isActive = false;
+		}
+	}
 }
 
 /******************************************************************************/
 void initChannel(CHANNEL *pCh, UINT channelNo) {
+	if (NULL == pCh) {
+		return;
+	}
+
 	memset(pCh, 0, sizeof(CHANNEL));
 	pCh->no = channelNo;
 	pCh->wave = 0.0;
@@ -334,6 +352,8 @@ void initChannel(CHANNEL *pCh, UINT channelNo) {
 
 	pCh->ctrl.bendRange = 2;
 	pitchBend(pCh, 0, 0);
+
+	programChange(pCh, 0);
 }
 
 void noteOff(CHANNEL *pCh, BYTE noteNo) {
@@ -342,7 +362,10 @@ void noteOff(CHANNEL *pCh, BYTE noteNo) {
 	}
 
 	for (UINT i = 0; i < SAMPLER_COUNT; ++i) {
-		if (gp_samplers[i]->channelNo == pCh->no && gp_samplers[i]->noteNo == noteNo) {
+		if (NULL == gp_samplers[i] || NULL == gp_samplers[i]->pChannel) {
+			continue;
+		}
+		if (gp_samplers[i]->pChannel->no == pCh->no && gp_samplers[i]->noteNo == noteNo) {
 			if (KEY_STATUS_HOLD != pCh->keyBoard[noteNo]) {
 				pCh->keyBoard[noteNo] = KEY_STATUS_OFF;
 				gp_samplers[i]->onKey = false;
@@ -356,30 +379,75 @@ void noteOn(CHANNEL *pCh, BYTE noteNo, BYTE velocity) {
 		return;
 	}
 
-	noteOff(pCh, noteNo);
-
 	if (0 == velocity) {
+		noteOff(pCh, noteNo);
 		return;
 	}
 
 	SAMPLER *pSmpl = NULL;
 	for (UINT i = 0; i < SAMPLER_COUNT; ++i) {
 		pSmpl = gp_samplers[i];
-		if (!pSmpl->isActive) {
-			pSmpl->channelNo = pCh->no;
-			pSmpl->noteNo = noteNo;
+		if (NULL == pSmpl->pChannel) {
+			continue;
+		}
+		if (pSmpl->pChannel->no == pCh->no && pSmpl->noteNo == noteNo) {
+			pSmpl->onKey = false;
+			pSmpl->isActive = false;
+		}
+	}
 
-			pSmpl->delta = 8.1758 * pow(2.0, noteNo / 12.0) / 44100;
-			pSmpl->index = 0.0;
-			pSmpl->time = 0.0;
+	for (UINT i = 0; i < SAMPLER_COUNT; ++i) {
+		pSmpl = gp_samplers[i];
+		if (!pSmpl->isActive) {
+			pSmpl->pChannel = pCh;
+			pSmpl->noteNo = noteNo;
 
 			pSmpl->tarAmp = velocity / 127.0;
 			pSmpl->curAmp = 0.0;
 
-			pSmpl->re = 1.0;
-			pSmpl->im = 0.0;
-
 			pCh->keyBoard[noteNo] = KEY_STATUS_ON;
+
+			auto pRgn = pCh->pLrgn->GetRegion(noteNo, velocity);
+			auto pWave = gp_dls->GetWave(*pRgn);
+
+			pSmpl->pWave = pWave;
+
+			if (NULL == pRgn->mp_sampler || 0 == pRgn->mp_sampler->LoopCount) {
+				if (NULL == pWave->mp_sampler || 0 == pWave->mp_sampler->LoopCount) {
+					pSmpl->loop.Start = 0;
+					pSmpl->loop.Length = pWave->m_dataSize / pWave->mp_format->BlockAlign;
+					pSmpl->hasLoop = false;
+				}
+				else {
+					pSmpl->loop = *pWave->m_loops[0];
+					pSmpl->hasLoop = true;
+				}
+			}
+			else {
+				pSmpl->loop = *pRgn->m_loops[0];
+				pSmpl->hasLoop = true;
+			}
+
+			if (NULL == pRgn->mp_sampler) {
+				auto diffNote = pow(2.0, (noteNo - pWave->mp_sampler->UnityNote) / 12.0);
+				auto finetune = pow(2.0, pWave->mp_sampler->FineTune / 1200.0);
+				pSmpl->delta = diffNote * finetune * pWave->mp_format->SampleRate / g_sampleRate;
+			}
+			else {
+				auto diffNote = pow(2.0, (noteNo - pRgn->mp_sampler->UnityNote) / 12.0);
+				auto finetune = pow(2.0, pRgn->mp_sampler->FineTune / 1200.0);
+				pSmpl->delta = diffNote * finetune * pWave->mp_format->SampleRate / g_sampleRate;
+			}
+
+			if (NULL == pRgn->mp_articulations) {
+				pSmpl->pLart = pSmpl->pChannel->pLart;
+			}
+			else {
+				pSmpl->pLart = pRgn->mp_articulations;
+			}
+
+			pSmpl->index = 0.0;
+			pSmpl->time = 0.0;
 
 			pSmpl->onKey = true;
 			pSmpl->isActive = true;
@@ -459,8 +527,31 @@ void programChange(CHANNEL *pCh, BYTE value) {
 	}
 
 	pCh->programNo = value;
-	pCh->ctrl.bankMSB;
-	pCh->ctrl.bankLSB;
+
+	DLS::MidiLocale locale;
+	locale.BankFlags = (10 == pCh->no) ? 0x80 : 0x00;
+	locale.ProgramNo = value;
+	locale.BankMSB = pCh->ctrl.bankMSB;
+	locale.BankLSB = pCh->ctrl.bankLSB;
+
+	if (NULL == gp_dls) {
+		pCh->pLrgn = NULL;
+		pCh->pLart = NULL;
+	}
+	else {
+		auto pInst = gp_dls->GetInst(locale);
+		if (NULL == pInst) {
+			locale.BankMSB = 0;
+			locale.BankLSB = 0;
+			pInst = gp_dls->GetInst(locale);
+		}
+		if (NULL == pInst) {
+			locale.ProgramNo = 0;
+			pInst = gp_dls->GetInst(locale);
+		}
+		pCh->pLrgn = pInst->mp_regions;
+		pCh->pLart = pInst->mp_articulations;
+	}
 }
 
 void pitchBend(CHANNEL *pCh, BYTE lsb, BYTE msb) {
@@ -468,9 +559,17 @@ void pitchBend(CHANNEL *pCh, BYTE lsb, BYTE msb) {
 		return;
 	}
 
-	pCh->ctrl.bankLSB = lsb;
-	pCh->ctrl.bankMSB = msb;
-	pCh->pitch = pow(2.0, pCh->ctrl.bendRange / 12.0 * ((lsb | msb << 7) - 8192.0) / 8192.0);
+	pCh->pitchLSB = lsb;
+	pCh->pitchMSB = msb;
+
+	auto temp = (short)((lsb | (msb << 7)) - 8192) * pCh->ctrl.bendRange;
+	if (temp < 0) {
+		temp = -temp;
+		pCh->pitch = 1.0 / (SemiTone[temp >> 13] * PitchMSB[(temp >> 7) % 64] * PitchLSB[temp % 128]);
+	}
+	else {
+		pCh->pitch = SemiTone[temp >> 13] * PitchMSB[(temp >> 7) % 64] * PitchLSB[temp % 128];
+	}
 }
 
 void sysEx(LPBYTE message) {

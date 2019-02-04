@@ -85,6 +85,9 @@ typedef struct {
 
 	KEY_STATUS keyBoard[KEY_COUNT] = { KEY_STATUS_OFF };
 
+	DLS::LRGN *pLrgn = NULL;
+	DLS::LART *pLart = NULL;
+
 	double wave;
 	double amp;
 	double panLeft;
@@ -93,17 +96,21 @@ typedef struct {
 } CHANNEL;
 
 typedef struct {
-	UINT channelNo;
+	CHANNEL *pChannel = NULL;
 	UINT noteNo;
 	BOOL onKey;
 	BOOL isActive;
+
+	DLS::WAVE *pWave = NULL;
+	DLS::LART *pLart = NULL;
+	DLS::WaveLoop loop;
+	BOOL hasLoop = false;
+
 	double delta;
 	double index;
 	double time;
 	double tarAmp;
 	double curAmp;
-	double re;
-	double im;
 } SAMPLER;
 
 /******************************************************************************/

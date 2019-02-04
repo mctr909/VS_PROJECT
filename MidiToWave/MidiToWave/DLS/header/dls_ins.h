@@ -22,7 +22,8 @@ namespace DLS {
 
 	class LINS : Chunk {
 	public:
-		std::vector<INS*> m_list;
+		UINT m_listCount = 0;
+		INS **mpp_list = NULL;
 
 	public:
 		LINS(LPBYTE ptr, UINT size) { Load(ptr, size); }
