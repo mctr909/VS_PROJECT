@@ -33,29 +33,29 @@ namespace MIDI {
                 Channel[i] = new Channel(mInst, ppChannel[i], i);
             }
 
-            WaveOutOpen((uint)Const.SampleRate, 128);
+            WaveOutOpen((uint)Const.SampleRate, 256);
         }
 
         public void Send(Message msg) {
             switch (msg.Type) {
             case EVENT_TYPE.NOTE_OFF:
-                noteOff(Channel[msg.Channel], msg.Data[1]);
+                noteOff(Channel[msg.Channel], msg.V1);
                 break;
 
             case EVENT_TYPE.NOTE_ON:
-                noteOn(Channel[msg.Channel], msg.Data[1], msg.Data[2]);
+                noteOn(Channel[msg.Channel], msg.V1, msg.V2);
                 break;
 
             case EVENT_TYPE.CTRL_CHG:
-                Channel[msg.Channel].CtrlChange(msg.Data[1], msg.Data[2]);
+                Channel[msg.Channel].CtrlChange(msg.V1, msg.V2);
                 break;
 
             case EVENT_TYPE.PRGM_CHG:
-                Channel[msg.Channel].ProgramChange(msg.Data[1]);
+                Channel[msg.Channel].ProgramChange(msg.V1);
                 break;
 
             case EVENT_TYPE.PITCH:
-                Channel[msg.Channel].PitchBend(msg.Data[1], msg.Data[2]);
+                Channel[msg.Channel].PitchBend(msg.V1, msg.V2);
                 break;
 
             default:

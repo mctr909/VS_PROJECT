@@ -11,39 +11,6 @@ namespace MIDI {
     };
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct CONTROL {
-        public byte vol;
-        public byte exp;
-        public byte pan;
-        public byte reserve1;
-
-        public byte rev;
-        public byte cho;
-        public byte del;
-        public byte reserve2;
-
-        public byte res;
-        public byte cut;
-        public byte atk;
-        public byte rel;
-
-        public byte vibRate;
-        public byte vibDepth;
-        public byte vibDelay;
-        public byte reserve3;
-
-        public byte bendRange;
-        public byte hold;
-        public byte reserve4;
-        public byte reserve5;
-
-        public byte nrpnMSB;
-        public byte nrpnLSB;
-        public byte rpnMSB;
-        public byte rpnLSB;
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct WAVE_LOOP {
         public uint start;
         public uint length;
@@ -146,6 +113,33 @@ namespace MIDI {
         public ENVELOPE envAmp;
         public ENVELOPE envEq;
         public FILTER eq;
+    };
+
+    public struct CONTROL {
+        public byte vol;
+        public byte exp;
+        public byte pan;
+
+        public byte rev;
+        public byte cho;
+        public byte del;
+
+        public byte res;
+        public byte cut;
+        public byte atk;
+        public byte rel;
+
+        public byte vibRate;
+        public byte vibDepth;
+        public byte vibDelay;
+
+        public byte bendRange;
+        public byte hold;
+
+        public byte nrpnMSB;
+        public byte nrpnLSB;
+        public byte rpnMSB;
+        public byte rpnLSB;
     };
 
     public struct WAVE_INFO {

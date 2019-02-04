@@ -257,29 +257,29 @@ namespace MIDI {
             case EVENT_TYPE.POLY_KEY:
             case EVENT_TYPE.CTRL_CHG:
             case EVENT_TYPE.PITCH:
-                ms.WriteByte((byte)((byte)msg.Type | msg.Channel));
-                ms.WriteByte(msg.Data[1]);
-                ms.WriteByte(msg.Data[2]);
+                ms.WriteByte(msg.Status);
+                ms.WriteByte(msg.V1);
+                ms.WriteByte(msg.V2);
                 return;
 
             // 1バイトメッセージ
             case EVENT_TYPE.PRGM_CHG:
             case EVENT_TYPE.CH_PRESS:
-                ms.WriteByte((byte)((byte)msg.Type | msg.Channel));
-                ms.WriteByte(msg.Data[1]);
+                ms.WriteByte(msg.Status);
+                ms.WriteByte(msg.V1);
                 return;
 
             // システムエクスクルーシブ
             case EVENT_TYPE.SYS_EX:
-                //ms.WriteByte((byte)EVENT_TYPE.SYS_EX);
-                //WriteDelta(ms, msg.SystemEx.Length);
-                //ms.Write(msg.SystemEx.Data, 0, (int)msg.SystemEx.Length);
+                ms.WriteByte(msg.Status);
+                WriteDelta(ms, (uint)(msg.Data.Length - 1));
+                ms.Write(msg.Data, 1, msg.Data.Length - 1);
                 return;
 
             // メタデータ
             case EVENT_TYPE.META:
-                ms.WriteByte((byte)EVENT_TYPE.META);
-                ms.WriteByte((byte)msg.Meta.Type);
+                ms.WriteByte(msg.Status);
+                ms.WriteByte(msg.V1);
                 WriteDelta(ms, (uint)msg.Meta.Length);
                 ms.Write(msg.Meta.Data, 0, msg.Meta.Length);
                 return;

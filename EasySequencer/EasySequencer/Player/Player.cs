@@ -159,23 +159,24 @@ namespace MIDI {
                     }
                 }
 
-                if (EVENT_TYPE.NOTE_OFF == type || EVENT_TYPE.NOTE_ON == type) {
-                    if (mTicks < (mCurrentTime - eventTime)) {
+                if (EVENT_TYPE.NOTE_ON == type && msg.V2 != 0) {
+                    if (16.0 < (mCurrentTime - eventTime)) {
                         continue;
                     }
-                    if (0x00 == mSender.Channel[msg.Channel].InstId.isDrum) {
-                        if ((msg.Data[1] + Transpose) < 0 || 127 < (msg.Data[1] + Transpose)) {
-                            continue;
-                        }
-                        else {
-                            msg = new Message(msg.Data[0], (byte)(msg.Data[1] + Transpose), msg.Data[2]);
-                        }
+
+                    if (!mSender.Channel[msg.Channel].Enable || (0 <= SoloChannel && SoloChannel != msg.Channel)) {
+                        continue;
                     }
                 }
 
-                if (msg.Channel <= 16 && !mSender.Channel[msg.Channel].Enable || (0 <= SoloChannel && SoloChannel != msg.Channel)) {
-                    if (EVENT_TYPE.NOTE_ON == type && msg.Data[2] != 0) {
-                        continue;
+                if (EVENT_TYPE.NOTE_OFF == type || EVENT_TYPE.NOTE_ON == type) {
+                    if (0x00 == mSender.Channel[msg.Channel].InstId.isDrum) {
+                        if ((msg.V1 + Transpose) < 0 || 127 < (msg.V1 + Transpose)) {
+                            continue;
+                        }
+                        else {
+                            msg = new Message(msg.Status, (byte)(msg.V1 + Transpose), msg.V2);
+                        }
                     }
                 }
 

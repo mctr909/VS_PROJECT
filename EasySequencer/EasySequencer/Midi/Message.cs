@@ -71,20 +71,8 @@
         }
     }
 
-    public class SystemEx {
-        private readonly byte[] mData;
-
-        public SystemEx(byte[] data) {
-            mData = new byte[data.Length + 1];
-            mData[0] = (byte)EVENT_TYPE.SYS_EX;
-            for (var i = 0; i < data.Length; ++i) {
-                mData[i + 1] = data[i];
-            }
-        }
-    }
-
     public struct Message {
-        public byte[] Data;
+        public readonly byte[] Data;
 
         public EVENT_TYPE Type {
             get { return (EVENT_TYPE)((0xF0 <= Data[0]) ? Data[0] : (Data[0] & 0xF0)); }
@@ -93,6 +81,12 @@
         public int Channel {
             get { return (Data[0] & 0x0F); }
         }
+
+        public byte Status { get { return Data[0]; } }
+
+        public byte V1 { get { return Data[1]; } }
+
+        public byte V2 { get { return Data[2]; } }
 
         public Meta Meta {
             get { return new Meta(Data); }
