@@ -1,0 +1,92 @@
+L<RIFF>(ASST)
+	L<MDL_>
+		L<LMTL>
+			L<IMTL>
+				L[INFO]
+					C[IKEY]
+					C<INAM>
+					C<ICMT>
+				C<utex>
+					int   texIndex;
+				C[colr]
+					vec3  Ka;
+					vec3  Ks;
+					vec3  Kd;
+					float Ns;
+					float Alpha;
+		L<LGRP>
+			L<IGRP>
+				L[INFO]
+					C[IKEY]
+					C<INAM>
+					C<ICMT>
+				C[umtl]
+					int mtlIndex;
+				C[ver_]
+					vec3[n];
+				C<tex_>
+					vec3[n];
+				C[veri]
+					int[n][3];
+				C<texi>
+					int[n][3];
+		L<LBNE>
+			L<IBNE>
+				L[INFO]
+					C[IKEY]
+					C<INAM>
+					C<ICMT>
+				C[bone]
+					int   Parent;
+					vec3  OfsPos;
+					vec2  OfsAng;
+					float Length;
+					float Weight;
+		L<LSEQ>
+			L<ISEQ>
+				L[INFO]
+					C[IKEY]
+					C<INAM>
+					C<ICMT>
+				L[LCOM]
+					C[comm]
+						// 0x0ttttttt: Bone
+						// 0x1ttttttt: Group Rotate
+						// 0x2ttttttt: Group Move
+						// 0x3ttttttt: Group Alpha
+						// 0x4ttttttt: Group Texture
+						// 0xF0000000: Model DelayTime
+						// 0xF0000001: Model Rotate
+						// 0xF0000002: Model Move
+						// 0xF0000003: Model Alpha
+						int       target;
+						byte[n-4] value;
+	L<PICT>
+		L<LTEX>
+			L<ITEX>
+				L[INFO]
+					C[IKEY]
+					C<INAM>
+					C<ICMT>
+				C[data]
+					int width;
+					int height;
+					color[height][width] pixel;
+	L<SND_>
+		L<LBGM>
+			L<IBGM>
+				L[INFO]
+					C[IKEY]
+					C<INAM>
+					C<ICMT>
+				C[data]
+					byte[n] file;
+		L<L_SE>
+			L<I_SE>
+				L[INFO]
+					C[IKEY]
+					C<INAM>
+					C<ICMT>
+				C[fmt ]
+				C[data]
+					byte[n] pcm;
