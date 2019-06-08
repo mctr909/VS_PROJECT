@@ -1,46 +1,22 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
 
 namespace DLSeditor {
     public partial class MainForm : Form {
-        private DLS.DLS mDLS;
         private string mFilePath;
-        private bool onRange;
+        private DLS.DLS mDLS;
         private DLS.INS mClipboardInst;
-
-        private readonly string[] NoteName = new string[] {
-            "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"
-        };
 
         public MainForm() {
             InitializeComponent();
             SetTabSize();
             mDLS = new DLS.DLS();
-
-            timer1.Interval = 50;
-            timer1.Enabled = true;
-            timer1.Start();
         }
 
         private void Form1_SizeChanged(object sender, EventArgs e) {
             SetTabSize();
-        }
-
-        private void timer1_Tick(object sender, EventArgs e) {
-            tstRegion.Text = "";
-            if (onRange) {
-                var posRegion = PosToRegion();
-                tstRegion.Text = string.Format(
-                    "強弱:{0} 音程:{1}({2}{3})",
-                    posRegion.Y.ToString("000"),
-                    posRegion.X.ToString("000"),
-                    NoteName[posRegion.X % 12],
-                    (posRegion.X / 12 - 2)
-                );
-            }
         }
 
         #region メニューバー[ファイル]
@@ -48,7 +24,6 @@ namespace DLSeditor {
             mDLS = new DLS.DLS();
             DispInstList();
             DispWaveList();
-            DispRegionInfo();
             tabControl.SelectedIndex = 0;
             mFilePath = "";
         }
@@ -83,8 +58,6 @@ namespace DLSeditor {
 
             DispWaveList();
             DispInstList();
-            DispRegionInfo();
-            DispInstAttr();
 
             if(0 < lstInst.Items.Count) {
                 lstInst.SelectedIndex = 0;
@@ -124,9 +97,6 @@ namespace DLSeditor {
                 case "tbpInstList":
                     AddInst();
                     break;
-                case "tbpRegion":
-                    AddRegion();
-                    break;
             }
         }
 
@@ -137,9 +107,6 @@ namespace DLSeditor {
                     break;
                 case "tbpInstList":
                     DeleteInst();
-                    break;
-                case "tbpRegion":
-                    DeleteRegion();
                     break;
             }
         }
@@ -153,7 +120,6 @@ namespace DLSeditor {
                     break;
             }
         }
-
 
         private void 貼り付けPToolStripMenuItem_Click(object sender, EventArgs e) {
             switch (tabControl.SelectedTab.Name) {
@@ -210,34 +176,6 @@ namespace DLSeditor {
         private void txtInstSearch_TextChanged(object sender, EventArgs e) {
             DispInstList();
         }
-
-        private void tsbAddRange_Click(object sender, EventArgs e) {
-            AddRegion();
-        }
-
-        private void tsbDeleteRange_Click(object sender, EventArgs e) {
-            DeleteRegion();
-        }
-
-        private void tsbRangeList_Click(object sender, EventArgs e) {
-            tsbRangeKey.Checked = false;
-            tsbRangeList.Checked = true;
-            tsbAddRange.Enabled = true;
-            tsbDeleteRange.Enabled = true;
-
-            pnlRegion.Visible = false;
-            lstRegion.Visible = true;
-        }
-
-        private void tsbRangeKey_Click(object sender, EventArgs e) {
-            tsbAddRange.Enabled = false;
-            tsbDeleteRange.Enabled = false;
-            tsbRangeList.Checked = false;
-            tsbRangeKey.Checked = true;
-
-            lstRegion.Visible = false;
-            pnlRegion.Visible = true;
-        }
         #endregion
 
         #region サイズ調整
@@ -260,8 +198,6 @@ namespace DLSeditor {
 
             SetInstListSize();
             SetWaveListSize();
-            SetInstAttributeSize();
-            SetInstRegionSize();
         }
 
         private void SetInstListSize() {
@@ -286,33 +222,6 @@ namespace DLSeditor {
             lstWave.Top = toolStrip3.Height + 4;
             lstWave.Width = width;
             lstWave.Height = height;
-        }
-
-        private void SetInstAttributeSize() {
-            var offsetX = 16;
-            var offsetY = 36;
-            var width = tabControl.Width - offsetX;
-            var height = tabControl.Height - offsetY;
-        }
-
-        private void SetInstRegionSize() {
-            var offsetX = 16;
-            var offsetY = 60;
-            var width = tabControl.Width - offsetX + 6;
-            var height = tabControl.Height - offsetY + 4;
-
-            picRegion.Width = picRegion.BackgroundImage.Width;
-            picRegion.Height = picRegion.BackgroundImage.Height;
-
-            pnlRegion.Left = 0;
-            pnlRegion.Top = toolStrip1.Height + 4;
-            pnlRegion.Width = width;
-            pnlRegion.Height = height;
-
-            lstRegion.Left = 0;
-            lstRegion.Top = toolStrip1.Height + 4;
-            lstRegion.Width = width;
-            lstRegion.Height = height;
         }
         #endregion
 
@@ -474,8 +383,13 @@ namespace DLSeditor {
 
         #region 音色一覧
         private void lstInst_DoubleClick(object sender, EventArgs e) {
-            DispRegionInfo();
-            DispInstAttr();
+            var inst = GetSelectedInst();
+            if (null == inst) {
+                return;
+            }
+            var fm = new InstInfoForm(mDLS, inst);
+            fm.ShowDialog();
+            DispInstList();
         }
 
         private void AddInst() {
@@ -497,8 +411,6 @@ namespace DLSeditor {
 
             DispInstList();
             DispWaveList();
-            DispRegionInfo();
-            DispInstAttr();
 
             if (index < lstInst.Items.Count) {
                 lstInst.SelectedIndex = index;
@@ -573,8 +485,6 @@ namespace DLSeditor {
             fm.ShowDialog();
 
             DispInstList();
-            DispRegionInfo();
-            DispInstAttr();
         }
 
         private void DispInstList() {
@@ -589,11 +499,12 @@ namespace DLSeditor {
                 }
 
                 lstInst.Items.Add(string.Format(
-                    "{0}\t{1}\t{2}\t{3}\t{4}",
+                    "{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
                     (inst.Header.Locale.BankFlags & 0x80) == 0x80 ? "Drum" : "Note",
                     inst.Header.Locale.ProgramNo.ToString("000"),
                     inst.Header.Locale.BankMSB.ToString("000"),
                     inst.Header.Locale.BankLSB.ToString("000"),
+                    inst.Info.Keywords.PadRight(10, ' ').Substring(0, 10),
                     inst.Info.Name
                 ));
             }
@@ -602,298 +513,6 @@ namespace DLSeditor {
                 idx = lstInst.Items.Count - 1;
             }
             lstInst.SelectedIndex = idx;
-        }
-        #endregion
-
-        #region 音色情報
-        private void txtInstName_Leave(object sender, EventArgs e) {
-            var inst = GetSelectedInst();
-            if (null == inst) {
-                return;
-            }
-
-            if (null == inst.Info) {
-                inst.Info = new DLS.INFO();
-            }
-
-            inst.Info.Name = txtInstName.Text;
-            Text = txtInstName.Text;
-            DispInstList();
-        }
-
-        private void txtInstKeyword_Leave(object sender, EventArgs e) {
-            var inst = GetSelectedInst();
-            if (null == inst) {
-                return;
-            }
-
-            if (null == inst.Info) {
-                inst.Info = new DLS.INFO();
-            }
-
-            inst.Info.Keywords = txtInstKeyword.Text;
-        }
-
-        private void txtInstComment_Leave(object sender, EventArgs e) {
-            var inst = GetSelectedInst();
-            if (null == inst) {
-                return;
-            }
-
-            if (null == inst.Info) {
-                inst.Info = new DLS.INFO();
-            }
-
-            inst.Info.Comments = txtInstComment.Text;
-        }
-        #endregion
-
-        #region 音色属性
-        private void DispInstAttr() {
-            var inst = GetSelectedInst();
-            if (null == inst || null == inst.Articulations || null == inst.Articulations.ART) {
-                ampEnvelope.Visible = false;
-            }
-            else {
-                ampEnvelope.Visible = true;
-            }
-        }
-
-        private void tbpInstAttribute_Leave(object sender, EventArgs e) {
-            var inst = GetSelectedInst();
-            if (null == inst || null == inst.Articulations || null == inst.Articulations.ART) {
-                return;
-            }
-
-            inst.Articulations.ART.List.Clear();
-            ampEnvelope.SetList(inst.Articulations.ART.List);
-        }
-        #endregion
-
-        #region 音程/強弱割り当て
-        private void pictRange_DoubleClick(object sender, EventArgs e) {
-            if (lstInst.SelectedIndex < 0) {
-                return;
-            }
-
-            EditRegion(PosToRegionId());
-        }
-
-        private void pictRange_MouseEnter(object sender, EventArgs e) {
-            onRange = true;
-        }
-
-        private void pictRange_MouseLeave(object sender, EventArgs e) {
-            onRange = false;
-        }
-
-        private void lstRegion_DoubleClick(object sender, EventArgs e) {
-            if (lstInst.SelectedIndex < 0) {
-                return;
-            }
-
-            EditRegion(ListToRegeonId());
-        }
-
-        private void AddRegion() {
-            var inst = GetSelectedInst();
-            if (null == inst) {
-                return;
-            }
-
-            var region = new DLS.RGN();
-            region.Header.Key.Low = ushort.MaxValue;
-            region.WaveLink.TableIndex = uint.MaxValue;
-            var fm = new RegionInfoForm(mDLS, region);
-            fm.ShowDialog();
-
-            if (ushort.MaxValue != region.Header.Key.Low) {
-                inst.Regions.List.Add(region.Header, region);
-                DispRegionInfo();
-            }
-        }
-
-        private void EditRegion(DLS.CK_RGNH regionId) {
-            var inst = GetSelectedInst();
-            if (null == inst) {
-                return;
-            }
-
-            if (inst.Regions.List.ContainsKey(regionId)) {
-                var region = inst.Regions.List[regionId];
-                var fm = new RegionInfoForm(mDLS, region);
-                fm.ShowDialog();
-                DispRegionInfo();
-            }
-            else {
-                AddRegion();
-            }
-        }
-
-        private void DeleteRegion() {
-            var inst = GetSelectedInst();
-            if (null == inst) {
-                return;
-            }
-
-            var index = lstRegion.SelectedIndex;
-
-            foreach (int idx in lstRegion.SelectedIndices) {
-                var cols = lstRegion.Items[idx].ToString().Split(' ');
-
-                var rgn = new DLS.CK_RGNH();
-                rgn.Key.Low = byte.Parse(cols[1]);
-                rgn.Key.High = byte.Parse(cols[2]);
-                rgn.Velocity.Low = byte.Parse(cols[7]);
-                rgn.Velocity.High = byte.Parse(cols[8]);
-
-                if (inst.Regions.List.ContainsKey(rgn)) {
-                    inst.Regions.List.Remove(rgn);
-                }
-            }
-
-            DispRegionInfo();
-
-            if (index < lstRegion.Items.Count) {
-                lstRegion.SelectedIndex = index;
-            }
-            else {
-                lstRegion.SelectedIndex = lstRegion.Items.Count - 1;
-            }
-        }
-
-        private Point PosToRegion() {
-            var posRegion = picRegion.PointToClient(Cursor.Position);
-            if (posRegion.X < 0) {
-                posRegion.X = 0;
-            }
-            if (posRegion.Y < 0) {
-                posRegion.Y = 0;
-            }
-            if (picRegion.Width <= posRegion.X) {
-                posRegion.X = picRegion.Width - 1;
-            }
-            if (picRegion.Height <= posRegion.Y) {
-                posRegion.Y = picRegion.Height - 1;
-            }
-
-            posRegion.Y = picRegion.Height - posRegion.Y - 1;
-            posRegion.X = (int)(posRegion.X / 7.0);
-            posRegion.Y = (int)(posRegion.Y / 4.0);
-
-            return posRegion;
-        }
-
-        private DLS.CK_RGNH PosToRegionId() {
-            var region = new DLS.CK_RGNH();
-            var posRegion = PosToRegion();
-            var inst = GetSelectedInst();
-            foreach (var rgn in inst.Regions.List.Values) {
-                var key = rgn.Header.Key;
-                var vel = rgn.Header.Velocity;
-                if (key.Low <= posRegion.X && posRegion.X <= key.High
-                && vel.Low <= posRegion.Y && posRegion.Y <= vel.High) {
-                    region = rgn.Header;
-                    break;
-                }
-            }
-
-            return region;
-        }
-
-        private DLS.CK_RGNH ListToRegeonId() {
-            if (lstRegion.SelectedIndex < 0) {
-                return new DLS.CK_RGNH();
-            }
-
-            var cols = lstRegion.Items[lstRegion.SelectedIndex].ToString().Split(' ');
-            var region = new DLS.CK_RGNH();
-            region.Key.Low = ushort.Parse(cols[1]);
-            region.Key.High = ushort.Parse(cols[2]);
-            region.Velocity.Low = ushort.Parse(cols[7]);
-            region.Velocity.High = ushort.Parse(cols[8]);
-
-            return region;
-        }
-
-        private void DispRegionInfo() {
-            var inst = GetSelectedInst();
-            if (null == inst) {
-                lstRegion.Items.Clear();
-                if (null != picRegion.Image) {
-                    picRegion.Image.Dispose();
-                    picRegion.Image = null;
-                }
-                return;
-            }
-
-            ampEnvelope.Art = inst.Articulations.ART;
-
-            txtInstName.Text = inst.Info.Name.Trim();
-            txtInstKeyword.Text = inst.Info.Keywords.Trim();
-            txtInstComment.Text = inst.Info.Comments.Trim();
-
-            Text = inst.Info.Name.Trim();
-
-            var bmp = new Bitmap(picRegion.Width, picRegion.Height);
-            var g = Graphics.FromImage(bmp);
-            var blueLine = new Pen(Color.FromArgb(255, 0, 0, 255), 2.0f);
-            var greenFill = new Pen(Color.FromArgb(64, 0, 255, 0), 1.0f).Brush;
-
-            var idx = lstRegion.SelectedIndex;
-            lstRegion.Items.Clear();
-
-            foreach (var region in inst.Regions.List.Values) {
-                var key = region.Header.Key;
-                var vel = region.Header.Velocity;
-                g.FillRectangle(
-                    greenFill,
-                    key.Low * 7,
-                    bmp.Height - (vel.High + 1) * 4 - 1,
-                    (key.High - key.Low + 1) * 7,
-                    (vel.High - vel.Low + 1) * 4
-                );
-                g.DrawRectangle(
-                    blueLine,
-                    key.Low * 7,
-                    bmp.Height - (vel.High + 1) * 4,
-                    (key.High - key.Low + 1) * 7,
-                    (vel.High - vel.Low + 1) * 4
-                );
-                var waveName = "";
-                if (mDLS.WavePool.List.ContainsKey((int)region.WaveLink.TableIndex)) {
-                    var wave = mDLS.WavePool.List[(int)region.WaveLink.TableIndex];
-                    waveName = wave.Info.Name;
-                }
-
-                var regionInfo = string.Format(
-                    "音程 {0} {1}    強弱 {2} {3}",
-                    region.Header.Key.Low.ToString("000"),
-                    region.Header.Key.High.ToString("000"),
-                    region.Header.Velocity.Low.ToString("000"),
-                    region.Header.Velocity.High.ToString("000")
-                );
-                if (uint.MaxValue != region.WaveLink.TableIndex) {
-                    regionInfo = string.Format(
-                        "{0}    波形 {1} {2}",
-                        regionInfo,
-                        region.WaveLink.TableIndex.ToString("0000"),
-                        waveName
-                    );
-                }
-                lstRegion.Items.Add(regionInfo);
-            }
-
-            if (null != picRegion.Image) {
-                picRegion.Image.Dispose();
-                picRegion.Image = null;
-            }
-            picRegion.Image = bmp;
-
-            if (lstRegion.Items.Count <= idx) {
-                idx = lstRegion.Items.Count - 1;
-            }
-            lstRegion.SelectedIndex = idx;
         }
         #endregion
 

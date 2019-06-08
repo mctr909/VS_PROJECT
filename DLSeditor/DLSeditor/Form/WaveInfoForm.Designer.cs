@@ -309,12 +309,12 @@
             this.numFineTune.Font = new System.Drawing.Font("MS UI Gothic", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.numFineTune.Location = new System.Drawing.Point(6, 25);
             this.numFineTune.Maximum = new decimal(new int[] {
-            50,
+            1200,
             0,
             0,
             0});
             this.numFineTune.Minimum = new decimal(new int[] {
-            50,
+            1200,
             0,
             0,
             -2147483648});
