@@ -33,6 +33,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.txtInstName = new System.Windows.Forms.TextBox();
             this.tbpInstAttribute = new System.Windows.Forms.TabPage();
+            this.ampEnvelope = new DLSeditor.Envelope();
             this.tbpRegion = new System.Windows.Forms.TabPage();
             this.lstRegion = new System.Windows.Forms.ListBox();
             this.pnlRegion = new System.Windows.Forms.Panel();
@@ -46,7 +47,6 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.txtRegion = new System.Windows.Forms.ToolStripTextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.ampEnvelope = new DLSeditor.Envelope();
             this.tabControl.SuspendLayout();
             this.tbpInstInfo.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -151,11 +151,20 @@
             this.tbpInstAttribute.Controls.Add(this.ampEnvelope);
             this.tbpInstAttribute.Location = new System.Drawing.Point(8, 39);
             this.tbpInstAttribute.Name = "tbpInstAttribute";
-            this.tbpInstAttribute.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tbpInstAttribute.Padding = new System.Windows.Forms.Padding(3);
             this.tbpInstAttribute.Size = new System.Drawing.Size(751, 687);
             this.tbpInstAttribute.TabIndex = 6;
             this.tbpInstAttribute.Text = "音色属性";
             this.tbpInstAttribute.UseVisualStyleBackColor = true;
+            // 
+            // ampEnvelope
+            // 
+            this.ampEnvelope.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.ampEnvelope.Art = null;
+            this.ampEnvelope.Location = new System.Drawing.Point(6, 6);
+            this.ampEnvelope.Name = "ampEnvelope";
+            this.ampEnvelope.Size = new System.Drawing.Size(1840, 720);
+            this.ampEnvelope.TabIndex = 1;
             // 
             // tbpRegion
             // 
@@ -222,7 +231,7 @@
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(452, 26);
+            this.toolStrip1.Size = new System.Drawing.Size(469, 31);
             this.toolStrip1.TabIndex = 6;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -293,15 +302,6 @@
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // ampEnvelope
-            // 
-            this.ampEnvelope.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.ampEnvelope.Art = null;
-            this.ampEnvelope.Location = new System.Drawing.Point(6, 6);
-            this.ampEnvelope.Name = "ampEnvelope";
-            this.ampEnvelope.Size = new System.Drawing.Size(1594, 678);
-            this.ampEnvelope.TabIndex = 1;
-            // 
             // InstInfoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
@@ -309,7 +309,6 @@
             this.ClientSize = new System.Drawing.Size(1559, 1028);
             this.Controls.Add(this.tabControl);
             this.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "InstInfoForm";
             this.Text = "InstInfoForm";
             this.SizeChanged += new System.EventHandler(this.InstInfoForm_SizeChanged);

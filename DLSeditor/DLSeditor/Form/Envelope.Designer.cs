@@ -585,7 +585,7 @@
             this.Controls.Add(this.grpEq);
             this.Controls.Add(this.grpAmp);
             this.Name = "Envelope";
-            this.Size = new System.Drawing.Size(1559, 1057);
+            this.Size = new System.Drawing.Size(1785, 1057);
             ((System.ComponentModel.ISupportInitialize)(this.picReleace)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picSustain)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picDecay)).EndInit();

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 namespace DLSeditor {
     public partial class Envelope : UserControl {
         private DLS.ART mArt;
+        private static int TrackBarWidth = 600;
 
         public Envelope() {
             InitializeComponent();
@@ -29,27 +30,27 @@ namespace DLSeditor {
 
             trbAmpAttack.Left = picAttack.Right + 4;
             trbAmpAttack.Top = picAttack.Top - 4;
-            trbAmpAttack.Width = 400;
+            trbAmpAttack.Width = TrackBarWidth;
             trbAmpAttack.Height = picAttack.Height;
 
             trbAmpHold.Left = picHold.Right + 4;
             trbAmpHold.Top = picHold.Top - 4;
-            trbAmpHold.Width = 400;
+            trbAmpHold.Width = TrackBarWidth;
             trbAmpHold.Height = picHold.Height;
 
             trbAmpDecay.Left = picDecay.Right + 4;
             trbAmpDecay.Top = picDecay.Top - 4;
-            trbAmpDecay.Width = 400;
+            trbAmpDecay.Width = TrackBarWidth;
             trbAmpDecay.Height = picDecay.Height;
 
             trbAmpSustain.Left = picSustain.Right + 4;
             trbAmpSustain.Top = picSustain.Top - 4;
-            trbAmpSustain.Width = 400;
+            trbAmpSustain.Width = TrackBarWidth;
             trbAmpSustain.Height = picSustain.Height;
 
             trbAmpReleace.Left = picReleace.Right + 4;
             trbAmpReleace.Top = picReleace.Top - 4;
-            trbAmpReleace.Width = 400;
+            trbAmpReleace.Width = TrackBarWidth;
             trbAmpReleace.Height = picReleace.Height;
 
 
@@ -111,27 +112,27 @@ namespace DLSeditor {
 
             trbEqAttack.Left = picEqAttack.Right + 4;
             trbEqAttack.Top = picEqAttack.Top - 4;
-            trbEqAttack.Width = 400;
+            trbEqAttack.Width = TrackBarWidth;
             trbEqAttack.Height = picEqAttack.Height;
 
             trbEqHold.Left = picEqHold.Right + 4;
             trbEqHold.Top = picEqHold.Top - 4;
-            trbEqHold.Width = 400;
+            trbEqHold.Width = TrackBarWidth;
             trbEqHold.Height = picEqHold.Height;
 
             trbEqDecay.Left = picEqDecay.Right + 4;
             trbEqDecay.Top = picEqDecay.Top - 4;
-            trbEqDecay.Width = 400;
+            trbEqDecay.Width = TrackBarWidth;
             trbEqDecay.Height = picEqDecay.Height;
 
             trbEqSustain.Left = picEqSustain.Right + 4;
             trbEqSustain.Top = picEqSustain.Top - 4;
-            trbEqSustain.Width = 400;
+            trbEqSustain.Width = TrackBarWidth;
             trbEqSustain.Height = picEqSustain.Height;
 
             trbEqReleace.Left = picEqReleace.Right + 4;
             trbEqReleace.Top = picEqReleace.Top - 4;
-            trbEqReleace.Width = 400;
+            trbEqReleace.Width = TrackBarWidth;
             trbEqReleace.Height = picEqReleace.Height;
 
 

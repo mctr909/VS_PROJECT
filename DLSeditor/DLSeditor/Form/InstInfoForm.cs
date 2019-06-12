@@ -106,10 +106,6 @@ namespace DLSeditor {
         #endregion
 
         #region 音色属性
-        private void tbpInstAttribute_Leave(object sender, EventArgs e) {
-
-        }
-
         private void DispInstAttr() {
             if (null == mINS.Articulations || null == mINS.Articulations.ART) {
                 ampEnvelope.Visible = false;
