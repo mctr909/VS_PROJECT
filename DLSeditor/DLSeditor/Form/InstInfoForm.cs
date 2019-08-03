@@ -86,15 +86,23 @@ namespace DLSeditor {
             if (null == mINS.Info) {
                 mINS.Info = new DLS.INFO();
             }
-            mINS.Info.Name = txtInstName.Text;
-            Text = txtInstName.Text;
+            mINS.Info.Name = txtInstName.Text.Trim();
+            Text = mINS.Info.Name;
         }
 
-        private void txtInstKeyword_Leave(object sender, EventArgs e) {
+        private void cmbInstKeyword_Leave(object sender, EventArgs e) {
             if (null == mINS.Info) {
                 mINS.Info = new DLS.INFO();
             }
-            mINS.Info.Keywords = txtInstKeyword.Text;
+            mINS.Info.Keywords = cmbInstKeyword.Text.Trim();
+            setCategoryList();
+        }
+
+        private void cmbInstKeyword_SelectedIndexChanged(object sender, EventArgs e) {
+            if (null == mINS.Info) {
+                mINS.Info = new DLS.INFO();
+            }
+            mINS.Info.Keywords = cmbInstKeyword.Text;
         }
 
         private void txtInstComment_Leave(object sender, EventArgs e) {
@@ -102,6 +110,19 @@ namespace DLSeditor {
                 mINS.Info = new DLS.INFO();
             }
             mINS.Info.Comments = txtInstComment.Text;
+        }
+
+        private void setCategoryList() {
+            cmbInstKeyword.Items.Clear();
+            cmbInstKeyword.Items.Add(mINS.Info.Keywords);
+            foreach (var inst in mDLS.Instruments.List.Values) {
+                if (null != inst.Info && "" != inst.Info.Keywords) {
+                    if (!cmbInstKeyword.Items.Contains(inst.Info.Keywords.Trim())) {
+                        cmbInstKeyword.Items.Add(inst.Info.Keywords.Trim());
+                    }
+                }
+            }
+            cmbInstKeyword.SelectedItem = mINS.Info.Keywords;
         }
         #endregion
 
@@ -163,8 +184,9 @@ namespace DLSeditor {
             ampEnvelope.Art = mINS.Articulations.ART;
 
             txtInstName.Text = mINS.Info.Name.Trim();
-            txtInstKeyword.Text = mINS.Info.Keywords.Trim();
+            cmbInstKeyword.Text = mINS.Info.Keywords.Trim();
             txtInstComment.Text = mINS.Info.Comments.Trim();
+            setCategoryList();
 
             Text = mINS.Info.Name.Trim();
 

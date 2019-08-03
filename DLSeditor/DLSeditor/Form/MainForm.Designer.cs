@@ -208,14 +208,14 @@
             // 
             // lstInst
             // 
-            this.lstInst.Font = new System.Drawing.Font("ＭＳ ゴシック", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lstInst.Font = new System.Drawing.Font("ＭＳ ゴシック", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lstInst.FormattingEnabled = true;
-            this.lstInst.ItemHeight = 29;
+            this.lstInst.ItemHeight = 27;
             this.lstInst.Location = new System.Drawing.Point(7, 62);
             this.lstInst.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.lstInst.Name = "lstInst";
             this.lstInst.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstInst.Size = new System.Drawing.Size(255, 120);
+            this.lstInst.Size = new System.Drawing.Size(255, 112);
             this.lstInst.TabIndex = 3;
             this.lstInst.DoubleClick += new System.EventHandler(this.lstInst_DoubleClick);
             // 
@@ -304,6 +304,7 @@
             // 
             // txtInstSearch
             // 
+            this.txtInstSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtInstSearch.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F);
             this.txtInstSearch.Name = "txtInstSearch";
             this.txtInstSearch.Size = new System.Drawing.Size(400, 38);
@@ -324,15 +325,15 @@
             // 
             // lstWave
             // 
-            this.lstWave.Font = new System.Drawing.Font("ＭＳ ゴシック", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lstWave.Font = new System.Drawing.Font("ＭＳ ゴシック", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lstWave.FormattingEnabled = true;
-            this.lstWave.ItemHeight = 29;
+            this.lstWave.ItemHeight = 27;
             this.lstWave.Location = new System.Drawing.Point(7, 62);
             this.lstWave.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.lstWave.Name = "lstWave";
             this.lstWave.ScrollAlwaysVisible = true;
             this.lstWave.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstWave.Size = new System.Drawing.Size(576, 439);
+            this.lstWave.Size = new System.Drawing.Size(576, 436);
             this.lstWave.TabIndex = 1;
             this.lstWave.DoubleClick += new System.EventHandler(this.lstWave_DoubleClick);
             // 
@@ -405,6 +406,7 @@
             // 
             // txtWaveSearch
             // 
+            this.txtWaveSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtWaveSearch.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F);
             this.txtWaveSearch.Name = "txtWaveSearch";
             this.txtWaveSearch.Size = new System.Drawing.Size(400, 38);

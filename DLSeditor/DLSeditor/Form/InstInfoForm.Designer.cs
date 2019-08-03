@@ -29,7 +29,7 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.txtInstComment = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.txtInstKeyword = new System.Windows.Forms.TextBox();
+            this.cmbInstKeyword = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.txtInstName = new System.Windows.Forms.TextBox();
             this.tbpInstAttribute = new System.Windows.Forms.TabPage();
@@ -109,7 +109,7 @@
             // groupBox2
             // 
             this.groupBox2.BackColor = System.Drawing.SystemColors.Control;
-            this.groupBox2.Controls.Add(this.txtInstKeyword);
+            this.groupBox2.Controls.Add(this.cmbInstKeyword);
             this.groupBox2.Location = new System.Drawing.Point(3, 89);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(500, 80);
@@ -117,14 +117,16 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "キーワード";
             // 
-            // txtInstKeyword
+            // cmbInstKeyword
             // 
-            this.txtInstKeyword.Font = new System.Drawing.Font("ＭＳ ゴシック", 11F);
-            this.txtInstKeyword.Location = new System.Drawing.Point(6, 30);
-            this.txtInstKeyword.Name = "txtInstKeyword";
-            this.txtInstKeyword.Size = new System.Drawing.Size(482, 37);
-            this.txtInstKeyword.TabIndex = 3;
-            this.txtInstKeyword.Leave += new System.EventHandler(this.txtInstKeyword_Leave);
+            this.cmbInstKeyword.Font = new System.Drawing.Font("ＭＳ ゴシック", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cmbInstKeyword.FormattingEnabled = true;
+            this.cmbInstKeyword.Location = new System.Drawing.Point(9, 30);
+            this.cmbInstKeyword.Name = "cmbInstKeyword";
+            this.cmbInstKeyword.Size = new System.Drawing.Size(479, 37);
+            this.cmbInstKeyword.TabIndex = 10;
+            this.cmbInstKeyword.SelectedIndexChanged += new System.EventHandler(this.cmbInstKeyword_SelectedIndexChanged);
+            this.cmbInstKeyword.Leave += new System.EventHandler(this.cmbInstKeyword_Leave);
             // 
             // groupBox1
             // 
@@ -317,7 +319,6 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tbpInstAttribute.ResumeLayout(false);
@@ -338,7 +339,6 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox txtInstComment;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TextBox txtInstKeyword;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox txtInstName;
         private System.Windows.Forms.TabPage tbpInstAttribute;
@@ -356,5 +356,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripTextBox txtRegion;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ComboBox cmbInstKeyword;
     }
 }

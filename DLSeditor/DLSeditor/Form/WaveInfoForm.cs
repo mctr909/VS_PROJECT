@@ -290,7 +290,10 @@ namespace DLSeditor {
 
         private void SetPosition() {
             //
-            picWave.Height = 128;
+            picSpectrum.Height = 192;
+
+            //
+            picWave.Height = 168;
             numWaveScale.Top = 0;
             picSpectrum.Top = numWaveScale.Top + numWaveScale.Height + 4;
             picWave.Top = picSpectrum.Top + picSpectrum.Height + 4;
@@ -306,7 +309,7 @@ namespace DLSeditor {
             ;
 
             //
-            picLoop.Height = 128;
+            picLoop.Height = 168;
             numLoopScale.Top = 0;
             picLoop.Top = numLoopScale.Top + numLoopScale.Height + 4;
 
@@ -329,7 +332,7 @@ namespace DLSeditor {
             var ms = new MemoryStream(wave.Data);
             var br = new BinaryReader(ms);
             var samples = 8 * wave.Data.Length / wave.Format.Bits;
-            var packSize = 16;
+            var packSize = 24;
             samples += packSize * 2 - (samples % (packSize * 2));
 
             mWaveData = new float[samples];
@@ -356,7 +359,7 @@ namespace DLSeditor {
             mSpecTimeDiv = 1.0f / (float)delta / packSize;
             mSpecData = new byte[(int)(mWaveData.Length * mSpecTimeDiv)][];
 
-            var sp = new Spectrum(wave.Format.SampleRate, 27.5, 24, 224);
+            var sp = new Spectrum(wave.Format.SampleRate, 27.5, 24, 192);
             var time = 0.0;
             for (var s = 0; s < mSpecData.Length; ++s) {
                 for (var i = 0; i < packSize && time < mWaveData.Length; ++i) {
