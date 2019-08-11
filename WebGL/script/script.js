@@ -1,15 +1,16 @@
 /// <reference path="math.js"/>
-// sample_021
-//
-// WebGLでクォータニオンによる球面線形補間
+class RenderMsgId {
+	static get DrawModel() { return 0 };
+	static get BindModel() { return 1 };
+}
 
 class ShaderAttribute {
 	/**
-	 * @param {WebGLRenderingContext} gl
-	 * @param {WebGLProgram} program
-	 * @param {number} type
-	 * @param {number} size
-	 * @param {string} name
+	 * @param {WebGLRenderingContext} gl 
+	 * @param {WebGLProgram} program 
+	 * @param {number} type 
+	 * @param {number} size 
+	 * @param {string} name 
 	 */
 	constructor(gl, program, type, size, name) {
 		this._gl = gl;
@@ -20,8 +21,8 @@ class ShaderAttribute {
 	}
 	get Name() { return this._name; }
 	/**
-	 * バッファをバインド
-	 * @param {WebGLBuffer} vbo 
+	 * バッファをバインドする
+	 * @param {WebGLBuffer} vbo
 	 */
 	bindBuffer(vbo) {
 		// バッファをバインドする
@@ -34,315 +35,281 @@ class ShaderAttribute {
 }
 
 class Render {
-	/**
-	 * @param {HTMLCanvasElement} cnv 
-	 */
-	constructor(cnv) {
-		cnv.width = 500;
-		cnv.height = 300;
-		this.mWidth = cnv.width;
-		this.mHeight = cnv.height;
-		this.mGL = cnv.getContext('webgl') || cnv.getContext('experimental-webgl');
-		this.mProgram = null;
-		this.mAttrPos = null;
-		this.mAttrNor = null;
-		this.mAttrCol = null;
+	constructor(objCanvas, width, height) {
+		/**
+		 * @property WebGLコンテキスト 
+		 * @type {WebGLRenderingContext}
+		 */
+		this.gl = null;
+
+		/** @property メッセージキュー */
+		this._message = new Array();
+
+		/** @property canvasコンテキスト */
+		this._canvas = null;
+		/** @property 登録モデル */
+		this._models = null;
+		/** @property バインド中モデル */
+		this._bindingModel = null;
+
+		/** ビュー×プロジェクション */
+		this._matViewProj = null;
+		/** カメラ */
+		this._cam = null;
+		/** 光源 */
+		this._light = null;
+
+		// canvasを初期化
+		this._canvas = objCanvas;
+		this._canvas.width = width;
+		this._canvas.height = height;
+
+		// webglコンテキストを取得
+		this.gl = this._canvas.getContext('webgl') || this._canvas.getContext('experimental-webgl');
+
+		this.gl.enable(this.gl.DEPTH_TEST);	// 深度テスト有効化
+		this.gl.depthFunc(this.gl.LEQUAL);	// 深度テスト(手前側を表示)
+		this.gl.enable(this.gl.CULL_FACE);	// カリング有効化
+
+		// 頂点シェーダとフラグメントシェーダの生成
+		// プログラムオブジェクトの生成とリンク
+		let v_shader = this._create_shader('vs');
+		let f_shader = this._create_shader('fs');
+		let prg = this._create_program(v_shader, f_shader);
+
+		// attributeを取得
+		this.mAttr = {
+			pos: new ShaderAttribute(this.gl, prg, this.gl.FLOAT, 3, "position"),
+			nor: new ShaderAttribute(this.gl, prg, this.gl.FLOAT, 3, "normal"),
+			col: new ShaderAttribute(this.gl, prg, this.gl.FLOAT, 4, "color")
+		};
+
+		// uniformLocationの取得
+		this.mUniLoc = {
+			matMVP: this.gl.getUniformLocation(prg, 'mvpMatrix'),
+			matModel: this.gl.getUniformLocation(prg, 'mMatrix'),
+			matInvModel: this.gl.getUniformLocation(prg, 'invMatrix'),
+			lightDirection: this.gl.getUniformLocation(prg, 'lightDirection'),
+			eyeDirection: this.gl.getUniformLocation(prg, 'eyeDirection'),
+			ambientColor: this.gl.getUniformLocation(prg, 'ambientColor')
+		};
+
+		this._loadModel();
 	}
 
-	/**
-	 * attributeを作成
-	 */
-	create_attribute() {
-		this.mAttrPos = new ShaderAttribute(this.mGL, this.mProgram, this.mGL.FLOAT, 3, "position");
-		this.mAttrNor = new ShaderAttribute(this.mGL, this.mProgram, this.mGL.FLOAT, 3, "normal");
-		this.mAttrCol = new ShaderAttribute(this.mGL, this.mProgram, this.mGL.FLOAT, 4, "color");
-	}
+	/** シェーダを生成します */
+	_create_shader(id) {
+		// シェーダを格納する変数
+		let shader;
 
-	/**
-	 * シェーダを生成する
-	 * @param {string} shaderElementId
-	 * @return {WebGLShader}
-	 */
-	create_shader(shaderElementId) {
 		// HTMLからscriptタグへの参照を取得
-		let scriptElement = document.getElementById(shaderElementId);
+		let scriptElement = document.getElementById(id);
+
+		// scriptタグが存在しない場合は抜ける
 		if (!scriptElement) {
-			// scriptタグが存在しない場合は抜ける
 			return;
 		}
 
-		// scriptタグのtype属性をチェックして格納
-		let shader;
+		// scriptタグのtype属性をチェック
 		switch (scriptElement.type) {
 			// 頂点シェーダの場合
 			case 'x-shader/x-vertex':
-				shader = this.mGL.createShader(this.mGL.VERTEX_SHADER);
+				shader = this.gl.createShader(this.gl.VERTEX_SHADER);
 				break;
+
 			// フラグメントシェーダの場合
 			case 'x-shader/x-fragment':
-				shader = this.mGL.createShader(this.mGL.FRAGMENT_SHADER);
+				shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
 				break;
+
 			default:
 				return;
 		}
 
 		// 生成されたシェーダにソースを割り当てる
-		this.mGL.shaderSource(shader, scriptElement.text);
+		this.gl.shaderSource(shader, scriptElement.text);
 
 		// シェーダをコンパイルする
-		this.mGL.compileShader(shader);
+		this.gl.compileShader(shader);
 
 		// シェーダが正しくコンパイルされたかチェック
-		if (this.mGL.getShaderParameter(shader, this.mGL.COMPILE_STATUS)) {
+		if (this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
 			// 成功していたらシェーダを返して終了
 			return shader;
-		} else {
+		}
+		else {
 			// 失敗していたらエラーログをアラートする
-			alert(this.mGL.getShaderInfoLog(shader));
-			return null;
+			alert(this.gl.getShaderInfoLog(shader));
 		}
 	}
 
-	/**
-	 * プログラムオブジェクトを生成しシェーダをリンクする
-	 * @param  {...WebGLShader} shaders
-	 */
-	create_program(...shaders) {
+	/** プログラムオブジェクトを生成しシェーダをリンクします */
+	_create_program(vs, fs) {
 		// プログラムオブジェクトの生成
-		let program = this.mGL.createProgram();
+		let program = this.gl.createProgram();
 
-		for (let i in shaders) {
-			// プログラムオブジェクトにシェーダを割り当てる
-			this.mGL.attachShader(program, shaders[i]);
-		}
+		// プログラムオブジェクトにシェーダを割り当てる
+		this.gl.attachShader(program, vs);
+		this.gl.attachShader(program, fs);
 
 		// シェーダをリンク
-		this.mGL.linkProgram(program);
+		this.gl.linkProgram(program);
 
 		// シェーダのリンクが正しく行なわれたかチェック
-		if (this.mGL.getProgramParameter(program, this.mGL.LINK_STATUS)) {
+		if (this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
 			// 成功していたらプログラムオブジェクトを有効にする
-			this.mGL.useProgram(program);
-			// プログラムオブジェクトをセット
-			this.mProgram = program;
-			// attributeを作成
-			this.create_attribute();
-		} else {
+			this.gl.useProgram(program);
+
+			// プログラムオブジェクトを返して終了
+			return program;
+		}
+		else {
 			// 失敗していたらエラーログをアラートする
-			alert(this.mGL.getProgramInfoLog(program));
+			alert(this.gl.getProgramInfoLog(program));
 		}
 	}
 
-	/**
-	 * VBOを生成する
-	 * @param {number[]} data
-	 * @returns {WebGLBuffer}
-	 */
-	create_vbo(data) {
+	/** VBOを生成します */
+	_create_vbo(data) {
 		// バッファオブジェクトの生成
-		let vbo = this.mGL.createBuffer();
+		let vbo = this.gl.createBuffer();
 		// バッファをバインドする
-		this.mGL.bindBuffer(this.mGL.ARRAY_BUFFER, vbo);
+		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
 		// バッファにデータをセット
-		this.mGL.bufferData(this.mGL.ARRAY_BUFFER, new Float32Array(data), this.mGL.STATIC_DRAW);
+		this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(data), this.gl.STATIC_DRAW);
 		// バッファのバインドを無効化
-		this.mGL.bindBuffer(this.mGL.ARRAY_BUFFER, null);
+		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
 		// 生成した VBO を返して終了
 		return vbo;
 	}
 
-	/**
-	 * IBOを生成する
-	 * @param {number[]} data
-	 * @returns {WebGLBuffer}
-	 */
-	create_ibo(data) {
+	/** IBOを生成します */
+	_create_ibo(data) {
 		// バッファオブジェクトの生成
-		let ibo = this.mGL.createBuffer();
+		let ibo = this.gl.createBuffer();
 		// バッファをバインドする
-		this.mGL.bindBuffer(this.mGL.ELEMENT_ARRAY_BUFFER, ibo);
+		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
 		// バッファにデータをセット
-		this.mGL.bufferData(this.mGL.ELEMENT_ARRAY_BUFFER, new Int16Array(data), this.mGL.STATIC_DRAW);
+		this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), this.gl.STATIC_DRAW);
 		// バッファのバインドを無効化
-		this.mGL.bindBuffer(this.mGL.ELEMENT_ARRAY_BUFFER, null);
+		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
 		// 生成したIBOを返して終了
 		return ibo;
 	}
-}
 
-onload = function() {
-	// canvasエレメントを取得
-	let render = new Render(document.getElementById('canvas'));
+	/** モデルデータ読み込み */
+	_loadModel() {
+		let torusData = torus(256, 256, 1.0, 2.0);
+		let sphereData = sphere(256, 256, 1.0);
 
-	// input range エレメント
-	var eRange = document.getElementById('range');
+		this._models = [
+			{
+				name: "torus",
+				position: this._create_vbo(torusData[0]),
+				normal: this._create_vbo(torusData[1]),
+				color: this._create_vbo(torusData[2]),
+				index: this._create_ibo(torusData[3]),
+				indexCount: torusData[3].length
+			},
+			{
+				name: "sphere",
+				position: this._create_vbo(sphereData[0]),
+				normal: this._create_vbo(sphereData[1]),
+				color: this._create_vbo(sphereData[2]),
+				index: this._create_ibo(sphereData[4]),
+				indexCount: sphereData[4].length
+			}
+		];
+	}
 
-	// 頂点シェーダとフラグメントシェーダの生成
-	var v_shader = render.create_shader('vs');
-	var f_shader = render.create_shader('fs');
+	/** モデルデータのバインドをします */
+	_bindModel(modelIndex) {
+		this._bindingModel = this._models[modelIndex];
 
-	// プログラムオブジェクトの生成とリンク
-	render.create_program(v_shader, f_shader);
+		// VBOをバインドする
+		this.mAttr.pos.bindBuffer(this._bindingModel.position);
+		this.mAttr.nor.bindBuffer(this._bindingModel.normal);
+		this.mAttr.col.bindBuffer(this._bindingModel.color);
 
-	// トーラスデータ
-	var torusData = torus(6, 6, 0.5, 1.5, [0.5, 0.5, 0.5, 1.0]);
-	var tPosition = render.create_vbo(torusData.p);
-	var tNormal   = render.create_vbo(torusData.n);
-	var tColor    = render.create_vbo(torusData.c);
-	var tIndex = render.create_ibo(torusData.i);
+		// IBOをバインドする
+		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this._bindingModel.index);
+	}
 
-	// バインド
-	render.mAttrPos.bindBuffer(tPosition);
-	render.mAttrNor.bindBuffer(tNormal);
-	render.mAttrCol.bindBuffer(tColor);
-	render.mGL.bindBuffer(render.mGL.ELEMENT_ARRAY_BUFFER, tIndex);
+	/** モデルを描画します */
+	_drawModel(matModel) {
+		// モデル×ビュー×プロジェクション
+		let matMVP = new Mat();
+		Mat.multiply(this._matViewProj, matModel, matMVP);
 
-	// uniformLocationを配列に取得
-	var uniLocation = new Array();
-	uniLocation[0] = render.mGL.getUniformLocation(render.mProgram, 'mvpMatrix');
-	uniLocation[1] = render.mGL.getUniformLocation(render.mProgram, 'mMatrix');
-	uniLocation[2] = render.mGL.getUniformLocation(render.mProgram, 'invMatrix');
-	uniLocation[3] = render.mGL.getUniformLocation(render.mProgram, 'lightPosition');
-	uniLocation[4] = render.mGL.getUniformLocation(render.mProgram, 'eyeDirection');
-	uniLocation[5] = render.mGL.getUniformLocation(render.mProgram, 'ambientColor');
+		// モデル逆行列
+		let matInv = new Mat();
+		Mat.inverse(matModel, matInv);
 
-	// 各種行列の生成と初期化
-	var mMatrix   = new Mat();
-	var vMatrix   = new Mat();
-	var pMatrix   = new Mat();
-	var tmpMatrix = new Mat();
-	var mvpMatrix = new Mat();
-	var invMatrix = new Mat();
-	var qMatrix   = new Mat();
-	
-	// 各種クォータニオンの生成と初期化
-	let aQuaternion = new Qtn();
-	let bQuaternion = new Qtn();
-	let sQuaternion = new Qtn();
-	aQuaternion.identity();
-	bQuaternion.identity();
-	sQuaternion.identity();
+		// uniformへ座標変換行列を登録し描画する
+		this.gl.uniformMatrix4fv(this.mUniLoc.matMVP, false, matMVP.Array);
+		this.gl.uniformMatrix4fv(this.mUniLoc.matModel, false, matModel.Array);
+		this.gl.uniformMatrix4fv(this.mUniLoc.matInvModel, false, matInv.Array);
+		this.gl.uniform3fv(this.mUniLoc.eyeDirection, this._cam.position);
+		this.gl.uniform3fv(this.mUniLoc.lightDirection, this._light.direction);
+		this.gl.uniform4fv(this.mUniLoc.ambientColor, this._light.ambientColor);
+		this.gl.drawElements(this.gl.TRIANGLES, this._bindingModel.indexCount, this.gl.UNSIGNED_SHORT, 0);
+	}
 
-	// 点光源の位置
-	var lightPosition = [15.0, 10.0, 15.0];
-	// 環境光の色
-	var ambientColor = [0.1, 0.1, 0.1, 1.0];
+	/** 
+	 * @param {RenderMsgId}id
+	 * @param {any}value
+	 */
+	pushMessage(id, value) {
+		this._message.push({id:id, value:value});
+	}
 
-	// カメラの座標
-	var camPosition = [0.0, 0.0, 20.0];
-	// カメラの上方向を表すベクトル
-	var camUpDirection = [0.0, 1.0, 0.0];
-	
-	// ビュー×プロジェクション座標変換行列
-	vMatrix.lookAt(camPosition, [0, 0, 0], camUpDirection);
-	pMatrix.perspective(45, 0.1, 100, render.mWidth / render.mHeight);
-	Mat.multiply(pMatrix, vMatrix, tmpMatrix);
-
-	// カウンタの宣言
-	var count = 0;
-	
-	// カリングと深度テストを有効にする
-	render.mGL.enable(render.mGL.DEPTH_TEST);
-	render.mGL.depthFunc(render.mGL.LEQUAL);
-	render.mGL.enable(render.mGL.CULL_FACE);
-
-	// 恒常ループ
-	(function(){
+	/** */
+	main() {
 		// canvasを初期化
-		render.mGL.clearColor(0.0, 0.0, 0.0, 1.0);
-		render.mGL.clearDepth(1.0);
-		render.mGL.clear(render.mGL.COLOR_BUFFER_BIT | render.mGL.DEPTH_BUFFER_BIT);
+		this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+		this.gl.clearDepth(1.0);
+		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-		// カウンタをインクリメントしてラジアンを算出
-		count++;
-		var rad = (count % 360) * Math.PI / 180;
-		
-		// 経過時間係数を算出
-		var time = eRange.value / 100;
-		
-		// 回転クォータニオンの生成
-		Qtn.rotate(rad, [1.0, 0.0, 0.0], aQuaternion);
-		Qtn.rotate(rad, [0.0, 1.0, 0.0], bQuaternion);
-		Qtn.slerp(aQuaternion, bQuaternion, time, sQuaternion);
-	
-		// モデルのレンダリング
-		ambientColor = [0.5, 0.0, 0.0, 1.0];
-		draw(aQuaternion);
-		ambientColor = [0.0, 0.5, 0.0, 1.0];
-		draw(bQuaternion);
-		ambientColor = [0.0, 0.0, 0.5, 1.0];
-		draw(sQuaternion);
+		// カメラの位置カメラの向き
+		this._cam = {
+			position: [0.0, 0.0, 80.0],
+			upDirection: [0.0, 1.0, 0.0]
+		};
 
-		function draw(qtn) {
-			// モデル座標変換行列の生成
-			qtn.toMat(qMatrix);
-			mMatrix.identity();
-			Mat.multiply(mMatrix, qMatrix, mMatrix);
-			Mat.translate(mMatrix, [0.0, 0.0, -5.0], mMatrix);
-			Mat.multiply(tmpMatrix, mMatrix, mvpMatrix);
-			Mat.inverse(mMatrix, invMatrix);
-			
-			// uniform変数の登録と描画
-			render.mGL.uniformMatrix4fv(uniLocation[0], false, mvpMatrix.Array);
-			render.mGL.uniformMatrix4fv(uniLocation[1], false, mMatrix.Array);
-			render.mGL.uniformMatrix4fv(uniLocation[2], false, invMatrix.Array);
-			render.mGL.uniform3fv(uniLocation[3], lightPosition);
-			render.mGL.uniform3fv(uniLocation[4], camPosition);
-			render.mGL.uniform4fv(uniLocation[5], ambientColor);
-			render.mGL.drawElements(render.mGL.TRIANGLES, torusData.i.length, render.mGL.UNSIGNED_SHORT, 0);
+		// 光源の向き, 環境光の色
+		this._light = {
+			direction: [1.0, 1.0, 1.0],
+			ambientColor: [0.1, 0.1, 0.1, 1.0]
+		};
+
+		// ビュー×プロジェクション座標変換行列
+		let matView = new Mat();
+		let matProj = new Mat();
+		this._matViewProj = new Mat();
+		matView.lookAt(this._cam.position, [0, 0, 0], this._cam.upDirection);
+		matProj.perspective(45, 0.1, 200, this._canvas.width / this._canvas.height);
+		Mat.multiply(matProj, matView, this._matViewProj);
+
+		// メッセージキューの実行
+		while(0 < this._message.length) {
+			let msg = this._message.shift();
+			switch (msg.id) {
+			case RenderMsgId.BindModel:
+				this._bindModel(msg.value);
+				break;
+			case RenderMsgId.DrawModel:
+				this._drawModel(msg.value);
+				break;
+			}
 		}
 
 		// コンテキストの再描画
-		render.mGL.flush();
-		
-		// ループのために再帰呼び出し
-		setTimeout(arguments.callee, 1000 / 30);
-	})();
-};
-
-// トーラスを生成
-function torus(row, column, irad, orad, color) {
-	let pos = new Array();
-	let nor = new Array();
-	let col = new Array();
-	let idx = new Array();
-	for (let i = 0; i <= row; i++) {
-		let r = Math.PI * 2 / row * i;
-		let rr = Math.cos(r);
-		let ry = Math.sin(r);
-		for (let ii = 0; ii <= column; ii++) {
-			let tr = Math.PI * 2 / column * ii;
-			let tx = (rr * irad + orad) * Math.cos(tr);
-			let ty = ry * irad;
-			let tz = (rr * irad + orad) * Math.sin(tr);
-			let rx = rr * Math.cos(tr);
-			let rz = rr * Math.sin(tr);
-			let tc;
-			if (color) {
-				tc = color;
-			} else {
-				tc = hsva(360 / column * ii, 1, 1, 1);
-			}
-			pos.push(tx, ty, tz);
-			nor.push(rx, ry, rz);
-			col.push(tc[0], tc[1], tc[2], tc[3]);
-		}
+		this.gl.flush();
 	}
-	for (let i = 0; i < row; i++) {
-		for (let ii = 0; ii < column; ii++) {
-			let r = (column + 1) * i + ii;
-			idx.push(r, r + column + 1, r + 1);
-			idx.push(r + column + 1, r + column + 2, r + 1);
-		}
-	}
-	return {p : pos, n : nor, c : col, i : idx};
 }
 
-// HSVカラー取得
 function hsva(h, s, v, a) {
-	if (1 < s || 1 < v || 1 < a) {
-		return;
-	}
+	if(s > 1 || v > 1 || a > 1){return;}
 	var th = h % 360;
 	var i = Math.floor(th / 60);
 	var f = th / 60 - i;
@@ -350,7 +317,7 @@ function hsva(h, s, v, a) {
 	var n = v * (1 - s * f);
 	var k = v * (1 - s * (1 - f));
 	var color = new Array();
-	if (!s > 0 && !s < 0) {
+	if(!s > 0 && !s < 0){
 		color.push(v, v, v, a); 
 	} else {
 		var r = new Array(v, n, m, m, k, v);
@@ -359,4 +326,74 @@ function hsva(h, s, v, a) {
 		color.push(r[i], g[i], b[i], a);
 	}
 	return color;
+}
+
+function torus(row, column, irad, orad){
+	let pos = new Array();
+	let nor = new Array();
+	let col = new Array();
+	let idx = new Array();
+
+	for(var i = 0; i <= row; i++){
+		var r = Math.PI * 2 / row * i;
+		var rr = Math.cos(r);
+		var ry = Math.sin(r);
+		for(var ii = 0; ii <= column; ii++){
+			var tr = Math.PI * 2 / column * ii;
+			var tx = (rr * irad + orad) * Math.cos(tr);
+			var ty = ry * irad;
+			var tz = (rr * irad + orad) * Math.sin(tr);
+			var rx = rr * Math.cos(tr);
+			var rz = rr * Math.sin(tr);
+			pos.push(tx, ty, tz);
+			nor.push(rx, ry, rz);
+			var tc = hsva(360 / column * ii, 1, 1, 1);
+			col.push(tc[0], tc[1], tc[2], tc[3]);
+		}
+	}
+	for(i = 0; i < row; i++){
+		for(ii = 0; ii < column; ii++){
+			r = (column + 1) * i + ii;
+			idx.push(r, r + column + 1, r + 1);
+			idx.push(r + column + 1, r + column + 2, r + 1);
+		}
+	}
+	return [pos, nor, col, idx];
+}
+
+function sphere(row, column, rad, color) {
+	var i, j, tc;
+	var pos = new Array(), nor = new Array(),
+		col = new Array(), st  = new Array(), idx = new Array();
+	for(i = 0; i <= row; i++){
+		var r = Math.PI / row * i;
+		var ry = Math.cos(r);
+		var rr = Math.sin(r);
+		for(j = 0; j <= column; j++){
+			var tr = Math.PI * 2 / column * j;
+			var tx = rr * rad * Math.cos(tr);
+			var ty = ry * rad;
+			var tz = rr * rad * Math.sin(tr);
+			var rx = rr * Math.cos(tr);
+			var rz = rr * Math.sin(tr);
+			if(color){
+				tc = color;
+			}else{
+				tc = hsva(360 / row * i, 1, 1, 1);
+			}
+			pos.push(tx, ty, tz);
+			nor.push(rx, ry, rz);
+			col.push(tc[0], tc[1], tc[2], tc[3]);
+			st.push(1 - 1 / column * j, 1 / row * i);
+		}
+	}
+	r = 0;
+	for(i = 0; i < row; i++){
+		for(j = 0; j < column; j++){
+			r = (column + 1) * i + j;
+			idx.push(r, r + 1, r + column + 2);
+			idx.push(r, r + column + 2, r + column + 1);
+		}
+	}
+	return [pos, nor, col, st, idx];
 }

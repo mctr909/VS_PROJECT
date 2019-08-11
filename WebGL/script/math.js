@@ -87,6 +87,17 @@ class Mat {
 	/**
 	 * @returns {Mat}
 	 */
+	get Copy() {
+		let ret = new Mat();
+		for(let i in this._a) {
+			ret._a[i] = this._a[i];
+		}
+		return ret;
+	}
+
+	/**
+	 * @returns {Mat}
+	 */
 	identity() {
 		this._a[0]  = 1; this._a[1]  = 0; this._a[2]  = 0; this._a[3]  = 0;
 		this._a[4]  = 0; this._a[5]  = 1; this._a[6]  = 0; this._a[7]  = 0;
