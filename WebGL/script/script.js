@@ -1,7 +1,7 @@
 /// <reference path="math.js"/>
 class RenderMsgId {
-	static get DrawModel() { return 0 };
-	static get BindModel() { return 1 };
+	static DrawModel = 0;
+	static BindModel = 1;
 }
 
 class ShaderAttribute {
@@ -35,38 +35,53 @@ class ShaderAttribute {
 }
 
 class Render {
+	/**
+	 * @param {HTMLCanvasElement} objCanvas 
+	 * @param {number} width 
+	 * @param {number} height 
+	 */
 	constructor(objCanvas, width, height) {
 		/**
-		 * @property WebGLコンテキスト 
+		 * canvas
+		 * @type {HTMLCanvasElement}
+		 */
+		this.mCanvas = objCanvas;
+		this.mCanvas.width = width;
+		this.mCanvas.height = height;
+		/**
+		 * WebGLコンテキスト 
 		 * @type {WebGLRenderingContext}
 		 */
-		this.gl = null;
-
-		/** @property メッセージキュー */
-		this._message = new Array();
-
-		/** @property canvasコンテキスト */
-		this._canvas = null;
-		/** @property 登録モデル */
-		this._models = null;
-		/** @property バインド中モデル */
-		this._bindingModel = null;
-
+		this.gl = this.mCanvas.getContext('webgl') || this.mCanvas.getContext('experimental-webgl');
+		/** メッセージキュー */
+		this.mMessage = new Array();
+		/** 登録モデル */
+		this.mModels = null;
+		/** バインド中モデル */
+		this.mBindingModel = null;
+		/** ビュー */
+		this.mMatView = new Mat();
+		/** プロジェクション */
+		this.mMatProj = new Mat();
 		/** ビュー×プロジェクション */
-		this._matViewProj = null;
+		this.mMatViewProj = new Mat();
 		/** カメラ */
-		this._cam = null;
+		this.mCam = null;
 		/** 光源 */
-		this._light = null;
+		this.mLight = null;
+		/** attribute */
+		this.mAttr = null;
+		/** uniformLocation */
+		this.mUniLoc = null;
+	
+		this._initialize();
+		this._loadModel();
+	}
 
-		// canvasを初期化
-		this._canvas = objCanvas;
-		this._canvas.width = width;
-		this._canvas.height = height;
-
-		// webglコンテキストを取得
-		this.gl = this._canvas.getContext('webgl') || this._canvas.getContext('experimental-webgl');
-
+	/**
+	 * 初期化
+	 */
+	_initialize() {
 		this.gl.enable(this.gl.DEPTH_TEST);	// 深度テスト有効化
 		this.gl.depthFunc(this.gl.LEQUAL);	// 深度テスト(手前側を表示)
 		this.gl.enable(this.gl.CULL_FACE);	// カリング有効化
@@ -93,35 +108,32 @@ class Render {
 			eyeDirection: this.gl.getUniformLocation(prg, 'eyeDirection'),
 			ambientColor: this.gl.getUniformLocation(prg, 'ambientColor')
 		};
-
-		this._loadModel();
 	}
 
-	/** シェーダを生成します */
-	_create_shader(id) {
-		// シェーダを格納する変数
-		let shader;
-
+	/**
+	 * シェーダを生成
+	 * @param {string} shaderElementId
+	 * @returns {WebGLShader}
+	 */
+	_create_shader(shaderElementId) {
 		// HTMLからscriptタグへの参照を取得
-		let scriptElement = document.getElementById(id);
-
-		// scriptタグが存在しない場合は抜ける
+		let scriptElement = document.getElementById(shaderElementId);
 		if (!scriptElement) {
-			return;
+			// scriptタグが存在しない場合は抜ける
+			return null;
 		}
 
-		// scriptタグのtype属性をチェック
+		// scriptタグのtype属性をチェックして格納
+		let shader;
 		switch (scriptElement.type) {
-			// 頂点シェーダの場合
 			case 'x-shader/x-vertex':
+				// 頂点シェーダの場合
 				shader = this.gl.createShader(this.gl.VERTEX_SHADER);
 				break;
-
-			// フラグメントシェーダの場合
 			case 'x-shader/x-fragment':
+				// フラグメントシェーダの場合
 				shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
 				break;
-
 			default:
 				return;
 		}
@@ -136,21 +148,26 @@ class Render {
 		if (this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
 			// 成功していたらシェーダを返して終了
 			return shader;
-		}
-		else {
+		} else {
 			// 失敗していたらエラーログをアラートする
 			alert(this.gl.getShaderInfoLog(shader));
+			return null;
 		}
 	}
 
-	/** プログラムオブジェクトを生成しシェーダをリンクします */
-	_create_program(vs, fs) {
+	/**
+	 * プログラムオブジェクトを生成しシェーダをリンク
+	 * @param  {...WebGLShader} shaders
+	 * @returns {WebGLProgram}
+	 */
+	_create_program(...shaders) {
 		// プログラムオブジェクトの生成
 		let program = this.gl.createProgram();
 
 		// プログラムオブジェクトにシェーダを割り当てる
-		this.gl.attachShader(program, vs);
-		this.gl.attachShader(program, fs);
+		for (let i in shaders) {
+			this.gl.attachShader(program, shaders[i]);
+		}
 
 		// シェーダをリンク
 		this.gl.linkProgram(program);
@@ -159,17 +176,19 @@ class Render {
 		if (this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
 			// 成功していたらプログラムオブジェクトを有効にする
 			this.gl.useProgram(program);
-
 			// プログラムオブジェクトを返して終了
 			return program;
-		}
-		else {
+		} else {
 			// 失敗していたらエラーログをアラートする
 			alert(this.gl.getProgramInfoLog(program));
+			return null;
 		}
 	}
 
-	/** VBOを生成します */
+	/**
+	 * VBOを生成
+	 * @param {number[]} data 
+	 */
 	_create_vbo(data) {
 		// バッファオブジェクトの生成
 		let vbo = this.gl.createBuffer();
@@ -183,7 +202,10 @@ class Render {
 		return vbo;
 	}
 
-	/** IBOを生成します */
+	/**
+	 * IBOを生成
+	 * @param {number[]} data 
+	 */
 	_create_ibo(data) {
 		// バッファオブジェクトの生成
 		let ibo = this.gl.createBuffer();
@@ -197,12 +219,13 @@ class Render {
 		return ibo;
 	}
 
-	/** モデルデータ読み込み */
+	/**
+	 * モデルデータ読み込み 
+	 */
 	_loadModel() {
 		let torusData = torus(256, 256, 1.0, 2.0);
 		let sphereData = sphere(256, 256, 1.0);
-
-		this._models = [
+		this.mModels = [
 			{
 				name: "torus",
 				position: this._create_vbo(torusData[0]),
@@ -222,37 +245,39 @@ class Render {
 		];
 	}
 
-	/** モデルデータのバインドをします */
+	/**
+	 * モデルデータのバインド
+	 * @param {number} modelIndex 
+	 */
 	_bindModel(modelIndex) {
-		this._bindingModel = this._models[modelIndex];
-
+		this.mBindingModel = this.mModels[modelIndex];
 		// VBOをバインドする
-		this.mAttr.pos.bindBuffer(this._bindingModel.position);
-		this.mAttr.nor.bindBuffer(this._bindingModel.normal);
-		this.mAttr.col.bindBuffer(this._bindingModel.color);
-
+		this.mAttr.pos.bindBuffer(this.mBindingModel.position);
+		this.mAttr.nor.bindBuffer(this.mBindingModel.normal);
+		this.mAttr.col.bindBuffer(this.mBindingModel.color);
 		// IBOをバインドする
-		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this._bindingModel.index);
+		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.mBindingModel.index);
 	}
 
-	/** モデルを描画します */
+	/**
+	 * モデルを描画
+	 * @param {Mat} matModel 
+	 */
 	_drawModel(matModel) {
 		// モデル×ビュー×プロジェクション
 		let matMVP = new Mat();
-		Mat.multiply(this._matViewProj, matModel, matMVP);
-
+		Mat.multiply(this.mMatViewProj, matModel, matMVP);
 		// モデル逆行列
 		let matInv = new Mat();
 		Mat.inverse(matModel, matInv);
-
 		// uniformへ座標変換行列を登録し描画する
 		this.gl.uniformMatrix4fv(this.mUniLoc.matMVP, false, matMVP.Array);
 		this.gl.uniformMatrix4fv(this.mUniLoc.matModel, false, matModel.Array);
 		this.gl.uniformMatrix4fv(this.mUniLoc.matInvModel, false, matInv.Array);
-		this.gl.uniform3fv(this.mUniLoc.eyeDirection, this._cam.position);
-		this.gl.uniform3fv(this.mUniLoc.lightDirection, this._light.direction);
-		this.gl.uniform4fv(this.mUniLoc.ambientColor, this._light.ambientColor);
-		this.gl.drawElements(this.gl.TRIANGLES, this._bindingModel.indexCount, this.gl.UNSIGNED_SHORT, 0);
+		this.gl.uniform3fv(this.mUniLoc.eyeDirection, this.mCam.position);
+		this.gl.uniform3fv(this.mUniLoc.lightDirection, this.mLight.direction);
+		this.gl.uniform4fv(this.mUniLoc.ambientColor, this.mLight.ambientColor);
+		this.gl.drawElements(this.gl.TRIANGLES, this.mBindingModel.indexCount, this.gl.UNSIGNED_SHORT, 0);
 	}
 
 	/** 
@@ -260,7 +285,7 @@ class Render {
 	 * @param {any}value
 	 */
 	pushMessage(id, value) {
-		this._message.push({id:id, value:value});
+		this.mMessage.push({id:id, value:value});
 	}
 
 	/** */
@@ -271,28 +296,25 @@ class Render {
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
 		// カメラの位置カメラの向き
-		this._cam = {
+		this.mCam = {
 			position: [0.0, 0.0, 80.0],
 			upDirection: [0.0, 1.0, 0.0]
 		};
 
 		// 光源の向き, 環境光の色
-		this._light = {
+		this.mLight = {
 			direction: [1.0, 1.0, 1.0],
 			ambientColor: [0.1, 0.1, 0.1, 1.0]
 		};
 
 		// ビュー×プロジェクション座標変換行列
-		let matView = new Mat();
-		let matProj = new Mat();
-		this._matViewProj = new Mat();
-		matView.lookAt(this._cam.position, [0, 0, 0], this._cam.upDirection);
-		matProj.perspective(45, 0.1, 200, this._canvas.width / this._canvas.height);
-		Mat.multiply(matProj, matView, this._matViewProj);
+		this.mMatView.lookAt(this.mCam.position, [0, 0, 0], this.mCam.upDirection);
+		this.mMatProj.perspective(45, 0.1, 200, this.mCanvas.width / this.mCanvas.height);
+		Mat.multiply(this.mMatProj, this.mMatView, this.mMatViewProj);
 
 		// メッセージキューの実行
-		while(0 < this._message.length) {
-			let msg = this._message.shift();
+		while (0 < this.mMessage.length) {
+			let msg = this.mMessage.shift();
 			switch (msg.id) {
 			case RenderMsgId.BindModel:
 				this._bindModel(msg.value);
