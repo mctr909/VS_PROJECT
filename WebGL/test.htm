@@ -2,7 +2,9 @@
 	<head>
 		<title>WebGL TEST</title>
 		<script type="text/javascript" src="script/math.js"></script>
-		<script type="text/javascript" src="script/script.js"></script>
+		<script type="text/javascript" src="script/queue.js"></script>
+		<script type="text/javascript" src="script/render_base.js"></script>
+		<script type="text/javascript" src="script/render.js"></script>
 		<script type="text/javascript">
 			let gCount = 0;
 			let gRange = null;
@@ -20,6 +22,8 @@
 			onload = function() {
 				gRange = document.getElementById('range');
 				gRender = new Render(document.getElementById("canvas"), 800, 600);
+				gRender.modelLoad(this, "A", "");
+				gRender.modelLoad(this, "B", "");
 				(function loop() {
 					gCount = ++gCount % (6 * 360);
 
@@ -31,36 +35,36 @@
 					Qtn.rotate(3 * rad, [3.0, 2.0, 1.0], qtnA);
 					Qtn.rotate(2 * rad, [3.0, 2.0, 1.0], qtnB);
 
-					gRender.pushMessage(RenderMsgId.BindModel, 1);
+					gRender.modelBind(this, "B", "");
 
 					//
 					let matModel = new Mat();
 					qtnA.toMat(matModel);
 					Mat.translate(matModel, [0.0, 0.0, -30.0], matModel);
-					gRender.pushMessage(RenderMsgId.DrawModel, matModel.Copy);
+					gRender.modelPosition(this, matModel.Copy);
 
 					//
 					qtnB.toMat(matModel);
 					Mat.translate(matModel, [0.0, 0.0, -30.0], matModel);
-					gRender.pushMessage(RenderMsgId.DrawModel, matModel.Copy);
+					gRender.modelPosition(this, matModel.Copy);
 
 					for (let i = 0.0; i <= 1.0; i += 0.01) {
 						let qtnS = new Qtn();
 						Qtn.slerp(qtnA, qtnB, i, qtnS);
 						qtnS.toMat(matModel);
 						Mat.translate(matModel, [0.0, 0.0, -30.0], matModel);
-						gRender.pushMessage(RenderMsgId.DrawModel, matModel.Copy);
+						gRender.modelPosition(this, matModel.Copy);
 					}
 
 					//
-					gRender.pushMessage(RenderMsgId.BindModel, 0);
+					gRender.modelBind(this, "A", "");
 					let qtnS = new Qtn();
 					Qtn.slerp(qtnA, qtnB, time, qtnS);
 					qtnS.toMat(matModel);
 					Mat.translate(matModel, [0.0, 0.0, -30.0], matModel);
-					gRender.pushMessage(RenderMsgId.DrawModel, matModel.Copy);
+					gRender.modelPosition(this, matModel.Copy);
 
-					gRender.main();
+					gRender.update();
 					window.requestAnimationFrame(loop);
 				})();
 			};

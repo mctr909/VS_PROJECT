@@ -2,9 +2,9 @@ class Message {
     /**
      * @param {string} id 
      * @param {any} sender 
-     * @param {any[]} value 
+     * @param {any} value 
      */
-    constructor(id, sender, ...value) {
+    constructor(id, sender, value) {
         /** @private */
         this._id = id;
         /** @private */
@@ -39,9 +39,9 @@ class Queue {
      * @protected
      * @param {string} id 
      * @param {any} sender 
-     * @param {any[]} value 
+     * @param {any} value 
      */
-    _enqueue(id, sender, ...value) {
+    _enqueue(id, sender, value) {
         this._que.push(new Message(id, sender, value));
     }
 
