@@ -2,9 +2,9 @@
 /// <reference path="render_base.js"/>
 class Render extends RenderBase {
 	/**
-	 * @param {HTMLCanvasElement} canvas 
-	 * @param {number} width 
-	 * @param {number} height 
+	 * @param {HTMLCanvasElement} canvas
+	 * @param {number} width
+	 * @param {number} height
 	 */
 	constructor(canvas, width, height) {
 		super(canvas, width, height);
@@ -62,8 +62,8 @@ class Render extends RenderBase {
 	 * モデルデータ読み込み
 	 * @protected @override
 	 * @param {any} sender
-     * @param {string} id
-     * @param {string} instanceId
+	 * @param {string} id
+	 * @param {string} instanceId
 	 */
 	_modelLoad(sender, id, instanceId) {
 		let torusData = torus(256, 256, 1.0, 2.0);
@@ -181,7 +181,7 @@ function hsva(h, s, v, a) {
 	var k = v * (1 - s * (1 - f));
 	var color = new Array();
 	if(!s > 0 && !s < 0){
-		color.push(v, v, v, a); 
+		color.push(v, v, v, a);
 	} else {
 		var r = new Array(v, n, m, m, k, v);
 		var g = new Array(k, v, v, n, m, m);

@@ -124,7 +124,7 @@ class Mat {
 		if (eyeX == centerX && eyeY == centerY && eyeZ == centerZ) {
 			return this.identity();
 		}
-	
+
 		let ecX = eyeX - centerX,
 			ecY = eyeY - centerY,
 			ecZ = eyeZ - centerZ
