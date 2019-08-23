@@ -72,17 +72,32 @@ void
 IIRFilter::Exec(UINT32& bankNo, INT16& input, double* output)
 {
 	BANK* bank = m_banks + bankNo;
+    double temp;
 
 	*output
 		= bank->b0 * input
-		+ bank->b1 * bank->bDelay1
-		+ bank->b2 * bank->bDelay2
-		- bank->a1 * bank->aDelay1
-		- bank->a2 * bank->aDelay2
+		+ bank->b1 * bank->bDelay01
+		+ bank->b2 * bank->bDelay02
+		- bank->a1 * bank->aDelay01
+		- bank->a2 * bank->aDelay02
 	;
 
-	bank->aDelay2 = bank->aDelay1;
-	bank->aDelay1 = *output;
-	bank->bDelay2 = bank->bDelay1;
-	bank->bDelay1 = input;
+	bank->aDelay02 = bank->aDelay01;
+	bank->aDelay01 = *output;
+	bank->bDelay02 = bank->bDelay01;
+	bank->bDelay01 = input;
+
+    temp = *output;
+    *output
+        = bank->b0 * temp
+        + bank->b1 * bank->bDelay11
+        + bank->b2 * bank->bDelay12
+        - bank->a1 * bank->aDelay11
+        - bank->a2 * bank->aDelay12
+    ;
+
+    bank->aDelay12 = bank->aDelay11;
+    bank->aDelay11 = *output;
+    bank->bDelay12 = bank->bDelay11;
+    bank->bDelay11 = temp;
 }

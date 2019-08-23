@@ -14,10 +14,14 @@ private:
 		double b1;
 		double b2;
 
-		double aDelay1;
-		double aDelay2;
-		INT16 bDelay1;
-		INT16 bDelay2;
+		double aDelay01;
+		double aDelay02;
+        double aDelay11;
+        double aDelay12;
+        double bDelay01;
+        double bDelay02;
+        double bDelay11;
+        double bDelay12;
 	};
 
 public:

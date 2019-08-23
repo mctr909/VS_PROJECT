@@ -23,7 +23,8 @@
     <ProjectGuid>{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>IIRSpectrumAnalyzer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <ProjectName>SpectrumAnalyzer(v15)</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -139,11 +140,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="dft.cpp" />
     <ClCompile Include="IIRFilter.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="WaveIn.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dft.h" />
     <ClInclude Include="IIRFilter.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="WaveIn.h" />
