@@ -1,49 +1,47 @@
 #pragma once
 #include <windows.h>
 
-class WaveIn
-{
-	//*******************************************************************
-	// メンバ定数
-	//*******************************************************************
+class WaveIn {
+    //*******************************************************************
+    // メンバ定数
+    //*******************************************************************
 public:
-	typedef INT16 BUFFER_TYPE;
-	static const UINT32 SAMPLE_RATE		= 44100;
-	static const UINT32 SAMPLES			= 441;
-	static const UINT16 CHANNELS		= 2;
-	static const bool   TO_MONO			= true;
-	static const UINT32 BUFFER_LENGTH	= (TO_MONO ? 1 : CHANNELS) * SAMPLES;
-	static const UINT32 BUFFER_SIZE		= CHANNELS * sizeof(BUFFER_TYPE) * SAMPLES;
+    typedef INT16 BUFFER_TYPE;
+    static const UINT32 SAMPLE_RATE = 44100;
+    static const UINT32 SAMPLES = 441;
+    static const UINT16 CHANNELS = 2;
+    static const UINT32 BUFFER_LENGTH = CHANNELS * SAMPLES;
+    static const UINT32 BUFFER_SIZE = CHANNELS * sizeof(BUFFER_TYPE) * SAMPLES;
 
 private:
-	static const UINT32 BUFFERS = 4;
+    static const UINT32 BUFFERS = 4;
 
-	//*******************************************************************
-	// メンバ変数
-	//*******************************************************************
+    //*******************************************************************
+    // メンバ変数
+    //*******************************************************************
 public:
-	bool		IsWaveOpen = false;
-	BUFFER_TYPE	m_pBuffer[BUFFER_LENGTH];
+    bool        IsWaveOpen = false;
+    void        *mpBuffer  = NULL;
 
 private:
-	HWAVEIN		m_hWaveIn		= NULL;
-	HGLOBAL		m_hgRecBuffer	= NULL;
-	LPWAVEHDR	m_whdr[BUFFERS];
+    HWAVEIN   mhWaveIn       = NULL;
+    HGLOBAL   mhgRecBuffer   = NULL;
+    LPWAVEHDR mWhdr[BUFFERS] = { NULL };
 
-	//*******************************************************************
-	// 関数プロトタイプ
-	//*******************************************************************
+    //*******************************************************************
+    // 関数プロトタイプ
+    //*******************************************************************
 public:
-	WaveIn(HWND);
-	~WaveIn();
+    WaveIn(HWND);
+    ~WaveIn();
 
 public:
-	MMRESULT Reuse(LPARAM);
-	void SetBuffer(LPARAM);
+    MMRESULT Reuse(LPARAM);
+    void SetBuffer(LPARAM);
 
 private:
-	bool OpenDevice(HWND);
-	void CloseDevice();
-	void StartRecording();
-	static void CALLBACK WaveInProc(HWAVEIN, UINT, DWORD, DWORD, DWORD);
+    bool OpenDevice(HWND);
+    void CloseDevice();
+    void StartRecording();
+    static void CALLBACK WaveInProc(HWAVEIN, UINT, DWORD, DWORD, DWORD);
 };

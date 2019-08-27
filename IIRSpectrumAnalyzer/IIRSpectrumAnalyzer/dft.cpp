@@ -28,19 +28,7 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
         return 0;
     }
 
-    // release
-    if (NULL != _pWaveBuff) {
-        free(_pWaveBuff);
-    }
-    if (NULL != _pTbl) {
-        free(_pTbl);
-    }
-    if (NULL != _pBeginTbl) {
-        free(_pBeginTbl);
-    }
-    if (NULL != _pBeginWave) {
-        free(_pBeginWave);
-    }
+    purge();
 
     // create
     _pWaveBuff = (double*)malloc(sizeof(double)*dftLength);
@@ -93,15 +81,34 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
     return 1;
 }
 
-void dft::exec(short *pInput, double *pAmp, int samples, double gamma) {
+void dft::purge() {
+    if (NULL != _pWaveBuff) {
+        free(_pWaveBuff);
+        _pWaveBuff = NULL;
+    }
+    if (NULL != _pTbl) {
+        free(_pTbl);
+        _pTbl = NULL;
+    }
+    if (NULL != _pBeginTbl) {
+        free(_pBeginTbl);
+        _pBeginTbl = NULL;
+    }
+    if (NULL != _pBeginWave) {
+        free(_pBeginWave);
+        _pBeginWave = NULL;
+    }
+}
+
+void dft::exec(short *pInput, double *pAmp, int samples) {
     if (_stop) {
         _stoped = 1;
         return;
     }
 
     memcpy(_pWaveBuff, _pWaveBuff + samples, sizeof(double)*(_dftLength - samples));
-    for (int a = 0, b = _dftLength - samples; b < _dftLength; ++a, ++b) {
-        _pWaveBuff[b] = pInput[a] / 32768.0;
+    for (int a = 0, b = _dftLength - samples; b < _dftLength; a += 2, ++b) {
+        _pWaveBuff[b] = (pInput[a] + pInput[a + 1]) / 65536.0;
     }
 
     for (int no = 0; no < _notes; ++no) {
@@ -112,7 +119,6 @@ void dft::exec(short *pInput, double *pAmp, int samples, double gamma) {
             re -= _pWaveBuff[t] * _pTbl[u];
             im += _pWaveBuff[t] * _pTbl[u + 1];
         }
-        re = sqrt(re*re + im * im);
-        pAmp[no] = (1.0 + gamma) * re / (re + gamma);
+        pAmp[no] = sqrt(re * re + im * im);
     }
 }

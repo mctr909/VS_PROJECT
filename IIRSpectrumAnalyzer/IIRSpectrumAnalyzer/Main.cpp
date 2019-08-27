@@ -122,77 +122,8 @@ mainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 LRESULT
 wmCreate(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam) {
-    DWORD        pallet[PALLET_COLORS];
-    LPLOGPALETTE lpPal;
-    LPDWORD      dp;
-    LPDWORD      sp;
-    HDC          hDC;
-    int          i, j, k;
-
-    // カラーパレットを作成する。
-    for (i = 0, j = 0, k = 0; i < PALLET_COLORS; ++i, j += 1280 / PALLET_COLORS, k = j % 256) {
-        if (j < 256) {
-            // Black -> Blue
-            pallet[i] = k;
-        } else if (j < 512) {
-            // Blue -> LightGreen
-            pallet[i] = (k << 8) | 0xFF;
-        } else if (j < 768) {
-            // LightGreen -> Green
-            pallet[i] = 0xFFFF - k;
-        } else if (j < 1024) {
-            // Green -> Yellow
-            pallet[i] = (k << 16) | 0xFF00;
-        } else if (j < 1280) {
-            // Yellow -> Red
-            pallet[i] = 0xFFFF00 - (k << 8);
-        }
-    }
-
-    lpPal = (LPLOGPALETTE)GlobalAlloc(GPTR, sizeof(LOGPALETTE) + (PALLET_COLORS * sizeof(PALETTEENTRY)));
-    lpPal->palVersion = 0x300;
-    lpPal->palNumEntries = PALLET_COLORS;
-    dp = (DWORD*)lpPal->palPalEntry;
-    sp = (DWORD*)pallet;
-    for (i = 0; i < PALLET_COLORS; ++i) {
-        *(dp++) = ((DWORD)PC_NOCOLLAPSE << 24) | (DWORD)RGBQUAD2COLORREF(*(sp++));
-    }
-    hPalette = CreatePalette(lpPal);
-    GlobalFree(lpPal);
-
-    // DIBバッファ lpBits の構造 (サイズDRAW_WIDTH * DRAW_HEIGHT * 2面)
-    // ※ DIBヘッダ lpBitmap の画像サイズは DRAW_WIDTH * DRAW_HEIGHT
-    // lpBits -> +-------------+ 高さ
-    //           |             | DRAW_HEIGHT	スペクトル表示用バッファ
-    //           +-------------+
-    //           |             | DRAW_HEIGHT	履歴スクロールバッファ
-    //           +-------------+
-    //           横幅 DRAW_WIDTH
-
-    // DIBバッファを作成する。
-    i = sizeof(BITMAPINFOHEADER) + PALLET_COLORS * 4;
-    lpBitmap = (LPBITMAPINFO)GlobalAlloc(GPTR, i + DRAW_WIDTH * DRAW_HEIGHT * 2);
-    lpBits = (LPBYTE)lpBitmap + i;
-    ZeroMemory(lpBits, DRAW_WIDTH * DRAW_HEIGHT * 2);
-
-    // DIBヘッダ
-    lpBitmap->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    lpBitmap->bmiHeader.biWidth = DRAW_WIDTH;
-    lpBitmap->bmiHeader.biHeight = DRAW_HEIGHT;
-    lpBitmap->bmiHeader.biPlanes = 1;
-    lpBitmap->bmiHeader.biBitCount = 8;
-    lpBitmap->bmiHeader.biCompression = BI_RGB;
-    lpBitmap->bmiHeader.biSizeImage = DRAW_WIDTH * DRAW_HEIGHT;
-    lpBitmap->bmiHeader.biXPelsPerMeter = 0;
-    lpBitmap->bmiHeader.biYPelsPerMeter = 0;
-    lpBitmap->bmiHeader.biClrUsed = PALLET_COLORS;
-    lpBitmap->bmiHeader.biClrImportant = PALLET_COLORS;
-    CopyMemory(&lpBitmap->bmiColors, pallet, PALLET_COLORS * 4);
-
-    // 表示バッファ(DDB)を作成する
-    hDC = GetDC(hWnd);
-    hMemBitmap = CreateCompatibleBitmap(hDC, DRAW_WIDTH, DRAW_HEIGHT * 2 + GAUGE_HEIGHT);
-    ReleaseDC(hWnd, hDC);
+    // パレットを作成する
+    createPallet(hWnd);
 
     // ゲージを描画する
     drawGauge(hWnd, hMemBitmap);
@@ -205,10 +136,10 @@ wmCreate(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam) {
         free(gpAmp);
     }
     gpAmp = (double*)malloc(sizeof(double)*BANKS);
-    dft::init(PITCH, SIGMA, BANKS, 12 * NOTE_DIV, 4410, WaveIn::SAMPLE_RATE);
+    dft::init(PITCH, SIGMA, BANKS, 12 * NOTE_DIV, DFT_LENGTH, WaveIn::SAMPLE_RATE);
 
-    // プロセスの優先順位を HIGH にする
-    SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+    // プロセスの優先順位を NORMAL にする
+    SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 
     InvalidateRect(hWnd, NULL, FALSE);
     return (LRESULT)0;
@@ -223,6 +154,8 @@ wmDestroy(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam) {
     // 確保していたメモリを開放
     GlobalFree(lpBitmap);
     DeleteObject(hMemBitmap);
+
+    dft::purge();
 
     delete cWaveIn;
     cWaveIn = NULL;
@@ -305,7 +238,7 @@ wmPaint(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam) {
 
 LRESULT
 wmUser(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam) {
-    if ((NULL == cWaveIn->m_pBuffer) || (FALSE == cWaveIn->IsWaveOpen)) {
+    if (FALSE == cWaveIn->IsWaveOpen) {
         InvalidateRect(hWnd, NULL, TRUE);
         return (LRESULT)0;
     }
@@ -334,7 +267,85 @@ wmUser(HWND& hWnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam) {
 }
 
 /******************************************************************************/
-/*  目盛を描画
+/* パレットを作成
+/******************************************************************************/
+void
+createPallet(HWND& hWnd) {
+    DWORD        pallet[PALLET_COLORS];
+    LPLOGPALETTE lpPal;
+    LPDWORD      dp;
+    LPDWORD      sp;
+    HDC          hDC;
+    int          i, a, b;
+
+    // カラーパレットを作成する。
+    for (i = 0, a = 0, b = 0; i < PALLET_COLORS; ++i, a += 0x500 / PALLET_COLORS, b = a % 0x100) {
+        if (a < 0x100) {
+            // Black -> Blue
+            pallet[i] = b;
+        } else if (a < 0x200) {
+            // Blue -> LightGreen
+            pallet[i] = (b << 8) | 0xFF;
+        } else if (a < 0x300) {
+            // LightGreen -> Green
+            pallet[i] = 0xFFFF - b;
+        } else if (a < 0x400) {
+            // Green -> Yellow
+            pallet[i] = (b << 16) | 0xFF00;
+        } else if (a < 0x500) {
+            // Yellow -> Red
+            pallet[i] = 0xFFFF00 - (b << 8);
+        }
+    }
+
+    lpPal = (LPLOGPALETTE)GlobalAlloc(GPTR, sizeof(LOGPALETTE) + (PALLET_COLORS * sizeof(PALETTEENTRY)));
+    lpPal->palVersion = 0x300;
+    lpPal->palNumEntries = PALLET_COLORS;
+    dp = (DWORD*)lpPal->palPalEntry;
+    sp = (DWORD*)pallet;
+    for (i = 0; i < PALLET_COLORS; ++i) {
+        *(dp++) = ((DWORD)PC_NOCOLLAPSE << 24) | (DWORD)RGBQUAD2COLORREF(*(sp++));
+    }
+    hPalette = CreatePalette(lpPal);
+    GlobalFree(lpPal);
+
+    // DIBバッファ lpBits の構造 (サイズDRAW_WIDTH * DRAW_HEIGHT * 2面)
+    // ※ DIBヘッダ lpBitmap の画像サイズは DRAW_WIDTH * DRAW_HEIGHT
+    // lpBits -> +-------------+ 高さ
+    //           |             | DRAW_HEIGHT	スペクトル表示用バッファ
+    //           +-------------+
+    //           |             | DRAW_HEIGHT	履歴スクロールバッファ
+    //           +-------------+
+    //           横幅 DRAW_WIDTH
+
+    // DIBバッファを作成する。
+    i = sizeof(BITMAPINFOHEADER) + PALLET_COLORS * 4;
+    lpBitmap = (LPBITMAPINFO)GlobalAlloc(GPTR, i + DRAW_WIDTH * DRAW_HEIGHT * 2);
+    lpBits = (LPBYTE)lpBitmap + i;
+    memset(lpBits, 0, DRAW_WIDTH * DRAW_HEIGHT * 2);
+
+    // DIBヘッダ
+    lpBitmap->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    lpBitmap->bmiHeader.biWidth = DRAW_WIDTH;
+    lpBitmap->bmiHeader.biHeight = DRAW_HEIGHT;
+    lpBitmap->bmiHeader.biPlanes = 1;
+    lpBitmap->bmiHeader.biBitCount = 8;
+    lpBitmap->bmiHeader.biCompression = BI_RGB;
+    lpBitmap->bmiHeader.biSizeImage = DRAW_WIDTH * DRAW_HEIGHT;
+    lpBitmap->bmiHeader.biXPelsPerMeter = 0;
+    lpBitmap->bmiHeader.biYPelsPerMeter = 0;
+    lpBitmap->bmiHeader.biClrUsed = PALLET_COLORS;
+    lpBitmap->bmiHeader.biClrImportant = PALLET_COLORS;
+    memcpy(&lpBitmap->bmiColors, pallet, PALLET_COLORS * 4);
+
+    // 表示バッファ(DDB)を作成する
+    hDC = GetDC(hWnd);
+    hMemBitmap = CreateCompatibleBitmap(hDC, DRAW_WIDTH, DRAW_HEIGHT * 2 + GAUGE_HEIGHT);
+    ReleaseDC(hWnd, hDC);
+}
+
+/******************************************************************************/
+/* 目盛を描画
 /******************************************************************************/
 void
 drawGauge(HWND hWnd, HBITMAP hMemBitmap) {
@@ -377,7 +388,7 @@ drawGauge(HWND hWnd, HBITMAP hMemBitmap) {
         }
 
         r.left = i * DRAW_STEPX;
-        r.right = r.left + (DRAW_STEPX * NOTE_DIV);
+        r.right = r.left + DRAW_STEPX;
 
         hbr = CreateSolidBrush(c);
         FillRect(hDC, &r, hbr);
@@ -388,7 +399,7 @@ drawGauge(HWND hWnd, HBITMAP hMemBitmap) {
 }
 
 /******************************************************************************/
-/* スペクトルをDIBバッファに描画する
+/* スペクトルをDIBバッファに描画
 /******************************************************************************/
 void
 plotSpectrum(HWND hWnd) {
@@ -396,30 +407,32 @@ plotSpectrum(HWND hWnd) {
     UINT32 level = 0;
 
     // スクロールバッファをスクロールダウン
-    for (UINT32 i = 0; i < 4; ++i) {
-        MoveMemory(
-            lpBits + DRAW_WIDTH * DRAW_HEIGHT,
-            lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
-            DRAW_WIDTH * (DRAW_HEIGHT - 1)
-        );
-    }
+    memcpy(
+        lpBits + DRAW_WIDTH * DRAW_HEIGHT,
+        lpBits + DRAW_WIDTH * DRAW_HEIGHT + DRAW_WIDTH,
+        DRAW_WIDTH * (DRAW_HEIGHT - 1)
+    );
+    memset(lpBits, 0, DRAW_WIDTH * DRAW_HEIGHT);
 
-    // スペクトル描画
-    ZeroMemory(lpBits, DRAW_WIDTH * DRAW_HEIGHT);
+    // DFT
+    dft::exec((short*)cWaveIn->mpBuffer, gpAmp, WaveIn::SAMPLES);
 
-    dft::exec(cWaveIn->m_pBuffer, gpAmp, WaveIn::SAMPLES, 0.03);
-
-    for (UINT32 index = 0; index < BANKS; ++index) {
-        // 入力波形をフィルタにかけて振幅を算出
+    for (UINT32 i = 0; i < BANKS; ++i) {
+        // 振幅を算出
         {
-            double amplitude = gpAmp[index];
-
+            double amplitude = gpAmp[i] / gAvgLevel;
             if (maxLevel < amplitude) {
                 maxLevel = amplitude;
             }
 
-            amplitude /= gAvgLevel;
-            amplitude *= 1.15 * DRAW_HEIGHT;
+            amplitude *= 64.0;
+            if (amplitude < 1.0) {
+                amplitude = 0.0;
+            } else {
+                amplitude = 1.2 * log10(amplitude) / log10(64.0);
+            }
+
+            amplitude *= DRAW_HEIGHT * ADJUST_AMP;
             if (DRAW_HEIGHT <= amplitude) {
                 amplitude = DRAW_HEIGHT - 1;
             }
@@ -429,10 +442,9 @@ plotSpectrum(HWND hWnd) {
         // DIBバッファ上に棒グラフを描画
         {
             // UINT32値を使って、一度に４ピクセルずつ描画する
-            register UINT32 *pix4 = (UINT32*)lpBits + index;
-            register UINT32 j;
-            for (j = 0; j < level; ++j) {
-                register UINT32 tmp = 8 + j * 55 / DRAW_HEIGHT;
+            UINT32 *pix4 = (UINT32*)lpBits + i;
+            for (UINT32 j = 0; j < level; ++j) {
+                UINT32 tmp = 8 + j * 56 / DRAW_HEIGHT;
                 tmp |= (tmp << 8) | (tmp << 16) | (tmp << 24);
                 *pix4 = tmp;
                 pix4 += BANKS;
@@ -441,19 +453,19 @@ plotSpectrum(HWND hWnd) {
 
         // スクロールバッファにも描画
         {
-            register UINT32 tmp = level * PALLET_COLORS / DRAW_HEIGHT;
-            tmp |= (tmp << 8) | (tmp << 16) | (tmp << 24);
-            *((UINT32 *)(lpBits + DRAW_WIDTH * (DRAW_HEIGHT * 2 - 1)) + index) = tmp;
+            UINT32 rgb = level * PALLET_COLORS / DRAW_HEIGHT;
+            rgb |= (rgb << 8) | (rgb << 16) | (rgb << 24);
+            *((UINT32 *)(lpBits + DRAW_WIDTH * (DRAW_HEIGHT * 2 - 1)) + i) = rgb;
         }
     }
 
     if (gAvgLevel < maxLevel) {
         gAvgLevel = maxLevel;
     } else {
-        gAvgLevel *= 1.0 - 24.0 / (WaveIn::SAMPLE_RATE / WaveIn::SAMPLES);
+        gAvgLevel -= gAvgLevel * 0.08;
     }
 
-    if (gAvgLevel < 1.0) {
-        gAvgLevel = 1.0;
+    if (gAvgLevel < 0.01) {
+        gAvgLevel = 0.01;
     }
 }
