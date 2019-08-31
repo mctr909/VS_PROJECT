@@ -12,7 +12,6 @@ int    _stop = 1;
 int    _stoped = 1;
 int    _notes = 0;
 int    _dftLength = 0;
-int    *_pBeginTbl = NULL;
 int    *_pBeginWave = NULL;
 double *_pWaveBuff = NULL;
 double *_pTbl = NULL;
@@ -33,7 +32,6 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
     // create
     _pWaveBuff = (double*)malloc(sizeof(double)*dftLength);
     _pTbl = (double*)malloc(sizeof(double)*notes*dftLength * 2);
-    _pBeginTbl = (int*)malloc(sizeof(int)*notes);
     _pBeginWave = (int*)malloc(sizeof(int)*notes);
 
     // clear
@@ -55,7 +53,6 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
         v /= integ;
 
         double mx = 0.0;
-        _pBeginTbl[no] = idx;
         _pBeginWave[no] = 0;
         for (int t = 0; t < dftLength; ++t) {
             double pwt = pi * w*(2 * t - dftLength + 1);
@@ -64,12 +61,13 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
                 mx = ex;
             }
             if (mx < BEGIN_THRESHOLD) {
-                _pBeginTbl[no] = idx;
-                _pBeginWave[no] = t;
+                _pBeginWave[no] = t + 1;
             }
-            _pTbl[idx]     = cos(pwt) * ex;
-            _pTbl[idx + 1] = sin(pwt) * ex;
-            idx += 2;
+            if (_pBeginWave[no] <= t && t < dftLength - _pBeginWave[no]) {
+                _pTbl[idx] = cos(pwt) * ex;
+                _pTbl[idx + 1] = sin(pwt) * ex;
+                idx += 2;
+            }
         }
     }
 
@@ -90,10 +88,6 @@ void dft::purge() {
         free(_pTbl);
         _pTbl = NULL;
     }
-    if (NULL != _pBeginTbl) {
-        free(_pBeginTbl);
-        _pBeginTbl = NULL;
-    }
     if (NULL != _pBeginWave) {
         free(_pBeginWave);
         _pBeginWave = NULL;
@@ -111,14 +105,17 @@ void dft::exec(short *pInput, double *pAmp, int samples) {
         _pWaveBuff[b] = (pInput[a] + pInput[a + 1]) / 65536.0;
     }
 
+    int idx = 0;
     for (int no = 0; no < _notes; ++no) {
         double re = 0.0;
         double im = 0.0;
         int end = _dftLength - _pBeginWave[no];
-        for (int t = _pBeginWave[no], u = _pBeginTbl[no]; t < end; ++t, u += 2) {
-            re -= _pWaveBuff[t] * _pTbl[u];
-            im += _pWaveBuff[t] * _pTbl[u + 1];
+        for (int t = _pBeginWave[no]; t < end; ++t) {
+            re -= _pWaveBuff[t] * _pTbl[idx];
+            im += _pWaveBuff[t] * _pTbl[idx + 1];
+            idx += 2;
         }
-        pAmp[no] = sqrt(re * re + im * im);
+        re = sqrt(re * re + im * im);
+        pAmp[no] = 1.008 * re / (re + 0.008);
     }
 }

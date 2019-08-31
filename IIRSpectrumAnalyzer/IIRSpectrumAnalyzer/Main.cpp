@@ -425,11 +425,11 @@ plotSpectrum(HWND hWnd) {
                 maxLevel = amplitude;
             }
 
-            amplitude *= 64.0;
+            amplitude *= 4.0;
             if (amplitude < 1.0) {
                 amplitude = 0.0;
             } else {
-                amplitude = 1.2 * log10(amplitude) / log10(64.0);
+                amplitude = log10(amplitude) / log10(4.0);
             }
 
             amplitude *= DRAW_HEIGHT * ADJUST_AMP;
@@ -465,7 +465,7 @@ plotSpectrum(HWND hWnd) {
         gAvgLevel -= gAvgLevel * 0.08;
     }
 
-    if (gAvgLevel < 0.01) {
-        gAvgLevel = 0.01;
+    if (gAvgLevel < 0.0001) {
+        gAvgLevel = 0.0001;
     }
 }
