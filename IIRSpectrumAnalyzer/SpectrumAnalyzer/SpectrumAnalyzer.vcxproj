@@ -22,9 +22,9 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{4BC5B0E8-7526-48F7-87B3-2D80661CEF0A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>IIRSpectrumAnalyzer</RootNamespace>
+    <RootNamespace>SpectrumAnalyzer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>SpectrumAnalyzer(v15)</ProjectName>
+    <ProjectName>SpectrumAnalyzer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
