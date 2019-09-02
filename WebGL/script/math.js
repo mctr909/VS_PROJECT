@@ -321,25 +321,25 @@ class Mat {
 			b31 = mb._a[8],  b32 = mb._a[9],  b33 = mb._a[10], b34 = mb._a[11],
 			b41 = mb._a[12], b42 = mb._a[13], b43 = mb._a[14], b44 = mb._a[15]
 		;
-		returnValue._a[0]  = b11 * a11 + b12 * a21 + b13 * a31 + b14 * a41;
-		returnValue._a[1]  = b11 * a12 + b12 * a22 + b13 * a32 + b14 * a42;
-		returnValue._a[2]  = b11 * a13 + b12 * a23 + b13 * a33 + b14 * a43;
-		returnValue._a[3]  = b11 * a14 + b12 * a24 + b13 * a34 + b14 * a44;
+		returnValue._a[0]  = a11 * b11 + a21 * b12 + a31 * b13 + a41 * b14;
+		returnValue._a[1]  = a12 * b11 + a22 * b12 + a32 * b13 + a42 * b14;
+		returnValue._a[2]  = a13 * b11 + a23 * b12 + a33 * b13 + a43 * b14;
+		returnValue._a[3]  = a14 * b11 + a24 * b12 + a34 * b13 + a44 * b14;
 
-		returnValue._a[4]  = b21 * a11 + b22 * a21 + b23 * a31 + b24 * a41;
-		returnValue._a[5]  = b21 * a12 + b22 * a22 + b23 * a32 + b24 * a42;
-		returnValue._a[6]  = b21 * a13 + b22 * a23 + b23 * a33 + b24 * a43;
-		returnValue._a[7]  = b21 * a14 + b22 * a24 + b23 * a34 + b24 * a44;
+		returnValue._a[4]  = a11 * b21 + a21 * b22 + a31 * b23 + a41 * b24;
+		returnValue._a[5]  = a12 * b21 + a22 * b22 + a32 * b23 + a42 * b24;
+		returnValue._a[6]  = a13 * b21 + a23 * b22 + a33 * b23 + a43 * b24;
+		returnValue._a[7]  = a14 * b21 + a24 * b22 + a34 * b23 + a44 * b24;
 
-		returnValue._a[8]  = b31 * a11 + b32 * a21 + b33 * a31 + b34 * a41;
-		returnValue._a[9]  = b31 * a12 + b32 * a22 + b33 * a32 + b34 * a42;
-		returnValue._a[10] = b31 * a13 + b32 * a23 + b33 * a33 + b34 * a43;
-		returnValue._a[11] = b31 * a14 + b32 * a24 + b33 * a34 + b34 * a44;
+		returnValue._a[8]  = a11 * b31 + a21 * b32 + a31 * b33 + a41 * b34;
+		returnValue._a[9]  = a12 * b31 + a22 * b32 + a32 * b33 + a42 * b34;
+		returnValue._a[10] = a13 * b31 + a23 * b32 + a33 * b33 + a43 * b34;
+		returnValue._a[11] = a14 * b31 + a24 * b32 + a34 * b33 + a44 * b34;
 
-		returnValue._a[12] = b41 * a11 + b42 * a21 + b43 * a31 + b44 * a41;
-		returnValue._a[13] = b41 * a12 + b42 * a22 + b43 * a32 + b44 * a42;
-		returnValue._a[14] = b41 * a13 + b42 * a23 + b43 * a33 + b44 * a43;
-		returnValue._a[15] = b41 * a14 + b42 * a24 + b43 * a34 + b44 * a44;
+		returnValue._a[12] = a11 * b41 + a21 * b42 + a31 * b43 + a41 * b44;
+		returnValue._a[13] = a12 * b41 + a22 * b42 + a32 * b43 + a42 * b44;
+		returnValue._a[14] = a13 * b41 + a23 * b42 + a33 * b43 + a43 * b44;
+		returnValue._a[15] = a14 * b41 + a24 * b42 + a34 * b43 + a44 * b44;
 		return returnValue;
 	}
 
@@ -447,11 +447,13 @@ class Mat {
 		;
 		let aXX = aX * aX * aCi + aC,
 			aXY = aY * aX * aCi + aZ * aS,
-			aXZ = aZ * aX * aCi - aY * aS,
-			aYX = aX * aY * aCi - aZ * aS,
+			aXZ = aZ * aX * aCi - aY * aS
+		;
+		let aYX = aX * aY * aCi - aZ * aS,
 			aYY = aY * aY * aCi + aC,
-			aYZ = aZ * aY * aCi + aX * aS,
-			aZX = aX * aZ * aCi + aY * aS,
+			aYZ = aZ * aY * aCi + aX * aS
+		;
+		let aZX = aX * aZ * aCi + aY * aS,
 			aZY = aY * aZ * aCi - aX * aS,
 			aZZ = aZ * aZ * aCi + aC
 		;
