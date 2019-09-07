@@ -420,23 +420,27 @@ plotSpectrum(HWND hWnd) {
     for (UINT32 i = 0; i < BANKS; ++i) {
         // 振幅を算出
         {
-            double amplitude = gpAmp[i] / gAvgLevel;
-            if (maxLevel < amplitude) {
-                maxLevel = amplitude;
+            double amp = gpAmp[i];
+            if (1.0 < amp) {
+                amp = 1.0;
+            }
+            if (maxLevel < amp) {
+                maxLevel = amp;
             }
 
-            amplitude *= 4.0;
-            if (amplitude < 1.0) {
-                amplitude = 0.0;
+            amp /= gAvgLevel;
+            amp = 10.0 * amp * 1.375 / (amp + 0.375);
+            if (amp < 1.0) {
+                amp = 0.0;
             } else {
-                amplitude = log10(amplitude) / log10(4.0);
+                amp = log10(amp) / log10(10.0);
             }
 
-            amplitude *= DRAW_HEIGHT * ADJUST_AMP;
-            if (DRAW_HEIGHT <= amplitude) {
-                amplitude = DRAW_HEIGHT - 1;
+            amp *= DRAW_HEIGHT;
+            if (DRAW_HEIGHT <= amp) {
+                amp = DRAW_HEIGHT - 1;
             }
-            level = static_cast<UINT32>(amplitude);
+            level = static_cast<UINT32>(amp);
         }
 
         // DIBバッファ上に棒グラフを描画
@@ -462,10 +466,10 @@ plotSpectrum(HWND hWnd) {
     if (gAvgLevel < maxLevel) {
         gAvgLevel = maxLevel;
     } else {
-        gAvgLevel -= gAvgLevel * 0.08;
+        gAvgLevel -= gAvgLevel * 0.01;
     }
 
-    if (gAvgLevel < 0.0001) {
-        gAvgLevel = 0.0001;
+    if (gAvgLevel < 1 / 32768.0) {
+        gAvgLevel = 1 / 32768.0;
     }
 }

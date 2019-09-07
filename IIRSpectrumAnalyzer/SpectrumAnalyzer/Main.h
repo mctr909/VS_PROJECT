@@ -21,14 +21,13 @@ const LPWSTR CLASS_NAME    = L"Spectrum";	// ウィンドウクラス名
 const LPWSTR WINDOW_TITLE  = L"Spectrum";	// タイトル
 
 const UINT32 NOTES          = 116;
-const UINT32 NOTE_DIV       = 5;
+const UINT32 NOTE_DIV       = 3;
 const UINT32 START_NOTE     = 0;
 const UINT32 BANKS          = NOTES * NOTE_DIV;
 
-const DOUBLE PITCH          = 27.5 * pow(2.0, (START_NOTE - 0.25) / 12.0);
-const DOUBLE SIGMA          = 60.0;
-const DOUBLE ADJUST_AMP     = 1.0;
-const UINT32 DFT_LENGTH     = 6000;
+const DOUBLE PITCH          = 27.5 * pow(2.0, START_NOTE + (1.0 - 1.0 / NOTE_DIV) / 12.0);
+const DOUBLE SIGMA          = 55.0;
+const UINT32 DFT_LENGTH     = 5000;
 const UINT32 WINDOW_WIDTH   = 466;
 const UINT32 WINDOW_HEIGHT  = 480;
 

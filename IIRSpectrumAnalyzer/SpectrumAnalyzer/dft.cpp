@@ -18,10 +18,6 @@ double *_pTbl = NULL;
 
 /******************************************************************************/
 int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLength, int sampleRate) {
-    double pi;
-    double sigma2;
-    int idx;
-
     _stop = 1;
     if (!_stoped) {
         return 0;
@@ -38,9 +34,9 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
     memset(_pWaveBuff, 0, sizeof(double)*dftLength);
 
     // set value
-    pi = 4.0*atan(1.0);
-    sigma2 = sigma * sigma;
-    idx = 0;
+    double pi = 4.0*atan(1.0);
+    double sigma2 = sigma * sigma;
+    int idx = 0;
     for (int no = 0; no < notes; ++no) {
         double w = baseFreq * pow(2.0, (double)no / octDiv) / sampleRate;
         double v = 2.0*sqrt(pi)*w / sigma;
@@ -48,7 +44,8 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
         double integ = 0.0;
         for (int t = 0; t < dftLength; ++t) {
             double pwt = pi * w*(2 * t - dftLength + 1);
-            integ += v * exp(-pwt * pwt / sigma2) * (0.5 - 0.5*cos(2 * pi*(t + 0.5) / dftLength));
+            double wnd = 0.5 - 0.5*cos(2 * pi*(t + 0.5) / dftLength);
+            integ += v * exp(-pwt * pwt / sigma2) * wnd;
         }
         v /= integ;
 
@@ -56,7 +53,8 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
         _pBeginWave[no] = 0;
         for (int t = 0; t < dftLength; ++t) {
             double pwt = pi * w*(2 * t - dftLength + 1);
-            double ex = v * exp(-pwt * pwt / sigma2) * (0.5 - 0.5*cos(2 * pi*(t + 0.5) / dftLength));
+            double wnd = 0.5 - 0.5*cos(2 * pi*(t + 0.5) / dftLength);
+            double ex = v * exp(-pwt * pwt / sigma2) * wnd;
             if (mx < ex) {
                 mx = ex;
             }
@@ -64,7 +62,7 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
                 _pBeginWave[no] = t + 1;
             }
             if (_pBeginWave[no] <= t && t < dftLength - _pBeginWave[no]) {
-                _pTbl[idx] = cos(pwt) * ex;
+                _pTbl[idx]     = cos(pwt) * ex;
                 _pTbl[idx + 1] = sin(pwt) * ex;
                 idx += 2;
             }
@@ -115,7 +113,6 @@ void dft::exec(short *pInput, double *pAmp, int samples) {
             im += _pWaveBuff[t] * _pTbl[idx + 1];
             idx += 2;
         }
-        re = sqrt(re * re + im * im);
-        pAmp[no] = 1.008 * re / (re + 0.008);
+        pAmp[no] = sqrt(re * re + im * im);
     }
 }
