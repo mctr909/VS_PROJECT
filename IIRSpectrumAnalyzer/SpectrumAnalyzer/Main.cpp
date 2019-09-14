@@ -428,12 +428,11 @@ plotSpectrum(HWND hWnd) {
                 maxLevel = amp;
             }
 
-            amp /= gAvgLevel;
-            amp = 10.0 * amp * 1.375 / (amp + 0.375);
+            amp *= 48.0 / gAvgLevel;
             if (amp < 1.0) {
                 amp = 0.0;
             } else {
-                amp = log10(amp) / log10(10.0);
+                amp = log10(amp) / log10(48.0);
             }
 
             amp *= DRAW_HEIGHT;
@@ -466,10 +465,10 @@ plotSpectrum(HWND hWnd) {
     if (gAvgLevel < maxLevel) {
         gAvgLevel = maxLevel;
     } else {
-        gAvgLevel -= gAvgLevel * 0.01;
+        gAvgLevel -= gAvgLevel * 0.02;
     }
 
-    if (gAvgLevel < 1 / 32768.0) {
-        gAvgLevel = 1 / 32768.0;
+    if (gAvgLevel < 1 / 1024.0) {
+        gAvgLevel = 1 / 1024.0;
     }
 }

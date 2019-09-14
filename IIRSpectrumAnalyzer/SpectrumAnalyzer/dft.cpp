@@ -52,9 +52,9 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
         double mx = 0.0;
         _pBeginWave[no] = 0;
         for (int t = 0; t < dftLength; ++t) {
-            double pwt = pi * w*(2 * t - dftLength + 1);
-            double wnd = 0.5 - 0.5*cos(2 * pi*(t + 0.5) / dftLength);
-            double ex = v * exp(-pwt * pwt / sigma2) * wnd;
+            double window = 0.5 - 0.5*cos(pi*(2*t + 1) / dftLength);
+            double wt = pi*w*(2*t - dftLength + 1);
+            double ex = v*exp(-wt*wt / sigma2) * window;
             if (mx < ex) {
                 mx = ex;
             }
@@ -62,8 +62,8 @@ int dft::init(double baseFreq, double sigma, int notes, int octDiv, int dftLengt
                 _pBeginWave[no] = t + 1;
             }
             if (_pBeginWave[no] <= t && t < dftLength - _pBeginWave[no]) {
-                _pTbl[idx]     = cos(pwt) * ex;
-                _pTbl[idx + 1] = sin(pwt) * ex;
+                _pTbl[idx]     = cos(wt) * ex;
+                _pTbl[idx + 1] = sin(wt) * ex;
                 idx += 2;
             }
         }

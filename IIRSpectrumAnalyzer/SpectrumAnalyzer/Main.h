@@ -26,8 +26,8 @@ const UINT32 START_NOTE     = 0;
 const UINT32 BANKS          = NOTES * NOTE_DIV;
 
 const DOUBLE PITCH          = 27.5 * pow(2.0, START_NOTE + (1.0 - 1.0 / NOTE_DIV) / 12.0);
-const DOUBLE SIGMA          = 55.0;
-const UINT32 DFT_LENGTH     = 5000;
+const DOUBLE SIGMA          = 48.0;
+const UINT32 DFT_LENGTH     = 11050;
 const UINT32 WINDOW_WIDTH   = 466;
 const UINT32 WINDOW_HEIGHT  = 480;
 
