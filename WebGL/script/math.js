@@ -1,77 +1,86 @@
 class Vec {
+	constructor(x=0.0, y=0.0, z=0.0) {
+		this._a = new Float32Array(3);
+		this._a[0] = x;
+		this._a[1] = y;
+		this._a[2] = z;
+	}
+	get Array() {
+		return this._a;
+	}
 	/**
-	 * @param {number[]} va
-	 * @param {number[]} vb
-	 * @param {number[]} returnValue
-	 * @returns {number[]}
+	 * @param {Vec} va
+	 * @param {Vec} vb
+	 * @param {Vec} returnValue
+	 * @returns {Vec}
 	 */
 	static add(va, vb, returnValue) {
-		returnValue[0] = va[0] + vb[0];
-		returnValue[1] = va[1] + vb[1];
-		returnValue[2] = va[2] + vb[2];
+		returnValue._a[0] = va._a[0] + vb._a[0];
+		returnValue._a[1] = va._a[1] + vb._a[1];
+		returnValue._a[2] = va._a[2] + vb._a[2];
 		return returnValue;
 	}
 	/**
-	 * @param {number[]} va
-	 * @param {number[]} vb
-	 * @param {number[]} returnValue
-	 * @returns {number[]}
+	 * @param {Vec} va
+	 * @param {Vec} vb
+	 * @param {Vec} returnValue
+	 * @returns {Vec}
 	 */
 	static sub(va, vb, returnValue) {
-		returnValue[0] = va[0] - vb[0];
-		returnValue[1] = va[1] - vb[1];
-		returnValue[2] = va[2] - vb[2];
+		returnValue._a[0] = va._a[0] - vb._a[0];
+		returnValue._a[1] = va._a[1] - vb._a[1];
+		returnValue._a[2] = va._a[2] - vb._a[2];
 		return returnValue;
 	}
 	/**
-	 * @param {number[]} va
-	 * @param {number[]} vb
-	 * @param {number[]} returnValue
-	 * @returns {number[]}
+	 * @param {Vec} va
+	 * @param {Vec} vb
+	 * @param {Vec} returnValue
+	 * @returns {Vec}
 	 */
 	static cross(va, vb, returnValue) {
-		returnValue[0] = va[1]*vb[2] - va[2]*vb[1];
-		returnValue[1] = va[2]*vb[0] - va[0]*vb[2];
-		returnValue[2] = va[0]*vb[1] - va[1]*vb[0];
+		returnValue._a[0] = va._a[1]*vb._a[2] - va._a[2]*vb._a[1];
+		returnValue._a[1] = va._a[2]*vb._a[0] - va._a[0]*vb._a[2];
+		returnValue._a[2] = va._a[0]*vb._a[1] - va._a[1]*vb._a[0];
 		return returnValue;
 	}
 	/**
-	 * @param {number[]} va
-	 * @param {number[]} vb
+	 * @param {Vec} va
+	 * @param {Vec} vb
 	 * @returns {number}
 	 */
 	static dot(va, vb) {
-		return (va[0]*vb[0] + va[1]*vb[1] + va[2]*vb[2]);
+		return (va._a[0]*vb._a[0] + va._a[1]*vb._a[1] + va._a[2]*vb._a[2]);
 	}
 	/**
-	 * @param {number[]} vector
-	 * @param {number[]} returnValue
-	 * @returns {number[]}
+	 * @param {Vec} v
+	 * @param {Vec} returnValue
+	 * @returns {Vec}
 	 */
-	static normal(vector, returnValue) {
-		let l = Math.sqrt(vector[0]*vector[0] + vector[1]*vector[1] + vector[2]*vector[2]);
+	static normal(v, returnValue) {
+		let l = Math.sqrt(v._a[0]*v._a[0] + v._a[1]*v._a[1] + v._a[2]*v._a[2]);
 		if (0===l) {
-			returnValue[0] = 0;
-			returnValue[1] = 0;
-			returnValue[2] = 0;
+			returnValue._a[0] = 0;
+			returnValue._a[1] = 0;
+			returnValue._a[2] = 0;
 		} else {
 			l = 1 / l;
-			returnValue[0] = vector[0]*l;
-			returnValue[1] = vector[1]*l;
-			returnValue[2] = vector[2]*l;
+			returnValue._a[0] = v._a[0]*l;
+			returnValue._a[1] = v._a[1]*l;
+			returnValue._a[2] = v._a[2]*l;
 		}
 		return returnValue;
 	}
 	/**
-	 * @param {number[]} vector
+	 * @param {Vec} v
 	 * @param {number} k
-	 * @param {number[]} returnValue
-	 * @returns {number[]}
+	 * @param {Vec} returnValue
+	 * @returns {Vec}
 	 */
-	static scale(vector, k, returnValue) {
-		returnValue[0] = vector[0]*k;
-		returnValue[1] = vector[1]*k;
-		returnValue[2] = vector[2]*k;
+	static scale(v, k, returnValue) {
+		returnValue._a[0] = v._a[0]*k;
+		returnValue._a[1] = v._a[1]*k;
+		returnValue._a[2] = v._a[2]*k;
 		return returnValue;
 	}
 }
@@ -82,7 +91,9 @@ class Mat {
 		this._a = new Float32Array(16);
 	}
 
-	get Array() { return this._a; }
+	get Array() {
+		return this._a;
+	}
 
 	/**
 	 * @returns {Mat}
@@ -345,23 +356,23 @@ class Mat {
 
 	/**
 	 * @param {Mat} matrix
-	 * @param {number[]} vector
+	 * @param {Vec} vector
 	 * @param {Mat} returnValue
 	 * @returns {Mat}
 	 */
 	static scale(matrix, vector, returnValue) {
-		returnValue._a[0]  = matrix._a[0]  * vector[0];
-		returnValue._a[1]  = matrix._a[1]  * vector[0];
-		returnValue._a[2]  = matrix._a[2]  * vector[0];
-		returnValue._a[3]  = matrix._a[3]  * vector[0];
-		returnValue._a[4]  = matrix._a[4]  * vector[1];
-		returnValue._a[5]  = matrix._a[5]  * vector[1];
-		returnValue._a[6]  = matrix._a[6]  * vector[1];
-		returnValue._a[7]  = matrix._a[7]  * vector[1];
-		returnValue._a[8]  = matrix._a[8]  * vector[2];
-		returnValue._a[9]  = matrix._a[9]  * vector[2];
-		returnValue._a[10] = matrix._a[10] * vector[2];
-		returnValue._a[11] = matrix._a[11] * vector[2];
+		returnValue._a[0]  = matrix._a[0]  * vector._a[0];
+		returnValue._a[1]  = matrix._a[1]  * vector._a[0];
+		returnValue._a[2]  = matrix._a[2]  * vector._a[0];
+		returnValue._a[3]  = matrix._a[3]  * vector._a[0];
+		returnValue._a[4]  = matrix._a[4]  * vector._a[1];
+		returnValue._a[5]  = matrix._a[5]  * vector._a[1];
+		returnValue._a[6]  = matrix._a[6]  * vector._a[1];
+		returnValue._a[7]  = matrix._a[7]  * vector._a[1];
+		returnValue._a[8]  = matrix._a[8]  * vector._a[2];
+		returnValue._a[9]  = matrix._a[9]  * vector._a[2];
+		returnValue._a[10] = matrix._a[10] * vector._a[2];
+		returnValue._a[11] = matrix._a[11] * vector._a[2];
 		returnValue._a[12] = matrix._a[12];
 		returnValue._a[13] = matrix._a[13];
 		returnValue._a[14] = matrix._a[14];
@@ -371,7 +382,7 @@ class Mat {
 
 	/**
 	 * @param {Mat} matrix
-	 * @param {number[]} vector
+	 * @param {Vec} vector
 	 * @param {Mat} returnValue
 	 * @returns {Mat}
 	 */
@@ -392,27 +403,27 @@ class Mat {
 		returnValue._a[11] = matrix._a[11];
 
 		returnValue._a[12]
-			= matrix._a[0] * vector[0]
-			+ matrix._a[4] * vector[1]
-			+ matrix._a[8] * vector[2]
+			= matrix._a[0] * vector._a[0]
+			+ matrix._a[4] * vector._a[1]
+			+ matrix._a[8] * vector._a[2]
 			+ matrix._a[12]
 		;
 		returnValue._a[13]
-			= matrix._a[1] * vector[0]
-			+ matrix._a[5] * vector[1]
-			+ matrix._a[9] * vector[2]
+			= matrix._a[1] * vector._a[0]
+			+ matrix._a[5] * vector._a[1]
+			+ matrix._a[9] * vector._a[2]
 			+ matrix._a[13]
 		;
 		returnValue._a[14]
-			= matrix._a[2]  * vector[0]
-			+ matrix._a[6]  * vector[1]
-			+ matrix._a[10] * vector[2]
+			= matrix._a[2]  * vector._a[0]
+			+ matrix._a[6]  * vector._a[1]
+			+ matrix._a[10] * vector._a[2]
 			+ matrix._a[14]
 		;
 		returnValue._a[15]
-			= matrix._a[3]  * vector[0]
-			+ matrix._a[7]  * vector[1]
-			+ matrix._a[11] * vector[2]
+			= matrix._a[3]  * vector._a[0]
+			+ matrix._a[7]  * vector._a[1]
+			+ matrix._a[11] * vector._a[2]
 			+ matrix._a[15]
 		;
 		return returnValue;
@@ -421,18 +432,18 @@ class Mat {
 	/**
 	 * @param {Mat} matrix
 	 * @param {number} angle
-	 * @param {number[]} axis
+	 * @param {Vec} axis
 	 * @param {Mat} returnValue
 	 * @returns {Mat}
 	 */
 	static rotate(matrix, angle, axis, returnValue) {
-		let sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
+		let sq = Math.sqrt(axis._a[0]*axis._a[0] + axis._a[1]*axis._a[1] + axis._a[2]*axis._a[2]);
 		if (!sq) {
 			return null;
 		}
-		let aX = axis[0],
-			aY = axis[1],
-			aZ = axis[2]
+		let aX = axis._a[0],
+			aY = axis._a[1],
+			aZ = axis._a[2]
 		;
 		if (sq != 1) {
 			sq = 1 / sq;
@@ -541,23 +552,23 @@ class Qtn {
 	}
 
 	/**
-	 * @param {number[]} vec
-	 * @param {number[]} returnValue
-	 * @returns {number[]}
+	 * @param {Vec} v
+	 * @param {Vec} returnValue
+	 * @returns {Vec}
 	 */
-	toVec(vec, returnValue) {
+	toVec(v, returnValue) {
 		let qp = new Qtn();
 		let qq = new Qtn();
 		let qr = new Qtn();
 		Qtn.inverse(this, qr);
-		qp._a[0] = vec[0];
-		qp._a[1] = vec[1];
-		qp._a[2] = vec[2];
+		qp._a[0] = v._a[0];
+		qp._a[1] = v._a[1];
+		qp._a[2] = v._a[2];
 		Qtn.multiply(qr, qp, qq);
 		Qtn.multiply(qq, qtn, qr);
-		returnValue[0] = qr._a[0];
-		returnValue[1] = qr._a[1];
-		returnValue[2] = qr._a[2];
+		returnValue._a[0] = qr._a[0];
+		returnValue._a[1] = qr._a[1];
+		returnValue._a[2] = qr._a[2];
 		return returnValue;
 	}
 
@@ -619,18 +630,18 @@ class Qtn {
 
 	/**
 	 * @param {number} angle
-	 * @param {number[]} axis
+	 * @param {Vec} axis
 	 * @param {Qtn} returnValue
 	 * @returns {Qtn}
 	 */
 	static rotate(angle, axis, returnValue) {
-		let sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
+		let sq = Math.sqrt(axis._a[0]*axis._a[0] + axis._a[1]*axis._a[1] + axis._a[2]*axis._a[2]);
 		if (!sq) {
 			return null;
 		}
-		let a = axis[0],
-			b = axis[1],
-			c = axis[2]
+		let a = axis._a[0],
+			b = axis._a[1],
+			c = axis._a[2]
 		;
 		if (sq != 1) {
 			sq = 1 / sq;
