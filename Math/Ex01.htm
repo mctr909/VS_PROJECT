@@ -1,0 +1,16 @@
+<body>
+<input type="range" min=-180  max=180  value=50  style="width:400px;" id="phi"     oninput="phi_oninput();"/>phi:<span id="lbl_phi"></span><br/>
+<input type="range" min=-180  max=180  value=20  style="width:400px;" id="theta"   oninput="theta_oninput();"/>theta:<span id="lbl_theta"></span><br/>
+<table><tr>
+<input type="button" id="btnPlayStop"  value="Play" onclick="btnPlayStop_onclick();"/><br/>
+<td><canvas id="disp"></canvas></td>
+<td>
+	<span id="lblPos"></span>
+	<div id="divPad" style="width:200px; height:200px; background:gray;" onmousemove="divPad_onmousemove(event);" onclick="divPad_onclick();"></div>
+	<input type="range" min=0     max=200  value=40  style="width:200px;" id="eyePosY" oninput="eyePosY_oninput();"/>y:<span id="lbl_eyePosY"></span><br/>
+	<input type="range" min=-180  max=180  value=0 style="width:200px;" id="azimuth" oninput="azimuth_oninput();"/>azimuth:<span id="lbl_azimuth"></span><br/>
+</td>
+</tr></table>
+<body>
+<script type="text/javascript" src="To2d.js"></script>
+<script type="text/javascript" src="Ex01.js"></script>
