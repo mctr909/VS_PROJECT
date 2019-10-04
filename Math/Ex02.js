@@ -21,8 +21,9 @@ class MRK4 extends RK4 {
 let rk4 = new MRK4();
 rk4.init();
 
-document.write("<table style=\"font-size:9px;\">");
-while (rk4.step()) {
+document.write("<table style=\"font-size:9px; font-family:MS Gothic\">");
+while (rk4.mTime < 1.0) {
+    rk4.step();
     let i = rk4.mF[0];
     let v = rk4.mF[1];
     document.write("<tr><td>" + i.toExponential(2) + "</td><td>" + v.toExponential(2) + "</td></tr>");

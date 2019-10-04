@@ -11,9 +11,6 @@ class RK4 {
 		/** @protected */
 		this.mDeltaTime = 0.01;
 
-		/** @private */
-		this._endTime = 1.0;
-
 		/** @private @type {number[]} */
 		this._f = new Array(variables);
 
@@ -35,9 +32,14 @@ class RK4 {
 		}
 	}
 
-	init(beginTime=0, endTime=1.0, deltaTime=0.001) {
+	/** @protected */
+	updateDF() {
+		this.mDF[0] = -this.mF[1] * 6.283185;
+		this.mDF[1] =  this.mF[0] * 6.283185;
+	}
+
+	init(beginTime=0, deltaTime=0.001) {
 		this.mTime = beginTime;
-		this._endTime = endTime;
 		this.mDeltaTime = deltaTime;
 		for (let i = 0; i < this.mF.length; i++) {
 			this._f[i] = this.mF[i];
@@ -45,22 +47,6 @@ class RK4 {
 	}
 
 	step() {
-		if (this.mTime <= this._endTime) {
-			this._rk4();
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/** @protected */
-	updateDF() {
-		this.mDF[0] = -this.mF[1] * 6.283185;
-		this.mDF[1] =  this.mF[0] * 6.283185;
-	}
-
-	/** @private */
-	_rk4() {
 		let idxVar = 0;
 
 		// dfdt[0]算出
