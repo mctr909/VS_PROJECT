@@ -13,26 +13,13 @@ namespace Envelope {
         private static int CutoffDispUnit = 32;
         private static int AmpDispUnit = 30;
 
-        private static Font FontBold = new Font("Segoe UI", 11.0f, FontStyle.Bold);
-        private static Font FontSmall = new Font("Segoe UI", 9.0f, FontStyle.Regular);
-
-        private static StringFormat MiddleCenter = new StringFormat {
-            Alignment = StringAlignment.Center,
-            LineAlignment = StringAlignment.Center
-        };
-        private static StringFormat BottomRight = new StringFormat {
-            Alignment = StringAlignment.Far,
-            LineAlignment = StringAlignment.Far
-        };
-        private static new StringFormat Right = new StringFormat {
-            Alignment = StringAlignment.Far
-        };
-
         private class Values {
-            private PictureBox mPixTime;
-            private PictureBox mPixValue;
+            private PictureBox mPicTime;
+            private PictureBox mPicValue;
             private Bitmap mBmpTime;
+            private Bitmap mBmpValue;
             private Graphics mGTime;
+            private Graphics mGValue;
 
             public int Attack { get; private set; }
             public int Hold { get; private set; }
@@ -52,10 +39,8 @@ namespace Envelope {
             public double Fall;
 
             public Values(PictureBox picTime, PictureBox picValue) {
-                mPixTime = picTime;
-                mBmpTime = new Bitmap(picTime.Width, picTime.Height);
-                mGTime = Graphics.FromImage(mBmpTime);
-                mPixValue = picValue;
+                mPicTime = picTime;
+                mPicValue = picValue;
             }
 
             public void Commit() {
@@ -79,29 +64,30 @@ namespace Envelope {
                 var decay = Decay + DDecay;
                 var release = Release + DRelease;
 
+                releaseImageTime();
+
                 mGTime.Clear(Color.Transparent);
                 mGTime.DrawString(attack.ToString("0ms"),
-                    FontBold,
+                    Fonts.Bold,
                     Colors.BFontTable,
                     new RectangleF(0, TableHeaderHeight, TableColumnWidth, TableHeaderHeight),
-                    MiddleCenter);
+                    Fonts.AlignMC);
                 mGTime.DrawString(hold.ToString("0ms"),
-                    FontBold,
+                    Fonts.Bold,
                     Colors.BFontTable,
                     new RectangleF(TableColumnWidth, TableHeaderHeight, TableColumnWidth, TableHeaderHeight),
-                    MiddleCenter);
+                    Fonts.AlignMC);
                 mGTime.DrawString(decay.ToString("0ms"),
-                    FontBold,
+                    Fonts.Bold,
                     Colors.BFontTable,
                     new RectangleF(TableColumnWidth * 2, TableHeaderHeight, TableColumnWidth, TableHeaderHeight),
-                    MiddleCenter);
+                    Fonts.AlignMC);
                 mGTime.DrawString(release.ToString("0ms"),
-                    FontBold,
+                    Fonts.Bold,
                     Colors.BFontTable,
                     new RectangleF(TableColumnWidth * 4, TableHeaderHeight, TableColumnWidth, TableHeaderHeight),
-                    MiddleCenter);
-
-                mPixTime.Image = mBmpTime;
+                    Fonts.AlignMC);
+                mPicTime.Image = mBmpTime;
             }
 
             public void DrawTimePitch() {
@@ -122,40 +108,38 @@ namespace Envelope {
 
                 DrawValuePitch();
 
+                releaseImageTime();
+
                 mGTime.Clear(Color.Transparent);
                 mGTime.DrawString(attack.ToString("0ms"),
-                    FontBold,
+                    Fonts.Bold,
                     Colors.BFontTable,
                     new RectangleF(0, TableHeaderHeight, TableColumnWidth, TableHeaderHeight),
-                    MiddleCenter);
+                    Fonts.AlignMC);
                 mGTime.DrawString(hold.ToString("0ms"),
-                    FontBold,
+                    Fonts.Bold,
                     Colors.BFontTable,
                     new RectangleF(TableColumnWidth, TableHeaderHeight, TableColumnWidth, TableHeaderHeight),
-                    MiddleCenter);
+                    Fonts.AlignMC);
                 mGTime.DrawString(decay.ToString("0ms"),
-                    FontBold,
+                    Fonts.Bold,
                     Colors.BFontTable,
                     new RectangleF(TableColumnWidth * 2, TableHeaderHeight, TableColumnWidth, TableHeaderHeight),
-                    MiddleCenter);
+                    Fonts.AlignMC);
                 mGTime.DrawString(release.ToString("0ms"),
-                    FontBold,
+                    Fonts.Bold,
                     Colors.BFontTable,
                     new RectangleF(TableColumnWidth * 3, TableHeaderHeight, TableColumnWidth, TableHeaderHeight),
-                    MiddleCenter);
+                    Fonts.AlignMC);
                 mGTime.DrawString(range.ToString("0cent"),
-                    FontBold,
+                    Fonts.Bold,
                     Colors.BFontTable,
                     new RectangleF(TableColumnWidth * 4, TableHeaderHeight, TableColumnWidth, TableHeaderHeight),
-                    MiddleCenter);
-
-                mPixTime.Image = mBmpTime;
+                    Fonts.AlignMC);
+                mPicTime.Image = mBmpTime;
             }
 
             public void DrawValuePitch() {
-                var bmp = new Bitmap(mPixValue.Width, mPixValue.Height);
-                var g = Graphics.FromImage(bmp);
-
                 var range = Range + DRange;
 
                 if (range < 100) {
@@ -190,43 +174,38 @@ namespace Envelope {
                 var psTop = pTop;
                 var psFall = pFall;
 
-                if (mPixValue.Height < psRise + 20) {
-                    psRise = mPixValue.Height - 20;
+                if (mPicValue.Height < psRise + 20) {
+                    psRise = mPicValue.Height - 20;
                 }
-                if (mPixValue.Height < psTop + 20) {
-                    psTop = mPixValue.Height - 20;
+                if (mPicValue.Height < psTop + 20) {
+                    psTop = mPicValue.Height - 20;
                 }
-                if (mPixValue.Height < psFall + 20) {
-                    psFall = mPixValue.Height - 20;
+                if (mPicValue.Height < psFall + 20) {
+                    psFall = mPicValue.Height - 20;
                 }
 
-                g.DrawLine(Colors.PGraphLine, 0, pRise, TableColumnWidth, pTop);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pFall);
+                releaseImageValue();
 
-                g.FillPie(Colors.BTableCell, -4, pRise - 4, 8, 8, 0, 360);
-                g.FillPie(Colors.BTableCell, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
-                g.FillPie(Colors.BTableCell, TableColumnWidth * 4 - 4, pFall - 4, 8, 8, 0, 360);
-                g.DrawArc(Colors.PTableBorderLight, -4, pRise - 4, 8, 8, 0, 360);
-                g.DrawArc(Colors.PTableBorderLight, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
-                g.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 4 - 4, pFall - 4, 8, 8, 0, 360);
+                mGValue.DrawLine(Colors.PGraphLine, 0, pRise, TableColumnWidth, pTop);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pFall);
 
-                g.DrawString(Rise.ToString("0cent"), FontSmall, Colors.BFontTable, 3, psRise);
-                g.DrawString(Top.ToString("0cent"), FontSmall, Colors.BFontTable, TableColumnWidth + 3, psTop);
-                g.DrawString(Fall.ToString("0cent"), FontSmall, Colors.BFontTable, TableColumnWidth * 4 - 3, psFall, Right);
+                mGValue.FillPie(Colors.BTableCell, -4, pRise - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BTableCell, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BTableCell, TableColumnWidth * 4 - 4, pFall - 4, 8, 8, 0, 360);
+                mGValue.DrawArc(Colors.PTableBorderLight, -4, pRise - 4, 8, 8, 0, 360);
+                mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
+                mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 4 - 4, pFall - 4, 8, 8, 0, 360);
 
-                if (null != mPixValue.Image) {
-                    mPixValue.Image.Dispose();
-                    mPixValue.Image = null;
-                }
-                mPixValue.Image = bmp;
+                mGValue.DrawString(Rise.ToString("0cent"), Fonts.Small, Colors.BFontTable, 3, psRise);
+                mGValue.DrawString(Top.ToString("0cent"), Fonts.Small, Colors.BFontTable, TableColumnWidth + 3, psTop);
+                mGValue.DrawString(Fall.ToString("0cent"), Fonts.Small, Colors.BFontTable, TableColumnWidth * 4 - 3, psFall, Fonts.AlignTR);
+
+                mPicValue.Image = mBmpValue;
             }
 
             public void DrawValueCutoff() {
-                var bmp = new Bitmap(mPixValue.Width, mPixValue.Height);
-                var g = Graphics.FromImage(bmp);
-
                 if (Rise < 32) {
                     Rise = 32;
                 }
@@ -255,7 +234,7 @@ namespace Envelope {
                     Fall = 20000;
                 }
 
-                var pOfs = bmp.Height + (int)(CutoffDispUnit * 4 * 1.5) - 1;
+                var pOfs = mPicValue.Height + (int)(CutoffDispUnit * 4 * 1.5) - 1;
                 var pRise = pOfs - (int)(Math.Log10(Rise) * CutoffDispUnit * 4);
                 var pTop = pOfs - (int)(Math.Log10(Top) * CutoffDispUnit * 4);
                 var pSustain = pOfs - (int)(Math.Log10(Sustain) * CutoffDispUnit * 4);
@@ -265,50 +244,45 @@ namespace Envelope {
                 var psSustain = pSustain;
                 var psFall = pFall;
 
-                if (mPixValue.Height < psRise + 20) {
-                    psRise = mPixValue.Height - 20;
+                if (mPicValue.Height < psRise + 20) {
+                    psRise = mPicValue.Height - 20;
                 }
-                if (mPixValue.Height < psTop + 20) {
-                    psTop = mPixValue.Height - 20;
+                if (mPicValue.Height < psTop + 20) {
+                    psTop = mPicValue.Height - 20;
                 }
-                if (mPixValue.Height < psSustain + 20) {
-                    psSustain = mPixValue.Height - 20;
+                if (mPicValue.Height < psSustain + 20) {
+                    psSustain = mPicValue.Height - 20;
                 }
-                if (mPixValue.Height < psFall + 20) {
-                    psFall = mPixValue.Height - 20;
+                if (mPicValue.Height < psFall + 20) {
+                    psFall = mPicValue.Height - 20;
                 }
 
-                g.DrawLine(Colors.PGraphLine, 0, pRise, TableColumnWidth, pTop);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pSustain);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth * 4, pSustain, TableColumnWidth * 5, pFall);
+                releaseImageValue();
 
-                g.FillPie(Colors.BTableCell, -4, pRise - 4, 8, 8, 0, 360);
-                g.FillPie(Colors.BTableCell, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
-                g.FillPie(Colors.BTableCell, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
-                g.FillPie(Colors.BTableCell, TableColumnWidth * 5 - 5, pFall - 4, 8, 8, 0, 360);
-                g.DrawArc(Colors.PTableBorderLight, -4, pRise - 4, 8, 8, 0, 360);
-                g.DrawArc(Colors.PTableBorderLight, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
-                g.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
-                g.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 5 - 5, pFall - 4, 8, 8, 0, 360);
+                mGValue.DrawLine(Colors.PGraphLine, 0, pRise, TableColumnWidth, pTop);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pSustain);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 4, pSustain, TableColumnWidth * 5, pFall);
 
-                g.DrawString(Rise.ToString("0Hz"), FontSmall, Colors.BFontTable, 3, psRise);
-                g.DrawString(Top.ToString("0Hz"), FontSmall, Colors.BFontTable, TableColumnWidth + 3, psTop);
-                g.DrawString(Sustain.ToString("0Hz"), FontSmall, Colors.BFontTable, TableColumnWidth * 3 + 3, psSustain);
-                g.DrawString(Fall.ToString("0Hz"), FontSmall, Colors.BFontTable, TableColumnWidth * 5 - 3, psFall, Right);
+                mGValue.FillPie(Colors.BTableCell, -4, pRise - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BTableCell, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BTableCell, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BTableCell, TableColumnWidth * 5 - 5, pFall - 4, 8, 8, 0, 360);
+                mGValue.DrawArc(Colors.PTableBorderLight, -4, pRise - 4, 8, 8, 0, 360);
+                mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
+                mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
+                mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 5 - 5, pFall - 4, 8, 8, 0, 360);
 
-                if (null != mPixValue.Image) {
-                    mPixValue.Image.Dispose();
-                    mPixValue.Image = null;
-                }
-                mPixValue.Image = bmp;
+                mGValue.DrawString(Rise.ToString("0Hz"), Fonts.Small, Colors.BFontTable, 3, psRise);
+                mGValue.DrawString(Top.ToString("0Hz"), Fonts.Small, Colors.BFontTable, TableColumnWidth + 3, psTop);
+                mGValue.DrawString(Sustain.ToString("0Hz"), Fonts.Small, Colors.BFontTable, TableColumnWidth * 3 + 3, psSustain);
+                mGValue.DrawString(Fall.ToString("0Hz"), Fonts.Small, Colors.BFontTable, TableColumnWidth * 5 - 3, psFall, Fonts.AlignTR);
+
+                mPicValue.Image = mBmpValue;
             }
 
             public void DrawValueAmp() {
-                var bmp = new Bitmap(mPixValue.Width, mPixValue.Height);
-                var g = Graphics.FromImage(bmp);
-
                 if (Top < 1 / 1024.0) {
                     Top = 1 / 1024.0;
                 }
@@ -325,7 +299,7 @@ namespace Envelope {
                 var dbTop = 20 * Math.Log10(Top);
                 var dbSustain = 20 * Math.Log10(Sustain);
 
-                var pOfs = bmp.Height - 1;
+                var pOfs = mPicValue.Height - 1;
                 var pRise = pOfs;
                 var pTop = AmpDispUnit - (int)(dbTop * AmpDispUnit / 6);
                 var pSustain = AmpDispUnit - (int)(dbSustain * AmpDispUnit / 6);
@@ -333,32 +307,30 @@ namespace Envelope {
                 var psTop = pTop;
                 var psSustain = pSustain;
 
-                if (mPixValue.Height < psTop + 20) {
-                    psTop = mPixValue.Height - 20;
+                if (mPicValue.Height < psTop + 20) {
+                    psTop = mPicValue.Height - 20;
                 }
-                if (mPixValue.Height < psSustain + 20) {
-                    psSustain = mPixValue.Height - 20;
+                if (mPicValue.Height < psSustain + 20) {
+                    psSustain = mPicValue.Height - 20;
                 }
 
-                g.DrawLine(Colors.PGraphLine, 0, pRise, TableColumnWidth, pTop);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pSustain);
-                g.DrawLine(Colors.PGraphLine, TableColumnWidth * 4, pSustain, TableColumnWidth * 5, pFall);
+                releaseImageValue();
 
-                g.FillPie(Colors.BTableCell, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
-                g.DrawArc(Colors.PTableBorderLight, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
-                g.FillPie(Colors.BTableCell, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
-                g.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
+                mGValue.DrawLine(Colors.PGraphLine, 0, pRise, TableColumnWidth, pTop);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pSustain);
+                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 4, pSustain, TableColumnWidth * 5, pFall);
 
-                g.DrawString(dbTop.ToString("0.0db"), FontSmall, Colors.BFontTable, TableColumnWidth + 3, psTop);
-                g.DrawString(dbSustain.ToString("0.0db"), FontSmall, Colors.BFontTable, TableColumnWidth * 3 + 3, psSustain);
+                mGValue.FillPie(Colors.BTableCell, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
+                mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BTableCell, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
+                mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
 
-                if (null != mPixValue.Image) {
-                    mPixValue.Image.Dispose();
-                    mPixValue.Image = null;
-                }
-                mPixValue.Image = bmp;
+                mGValue.DrawString(dbTop.ToString("0.0db"), Fonts.Small, Colors.BFontTable, TableColumnWidth + 3, psTop);
+                mGValue.DrawString(dbSustain.ToString("0.0db"), Fonts.Small, Colors.BFontTable, TableColumnWidth * 3 + 3, psSustain);
+
+                mPicValue.Image = mBmpValue;
             }
 
             private void limit() {
@@ -413,9 +385,38 @@ namespace Envelope {
                     DRange = 0;
                 }
             }
+
+            private void releaseImageTime() {
+                if (null != mBmpTime) {
+                    mBmpTime.Dispose();
+                    mBmpTime = null;
+                    mGTime.Dispose();
+                    mGTime = null;
+                }
+                if (null != mPicTime.Image) {
+                    mPicTime.Image.Dispose();
+                    mPicTime.Image = null;
+                }
+                mBmpTime = new Bitmap(TableColumnWidth * 5, TableHeaderHeight * 2);
+                mGTime = Graphics.FromImage(mBmpTime);
+            }
+
+            private void releaseImageValue() {
+                if (null != mBmpValue) {
+                    mBmpValue.Dispose();
+                    mBmpValue = null;
+                    mGValue.Dispose();
+                    mGValue = null;
+                }
+                if (null != mPicValue.Image) {
+                    mPicValue.Image.Dispose();
+                    mPicValue.Image = null;
+                }
+                mBmpValue = new Bitmap(mPicValue.Width, mPicValue.Height);
+                mGValue = Graphics.FromImage(mBmpValue);
+            }
         }
 
-        private bool mMoving = false;
         private bool mTimeScroll = false;
         private bool mValueScroll = false;
         private Point mCurPos;
@@ -424,21 +425,24 @@ namespace Envelope {
         private Values mCutoff;
         private Values mAmp;
 
+        private CommonCtrl mCommonCtrl;
+
         private TabButton mTabButtons;
-        private Bitmap mBmpTabPageRow;
-        private Bitmap mBmpTabPageCol;
-        private Bitmap mBmpTabPageCell;
-        private Graphics mGTabPageRow;
-        private Graphics mGTabPageCol;
-        private Graphics mGTabPageCell;
+        private Bitmap mBmpRow;
+        private Bitmap mBmpCol;
+        private Bitmap mBmpCell;
+        private Graphics mGRow;
+        private Graphics mGCol;
+        private Graphics mGCell;
 
         public Envelope() {
             InitializeComponent();
         }
 
         private void Envelope_Load(object sender, EventArgs e) {
-            BackColor = Colors.FormColor;
-            mTabButtons = new TabButton(picTab, tab_Click, 14.0f, new string[] {
+            mCommonCtrl = new CommonCtrl(this);
+
+            mTabButtons = new TabButton(picTabButton, tab_Click, 14.0f, new string[] {
                  "Pitch",
                  "Cutoff",
                  "Amp"
@@ -446,87 +450,27 @@ namespace Envelope {
 
             drawBackgroundPitch();
 
-            mPitch = new Values(picTabPageCol, picTabPageCell);
+            mPitch = new Values(picHeader, picCell);
             mPitch.DrawTimePitch();
             mPitch.DrawValuePitch();
 
-            mCutoff = new Values(picTabPageCol, picTabPageCell);
+            mCutoff = new Values(picHeader, picCell);
             mCutoff.Rise = 20000;
             mCutoff.Top = 20000;
             mCutoff.Sustain = 20000;
             mCutoff.Fall = 20000;
 
-            mAmp = new Values(picTabPageCol, picTabPageCell);
+            mAmp = new Values(picHeader, picCell);
             mAmp.Top = 1.0;
             mAmp.Sustain = 1.0;
         }
 
-        private void Envelope_MouseDown(object sender, MouseEventArgs e) {
-            mMoving = true;
-            mCurPos = Cursor.Position;
-        }
-
-        private void Envelope_MouseUp(object sender, MouseEventArgs e) {
-            mMoving = false;
-        }
-
-        private void Envelope_MouseMove(object sender, MouseEventArgs e) {
-            if (mMoving) {
-                var s = Screen.FromControl(this);
-                var sw = s.Bounds.Width;
-                var sh = s.Bounds.Height;
-                var dx = Cursor.Position.X - mCurPos.X;
-                var dy = Cursor.Position.Y - mCurPos.Y;
-                var left = Left + dx;
-                var top = Top + dy;
-                if (left < 96 - Width) {
-                    left = 96 - Width;
-                }
-                if (sw - 96 < left) {
-                    left = sw - 96;
-                }
-                if (top < 64 - Height) {
-                    top = 64 - Height;
-                }
-                if (sh - 64 < top) {
-                    top = sh - 64;
-                }
-                Left = left;
-                Top = top;
-                mCurPos = Cursor.Position;
-            }
-        }
-
-        private void btnClose_Click(object sender, EventArgs e) {
-            Close();
-        }
-
-        private void btnClose_MouseEnter(object sender, EventArgs e) {
-            btnClose.Image = Properties.Resources.close_hover;
-        }
-
-        private void btnClose_MouseLeave(object sender, EventArgs e) {
-            btnClose.Image = Properties.Resources.close_leave;
-        }
-
-        private void btnMinimize_Click(object sender, EventArgs e) {
-            WindowState = FormWindowState.Minimized;
-        }
-
-        private void btnMinimize_MouseEnter(object sender, EventArgs e) {
-            btnMinimize.Image = Properties.Resources.minimize_hover;
-        }
-
-        private void btnMinimize_MouseLeave(object sender, EventArgs e) {
-            btnMinimize.Image = Properties.Resources.minimize_leave;
-        }
-
         private void picTabPageCol_MouseDown(object sender, MouseEventArgs e) {
-            var pos = picTabPageCol.PointToClient(Cursor.Position);
+            var pos = picHeader.PointToClient(Cursor.Position);
             if (pos.Y < TableHeaderHeight) {
                 return;
             }
-            mCurPos = picTabPageCol.PointToClient(Cursor.Position);
+            mCurPos = picHeader.PointToClient(Cursor.Position);
             mTimeScroll = true;
             Cursor.Current = Cursors.VSplit;
         }
@@ -543,7 +487,7 @@ namespace Envelope {
                 return;
             }
 
-            var pos = picTabPageCol.PointToClient(Cursor.Position);
+            var pos = picHeader.PointToClient(Cursor.Position);
             var delta = pos.X - mCurPos.X;
 
             if (Math.Abs(delta) < 80) {
@@ -617,7 +561,7 @@ namespace Envelope {
         }
 
         private void picTabPageCell_MouseDown(object sender, MouseEventArgs e) {
-            mCurPos = picTabPageCol.PointToClient(Cursor.Position);
+            mCurPos = picHeader.PointToClient(Cursor.Position);
             switch (mTabButtons.CurrentTab) {
             case "Pitch":
                 switch (mCurPos.X / TableColumnWidth) {
@@ -661,7 +605,7 @@ namespace Envelope {
                 return;
             }
 
-            var pos = picTabPageCell.PointToClient(Cursor.Position);
+            var pos = picCell.PointToClient(Cursor.Position);
 
             switch (mTabButtons.CurrentTab) {
             case "Pitch":
@@ -681,7 +625,7 @@ namespace Envelope {
                 mPitch.DrawValuePitch();
                 break;
             case "Cutoff":
-                var freqPos = picTabPageCell.Height - pos.Y + CutoffDispUnit * 6;
+                var freqPos = picCell.Height - pos.Y + CutoffDispUnit * 6;
                 var freq = Math.Pow(10.0, freqPos * 0.25 / CutoffDispUnit);
                 switch (mCurPos.X / TableColumnWidth) {
                 case 0:
@@ -736,499 +680,495 @@ namespace Envelope {
         }
 
         private void drawBackgroundPitch() {
-            releaseImage();
+            releaseBackgroundImage();
 
-            mBmpTabPageCol = new Bitmap(TableColumnWidth * 5, TableHeaderHeight * 2);
-            mGTabPageCol = Graphics.FromImage(mBmpTabPageCol);
-            mBmpTabPageRow = new Bitmap(TableLeftFrameWidth, PitchDispUnit * 4 + mBmpTabPageCol.Height);
-            mGTabPageRow = Graphics.FromImage(mBmpTabPageRow);
-            mBmpTabPageCell = new Bitmap(TableColumnWidth * 5, PitchDispUnit * 4);
-            mGTabPageCell = Graphics.FromImage(mBmpTabPageCell);
+            mBmpCol = new Bitmap(TableColumnWidth * 5, TableHeaderHeight * 2);
+            mGCol = Graphics.FromImage(mBmpCol);
+            mBmpRow = new Bitmap(TableLeftFrameWidth, PitchDispUnit * 4 + mBmpCol.Height);
+            mGRow = Graphics.FromImage(mBmpRow);
+            mBmpCell = new Bitmap(TableColumnWidth * 5, PitchDispUnit * 4);
+            mGCell = Graphics.FromImage(mBmpCell);
 
-            mGTabPageCol.Clear(Colors.TableHeader);
-            mGTabPageCol.FillRectangle(Colors.BTableCell,
+            mGCol.Clear(Colors.TableHeader);
+            mGCol.FillRectangle(Colors.BTableCell,
                 0, TableHeaderHeight,
-                mBmpTabPageCol.Width, TableHeaderHeight);
-            mGTabPageRow.Clear(Colors.TableHeader);
-            mGTabPageCell.Clear(Colors.TableCell);
-            mGTabPageCell.FillRectangle(Colors.BTableHeader,
+                mBmpCol.Width, TableHeaderHeight);
+            mGRow.Clear(Colors.TableHeader);
+            mGCell.Clear(Colors.TableCell);
+            mGCell.FillRectangle(Colors.BTableHeader,
                 TableColumnWidth * 4, 0,
-                TableColumnWidth * 4, mBmpTabPageCell.Height);
+                TableColumnWidth * 4, mBmpCell.Height);
 
-            mGTabPageCol.DrawString("Attack",
-                FontBold,
+            mGCol.DrawString("Attack",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(0, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Hold",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Hold",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Decay",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Decay",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth * 2, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Release",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Release",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth * 3, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Range",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Range",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth * 4, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
+                Fonts.AlignMC);
 
-            mGTabPageCol.DrawLine(Colors.PTableBorderBold,
-                0, mBmpTabPageCol.Height - 1,
-                mBmpTabPageCol.Width, mBmpTabPageCol.Height - 1);
-            mGTabPageCol.DrawLine(Colors.PTableBorderBold,
+            mGCol.DrawLine(Colors.PTableBorderBold,
+                0, mBmpCol.Height - 1,
+                mBmpCol.Width, mBmpCol.Height - 1);
+            mGCol.DrawLine(Colors.PTableBorderBold,
                 TableColumnWidth * 4, 0,
-                TableColumnWidth * 4, mBmpTabPageCol.Height);
-            mGTabPageRow.DrawLine(Colors.PTableBorderBold,
-                0, mBmpTabPageCol.Height - 1,
-                mBmpTabPageRow.Width, mBmpTabPageCol.Height - 1);
-            mGTabPageRow.DrawLine(Colors.PTableBorderBold,
+                TableColumnWidth * 4, mBmpCol.Height);
+            mGRow.DrawLine(Colors.PTableBorderBold,
+                0, mBmpCol.Height - 1,
+                mBmpRow.Width, mBmpCol.Height - 1);
+            mGRow.DrawLine(Colors.PTableBorderBold,
                 TableLeftFrameWidth - 1, 0,
-                TableLeftFrameWidth - 1, mBmpTabPageRow.Height);
-            mGTabPageCell.DrawLine(Colors.PTableBorderBold,
+                TableLeftFrameWidth - 1, mBmpRow.Height);
+            mGCell.DrawLine(Colors.PTableBorderBold,
                 TableColumnWidth * 4, 0,
-                TableColumnWidth * 4, mBmpTabPageCell.Height);
+                TableColumnWidth * 4, mBmpCell.Height);
 
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth, 0,
-                TableColumnWidth, mBmpTabPageCol.Height);
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+                TableColumnWidth, mBmpCol.Height);
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 2, 0,
-                TableColumnWidth * 2, mBmpTabPageCol.Height);
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 2, mBmpCol.Height);
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 3, 0,
-                TableColumnWidth * 3, mBmpTabPageCol.Height);
+                TableColumnWidth * 3, mBmpCol.Height);
 
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
-                0, PitchDispUnit + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, PitchDispUnit + mBmpTabPageCol.Height);
-            mGTabPageRow.DrawLine(Colors.PTableBorderLight,
-                0, PitchDispUnit * 2 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, PitchDispUnit * 2 + mBmpTabPageCol.Height);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
-                0, PitchDispUnit * 3 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, PitchDispUnit * 3 + mBmpTabPageCol.Height);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
-                0, PitchDispUnit * 4 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, PitchDispUnit * 4 + mBmpTabPageCol.Height);
+            mGRow.DrawLine(Colors.PTableBorder,
+                0, PitchDispUnit + mBmpCol.Height,
+                mBmpRow.Width, PitchDispUnit + mBmpCol.Height);
+            mGRow.DrawLine(Colors.PTableBorderLight,
+                0, PitchDispUnit * 2 + mBmpCol.Height,
+                mBmpRow.Width, PitchDispUnit * 2 + mBmpCol.Height);
+            mGRow.DrawLine(Colors.PTableBorder,
+                0, PitchDispUnit * 3 + mBmpCol.Height,
+                mBmpRow.Width, PitchDispUnit * 3 + mBmpCol.Height);
+            mGRow.DrawLine(Colors.PTableBorder,
+                0, PitchDispUnit * 4 + mBmpCol.Height,
+                mBmpRow.Width, PitchDispUnit * 4 + mBmpCol.Height);
 
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, PitchDispUnit,
-                mBmpTabPageCell.Width - TableColumnWidth, PitchDispUnit);
-            mGTabPageCell.DrawLine(Colors.PTableBorderLight,
+                mBmpCell.Width - TableColumnWidth, PitchDispUnit);
+            mGCell.DrawLine(Colors.PTableBorderLight,
                 0, PitchDispUnit * 2,
-                mBmpTabPageCell.Width - TableColumnWidth, PitchDispUnit * 2);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width - TableColumnWidth, PitchDispUnit * 2);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, PitchDispUnit * 3,
-                mBmpTabPageCell.Width - TableColumnWidth, PitchDispUnit * 3);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width - TableColumnWidth, PitchDispUnit * 3);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, PitchDispUnit * 4,
-                mBmpTabPageCell.Width - TableColumnWidth, PitchDispUnit * 4);
+                mBmpCell.Width - TableColumnWidth, PitchDispUnit * 4);
 
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth, 0,
-                TableColumnWidth, mBmpTabPageCell.Height);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                TableColumnWidth, mBmpCell.Height);
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 2, 0,
-                TableColumnWidth * 2, mBmpTabPageCell.Height);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 2, mBmpCell.Height);
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 3, 0,
-                TableColumnWidth * 3, mBmpTabPageCell.Height);
+                TableColumnWidth * 3, mBmpCell.Height);
 
-            setImage();
+            setBackgroundImage();
         }
 
         private void drawBackgroundCutoff() {
-            releaseImage();
+            releaseBackgroundImage();
 
             var ofs10kTo20k = (int)((Math.Log10(20000) - Math.Log10(10000)) * 4 * CutoffDispUnit);
             var ofs10kTo20k_TabPageColHeight = ofs10kTo20k + TableHeaderHeight * 2;
 
-            mBmpTabPageCol = new Bitmap(TableColumnWidth * 5, TableHeaderHeight * 2);
-            mGTabPageCol = Graphics.FromImage(mBmpTabPageCol);
-            mBmpTabPageRow = new Bitmap(TableLeftFrameWidth, CutoffDispUnit * 10 + ofs10kTo20k + mBmpTabPageCol.Height);
-            mGTabPageRow = Graphics.FromImage(mBmpTabPageRow);
-            mBmpTabPageCell = new Bitmap(TableColumnWidth * 5, CutoffDispUnit * 10 + ofs10kTo20k);
-            mGTabPageCell = Graphics.FromImage(mBmpTabPageCell);
+            mBmpCol = new Bitmap(TableColumnWidth * 5, TableHeaderHeight * 2);
+            mGCol = Graphics.FromImage(mBmpCol);
+            mBmpRow = new Bitmap(TableLeftFrameWidth, CutoffDispUnit * 10 + ofs10kTo20k + mBmpCol.Height);
+            mGRow = Graphics.FromImage(mBmpRow);
+            mBmpCell = new Bitmap(TableColumnWidth * 5, CutoffDispUnit * 10 + ofs10kTo20k);
+            mGCell = Graphics.FromImage(mBmpCell);
 
-            mGTabPageCol.Clear(Colors.TableHeader);
-            mGTabPageCol.FillRectangle(Colors.BTableCell,
+            mGCol.Clear(Colors.TableHeader);
+            mGCol.FillRectangle(Colors.BTableCell,
                 0, TableHeaderHeight,
                 TableColumnWidth * 3, TableHeaderHeight);
-            mGTabPageCol.FillRectangle(Colors.BTableCell,
+            mGCol.FillRectangle(Colors.BTableCell,
                 TableColumnWidth * 4, TableHeaderHeight,
                 TableColumnWidth, TableHeaderHeight);
-            mGTabPageRow.Clear(Colors.TableHeader);
-            mGTabPageCell.Clear(Colors.TableCell);
+            mGRow.Clear(Colors.TableHeader);
+            mGCell.Clear(Colors.TableCell);
 
-            mGTabPageCol.DrawString("Attack",
-                FontBold,
+            mGCol.DrawString("Attack",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(0, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Hold",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Hold",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Decay",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Decay",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth * 2, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Sustain",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Sustain",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth * 3, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Release",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Release",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth * 4, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
+                Fonts.AlignMC);
 
-            mGTabPageCol.DrawLine(Colors.PTableBorderBold,
-                0, mBmpTabPageCol.Height - 1,
-                mBmpTabPageCol.Width, mBmpTabPageCol.Height - 1);
-            mGTabPageRow.DrawLine(Colors.PTableBorderBold,
-                0, mBmpTabPageCol.Height - 1,
-                mBmpTabPageRow.Width, mBmpTabPageCol.Height - 1);
-            mGTabPageRow.DrawLine(Colors.PTableBorderBold,
+            mGCol.DrawLine(Colors.PTableBorderBold,
+                0, mBmpCol.Height - 1,
+                mBmpCol.Width, mBmpCol.Height - 1);
+            mGRow.DrawLine(Colors.PTableBorderBold,
+                0, mBmpCol.Height - 1,
+                mBmpRow.Width, mBmpCol.Height - 1);
+            mGRow.DrawLine(Colors.PTableBorderBold,
                 TableLeftFrameWidth - 1, 0,
-                TableLeftFrameWidth - 1, mBmpTabPageRow.Height);
+                TableLeftFrameWidth - 1, mBmpRow.Height);
 
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth, 0, TableColumnWidth,
-                mBmpTabPageCol.Height);
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+                mBmpCol.Height);
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 2, 0,
-                TableColumnWidth * 2, mBmpTabPageCol.Height);
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 2, mBmpCol.Height);
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 3, 0,
-                TableColumnWidth * 3, mBmpTabPageCol.Height);
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 3, mBmpCol.Height);
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 4, 0,
-                TableColumnWidth * 4, mBmpTabPageCol.Height);
+                TableColumnWidth * 4, mBmpCol.Height);
 
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
+            mGRow.DrawLine(Colors.PTableBorder,
                 0, ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, ofs10kTo20k_TabPageColHeight);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
+                mBmpRow.Width, ofs10kTo20k_TabPageColHeight);
+            mGRow.DrawLine(Colors.PTableBorder,
                 0, CutoffDispUnit * 2 + ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, CutoffDispUnit * 2 + ofs10kTo20k_TabPageColHeight);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
+                mBmpRow.Width, CutoffDispUnit * 2 + ofs10kTo20k_TabPageColHeight);
+            mGRow.DrawLine(Colors.PTableBorder,
                 0, CutoffDispUnit * 4 + ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, CutoffDispUnit * 4 + ofs10kTo20k_TabPageColHeight);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
+                mBmpRow.Width, CutoffDispUnit * 4 + ofs10kTo20k_TabPageColHeight);
+            mGRow.DrawLine(Colors.PTableBorder,
                 0, CutoffDispUnit * 6 + ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, CutoffDispUnit * 6 + ofs10kTo20k_TabPageColHeight);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
+                mBmpRow.Width, CutoffDispUnit * 6 + ofs10kTo20k_TabPageColHeight);
+            mGRow.DrawLine(Colors.PTableBorder,
                 0, CutoffDispUnit * 8 + ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, CutoffDispUnit * 8 + ofs10kTo20k_TabPageColHeight);
+                mBmpRow.Width, CutoffDispUnit * 8 + ofs10kTo20k_TabPageColHeight);
 
-            mGTabPageRow.DrawString("10kHz", FontSmall, Colors.BFontTable, new RectangleF(
-                -5, mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, ofs10kTo20k), BottomRight);
-            mGTabPageRow.DrawString("3.16kHz", FontSmall, Colors.BFontTable, new RectangleF(
+            mGRow.DrawString("10kHz", Fonts.Small, Colors.BFontTable, new RectangleF(
+                -5, mBmpCol.Height,
+                mBmpRow.Width, ofs10kTo20k), Fonts.AlignBR);
+            mGRow.DrawString("3.16kHz", Fonts.Small, Colors.BFontTable, new RectangleF(
                 -5, CutoffDispUnit + ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, CutoffDispUnit), BottomRight);
-            mGTabPageRow.DrawString("1kHz", FontSmall, Colors.BFontTable, new RectangleF(
+                mBmpRow.Width, CutoffDispUnit), Fonts.AlignBR);
+            mGRow.DrawString("1kHz", Fonts.Small, Colors.BFontTable, new RectangleF(
                 -5, CutoffDispUnit * 3 + ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, CutoffDispUnit), BottomRight);
-            mGTabPageRow.DrawString("316Hz", FontSmall, Colors.BFontTable, new RectangleF(
+                mBmpRow.Width, CutoffDispUnit), Fonts.AlignBR);
+            mGRow.DrawString("316Hz", Fonts.Small, Colors.BFontTable, new RectangleF(
                 -5, CutoffDispUnit * 5 + ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, CutoffDispUnit), BottomRight);
-            mGTabPageRow.DrawString("100Hz", FontSmall, Colors.BFontTable, new RectangleF(
+                mBmpRow.Width, CutoffDispUnit), Fonts.AlignBR);
+            mGRow.DrawString("100Hz", Fonts.Small, Colors.BFontTable, new RectangleF(
                 -5, CutoffDispUnit * 7 + ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, CutoffDispUnit), BottomRight);
-            mGTabPageRow.DrawString("32Hz", FontSmall, Colors.BFontTable, new RectangleF(
+                mBmpRow.Width, CutoffDispUnit), Fonts.AlignBR);
+            mGRow.DrawString("32Hz", Fonts.Small, Colors.BFontTable, new RectangleF(
                 -5, CutoffDispUnit * 9 + ofs10kTo20k_TabPageColHeight,
-                mBmpTabPageRow.Width, CutoffDispUnit), BottomRight);
+                mBmpRow.Width, CutoffDispUnit), Fonts.AlignBR);
 
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, ofs10kTo20k,
-                mBmpTabPageCell.Width, ofs10kTo20k);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width, ofs10kTo20k);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, CutoffDispUnit * 2 + ofs10kTo20k,
-                mBmpTabPageCell.Width, CutoffDispUnit * 2 + ofs10kTo20k);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width, CutoffDispUnit * 2 + ofs10kTo20k);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, CutoffDispUnit * 4 + ofs10kTo20k,
-                mBmpTabPageCell.Width, CutoffDispUnit * 4 + ofs10kTo20k);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width, CutoffDispUnit * 4 + ofs10kTo20k);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, CutoffDispUnit * 6 + ofs10kTo20k,
-                mBmpTabPageCell.Width, CutoffDispUnit * 6 + ofs10kTo20k);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width, CutoffDispUnit * 6 + ofs10kTo20k);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, CutoffDispUnit * 8 + ofs10kTo20k,
-                mBmpTabPageCell.Width, CutoffDispUnit * 8 + ofs10kTo20k);
+                mBmpCell.Width, CutoffDispUnit * 8 + ofs10kTo20k);
 
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, CutoffDispUnit + ofs10kTo20k,
-                mBmpTabPageCell.Width, CutoffDispUnit + ofs10kTo20k);
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+                mBmpCell.Width, CutoffDispUnit + ofs10kTo20k);
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, CutoffDispUnit * 3 + ofs10kTo20k,
-                mBmpTabPageCell.Width, CutoffDispUnit * 3 + ofs10kTo20k);
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+                mBmpCell.Width, CutoffDispUnit * 3 + ofs10kTo20k);
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, CutoffDispUnit * 5 + ofs10kTo20k,
-                mBmpTabPageCell.Width, CutoffDispUnit * 5 + ofs10kTo20k);
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+                mBmpCell.Width, CutoffDispUnit * 5 + ofs10kTo20k);
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, CutoffDispUnit * 7 + ofs10kTo20k,
-                mBmpTabPageCell.Width, CutoffDispUnit * 7 + ofs10kTo20k);
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+                mBmpCell.Width, CutoffDispUnit * 7 + ofs10kTo20k);
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, CutoffDispUnit * 9 + ofs10kTo20k,
-                mBmpTabPageCell.Width, CutoffDispUnit * 9 + ofs10kTo20k);
+                mBmpCell.Width, CutoffDispUnit * 9 + ofs10kTo20k);
 
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth, 0, TableColumnWidth,
-                mBmpTabPageCell.Height);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Height);
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 2, 0,
-                TableColumnWidth * 2, mBmpTabPageCell.Height);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 2, mBmpCell.Height);
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 3, 0,
-                TableColumnWidth * 3, mBmpTabPageCell.Height);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 3, mBmpCell.Height);
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 4, 0,
-                TableColumnWidth * 4, mBmpTabPageCell.Height);
+                TableColumnWidth * 4, mBmpCell.Height);
 
-            setImage();
+            setBackgroundImage();
         }
 
         private void drawBackgroundAmp() {
-            releaseImage();
+            releaseBackgroundImage();
 
-            mBmpTabPageCol = new Bitmap(TableColumnWidth * 5, TableHeaderHeight * 2);
-            mGTabPageCol = Graphics.FromImage(mBmpTabPageCol);
-            mBmpTabPageRow = new Bitmap(TableLeftFrameWidth, AmpDispUnit * 11 + mBmpTabPageCol.Height);
-            mGTabPageRow = Graphics.FromImage(mBmpTabPageRow);
-            mBmpTabPageCell = new Bitmap(TableColumnWidth * 5, AmpDispUnit * 11);
-            mGTabPageCell = Graphics.FromImage(mBmpTabPageCell);
+            mBmpCol = new Bitmap(TableColumnWidth * 5, TableHeaderHeight * 2);
+            mGCol = Graphics.FromImage(mBmpCol);
+            mBmpRow = new Bitmap(TableLeftFrameWidth, AmpDispUnit * 11 + mBmpCol.Height);
+            mGRow = Graphics.FromImage(mBmpRow);
+            mBmpCell = new Bitmap(TableColumnWidth * 5, AmpDispUnit * 11);
+            mGCell = Graphics.FromImage(mBmpCell);
 
-            mGTabPageCol.Clear(Colors.TableHeader);
-            mGTabPageCol.FillRectangle(Colors.BTableCell,
+            mGCol.Clear(Colors.TableHeader);
+            mGCol.FillRectangle(Colors.BTableCell,
                 0, TableHeaderHeight,
                 TableColumnWidth * 3, TableHeaderHeight);
-            mGTabPageCol.FillRectangle(Colors.BTableCell,
+            mGCol.FillRectangle(Colors.BTableCell,
                 TableColumnWidth * 4, TableHeaderHeight,
                 TableColumnWidth, TableHeaderHeight);
-            mGTabPageRow.Clear(Colors.TableHeader);
-            mGTabPageCell.Clear(Colors.TableCell);
+            mGRow.Clear(Colors.TableHeader);
+            mGCell.Clear(Colors.TableCell);
 
-            mGTabPageCol.DrawString("Attack",
-                FontBold,
+            mGCol.DrawString("Attack",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(0, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Hold",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Hold",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Decay",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Decay",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth * 2, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Sustain",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Sustain",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth * 3, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
-            mGTabPageCol.DrawString("Release",
-                FontBold,
+                Fonts.AlignMC);
+            mGCol.DrawString("Release",
+                Fonts.Bold,
                 Colors.BFontTable,
                 new RectangleF(TableColumnWidth * 4, 0, TableColumnWidth, TableHeaderHeight),
-                MiddleCenter);
+                Fonts.AlignMC);
 
-            mGTabPageCol.DrawLine(Colors.PTableBorderBold,
-                0, mBmpTabPageCol.Height - 1,
-                mBmpTabPageCol.Width, mBmpTabPageCol.Height - 1);
-            mGTabPageRow.DrawLine(Colors.PTableBorderBold,
-                0, mBmpTabPageCol.Height - 1,
-                mBmpTabPageRow.Width, mBmpTabPageCol.Height - 1);
-            mGTabPageRow.DrawLine(Colors.PTableBorderBold,
+            mGCol.DrawLine(Colors.PTableBorderBold,
+                0, mBmpCol.Height - 1,
+                mBmpCol.Width, mBmpCol.Height - 1);
+            mGRow.DrawLine(Colors.PTableBorderBold,
+                0, mBmpCol.Height - 1,
+                mBmpRow.Width, mBmpCol.Height - 1);
+            mGRow.DrawLine(Colors.PTableBorderBold,
                 TableLeftFrameWidth - 1, 0,
-                TableLeftFrameWidth - 1, mBmpTabPageRow.Height);
+                TableLeftFrameWidth - 1, mBmpRow.Height);
 
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth, 0,
-                TableColumnWidth, mBmpTabPageCol.Height);
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+                TableColumnWidth, mBmpCol.Height);
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 2, 0,
-                TableColumnWidth * 2, mBmpTabPageCol.Height);
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 2, mBmpCol.Height);
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 3, 0,
-                TableColumnWidth * 3, mBmpTabPageCol.Height);
-            mGTabPageCol.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 3, mBmpCol.Height);
+            mGCol.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 4, 0,
-                TableColumnWidth * 4, mBmpTabPageCol.Height);
+                TableColumnWidth * 4, mBmpCol.Height);
 
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
-                0, AmpDispUnit + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit + mBmpTabPageCol.Height);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
-                0, AmpDispUnit * 3 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit * 3 + mBmpTabPageCol.Height);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
-                0, AmpDispUnit * 5 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit * 5 + mBmpTabPageCol.Height);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
-                0, AmpDispUnit * 7 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit * 7 + mBmpTabPageCol.Height);
-            mGTabPageRow.DrawLine(Colors.PTableBorder,
-                0, AmpDispUnit * 9 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit * 9 + mBmpTabPageCol.Height);
+            mGRow.DrawLine(Colors.PTableBorder,
+                0, AmpDispUnit + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit + mBmpCol.Height);
+            mGRow.DrawLine(Colors.PTableBorder,
+                0, AmpDispUnit * 3 + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit * 3 + mBmpCol.Height);
+            mGRow.DrawLine(Colors.PTableBorder,
+                0, AmpDispUnit * 5 + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit * 5 + mBmpCol.Height);
+            mGRow.DrawLine(Colors.PTableBorder,
+                0, AmpDispUnit * 7 + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit * 7 + mBmpCol.Height);
+            mGRow.DrawLine(Colors.PTableBorder,
+                0, AmpDispUnit * 9 + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit * 9 + mBmpCol.Height);
 
-            mGTabPageRow.DrawString("0db", FontSmall, Colors.BFontTable,
-                new RectangleF(-5, mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit), BottomRight);
-            mGTabPageRow.DrawString("-12db ", FontSmall, Colors.BFontTable,
-                new RectangleF(-5, AmpDispUnit * 2 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit), BottomRight);
-            mGTabPageRow.DrawString("-24db ", FontSmall, Colors.BFontTable,
-                new RectangleF(-5, AmpDispUnit * 4 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit), BottomRight);
-            mGTabPageRow.DrawString("-36db ", FontSmall, Colors.BFontTable,
-                new RectangleF(-5, AmpDispUnit * 6 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit), BottomRight);
-            mGTabPageRow.DrawString("-48db ", FontSmall, Colors.BFontTable,
-                new RectangleF(-5, AmpDispUnit * 8 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit), BottomRight);
-            mGTabPageRow.DrawString("-60db ", FontSmall, Colors.BFontTable,
-                new RectangleF(-5, AmpDispUnit * 10 + mBmpTabPageCol.Height,
-                mBmpTabPageRow.Width, AmpDispUnit), BottomRight);
+            mGRow.DrawString("0db", Fonts.Small, Colors.BFontTable,
+                new RectangleF(-5, mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit), Fonts.AlignBR);
+            mGRow.DrawString("-12db ", Fonts.Small, Colors.BFontTable,
+                new RectangleF(-5, AmpDispUnit * 2 + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit), Fonts.AlignBR);
+            mGRow.DrawString("-24db ", Fonts.Small, Colors.BFontTable,
+                new RectangleF(-5, AmpDispUnit * 4 + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit), Fonts.AlignBR);
+            mGRow.DrawString("-36db ", Fonts.Small, Colors.BFontTable,
+                new RectangleF(-5, AmpDispUnit * 6 + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit), Fonts.AlignBR);
+            mGRow.DrawString("-48db ", Fonts.Small, Colors.BFontTable,
+                new RectangleF(-5, AmpDispUnit * 8 + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit), Fonts.AlignBR);
+            mGRow.DrawString("-60db ", Fonts.Small, Colors.BFontTable,
+                new RectangleF(-5, AmpDispUnit * 10 + mBmpCol.Height,
+                mBmpRow.Width, AmpDispUnit), Fonts.AlignBR);
 
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, AmpDispUnit,
-                mBmpTabPageCell.Width, AmpDispUnit);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width, AmpDispUnit);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, AmpDispUnit * 3,
-                mBmpTabPageCell.Width, AmpDispUnit * 3);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width, AmpDispUnit * 3);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, AmpDispUnit * 5,
-                mBmpTabPageCell.Width, AmpDispUnit * 5);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width, AmpDispUnit * 5);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, AmpDispUnit * 7,
-                mBmpTabPageCell.Width, AmpDispUnit * 7);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                mBmpCell.Width, AmpDispUnit * 7);
+            mGCell.DrawLine(Colors.PTableBorder,
                 0, AmpDispUnit * 9,
-                mBmpTabPageCell.Width, AmpDispUnit * 9);
+                mBmpCell.Width, AmpDispUnit * 9);
 
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, AmpDispUnit * 2,
-                mBmpTabPageCell.Width, AmpDispUnit * 2);
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+                mBmpCell.Width, AmpDispUnit * 2);
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, AmpDispUnit * 4,
-                mBmpTabPageCell.Width, AmpDispUnit * 4);
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+                mBmpCell.Width, AmpDispUnit * 4);
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, AmpDispUnit * 6,
-                mBmpTabPageCell.Width, AmpDispUnit * 6);
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+                mBmpCell.Width, AmpDispUnit * 6);
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, AmpDispUnit * 8,
-                mBmpTabPageCell.Width, AmpDispUnit * 8);
-            mGTabPageCell.DrawLine(Colors.PTableBorderDark,
+                mBmpCell.Width, AmpDispUnit * 8);
+            mGCell.DrawLine(Colors.PTableBorderDark,
                 0, AmpDispUnit * 10,
-                mBmpTabPageCell.Width, AmpDispUnit * 10);
+                mBmpCell.Width, AmpDispUnit * 10);
 
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth, 0,
-                TableColumnWidth, mBmpTabPageCell.Height);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                TableColumnWidth, mBmpCell.Height);
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 2, 0,
-                TableColumnWidth * 2, mBmpTabPageCell.Height);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 2, mBmpCell.Height);
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 3, 0,
-                TableColumnWidth * 3, mBmpTabPageCell.Height);
-            mGTabPageCell.DrawLine(Colors.PTableBorder,
+                TableColumnWidth * 3, mBmpCell.Height);
+            mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth * 4, 0,
-                TableColumnWidth * 4, mBmpTabPageCell.Height);
+                TableColumnWidth * 4, mBmpCell.Height);
 
-            setImage();
+            setBackgroundImage();
         }
 
-        private void setImage() {
-            mGTabPageRow.DrawLine(Colors.PTabBorderBold,
-                0, mBmpTabPageRow.Height - 1,
-                mBmpTabPageRow.Width, mBmpTabPageRow.Height - 1);
-            mGTabPageRow.DrawLine(Colors.PTabBorderBold, 1, 0, 1, mBmpTabPageRow.Height);
-            mGTabPageCell.DrawLine(Colors.PTabBorderBold,
-                0, mBmpTabPageCell.Height - 1,
-                mBmpTabPageCell.Width, mBmpTabPageCell.Height - 1);
-            mGTabPageCell.DrawLine(Colors.PTabBorderBold,
-                mBmpTabPageCell.Width - 1, 0,
-                mBmpTabPageCell.Width - 1, mBmpTabPageCell.Height);
-            mGTabPageCol.DrawLine(Colors.PTabBorderBold,
-                mBmpTabPageCol.Width - 1, 0,
-                mBmpTabPageCol.Width - 1, mBmpTabPageCol.Height);
-            mGTabPageCol.DrawLine(Colors.PTabBorderBold,
-                picTab.Width - mBmpTabPageRow.Width - 3, 1,
-                mBmpTabPageCol.Width, 1);
+        private void setBackgroundImage() {
+            mGRow.DrawLine(Colors.PTabBorderBold,
+                0, mBmpRow.Height - 1,
+                mBmpRow.Width, mBmpRow.Height - 1);
+            mGRow.DrawLine(Colors.PTabBorderBold, 1, 0, 1, mBmpRow.Height);
+            mGCell.DrawLine(Colors.PTabBorderBold,
+                0, mBmpCell.Height - 1,
+                mBmpCell.Width, mBmpCell.Height - 1);
+            mGCell.DrawLine(Colors.PTabBorderBold,
+                mBmpCell.Width - 1, 0,
+                mBmpCell.Width - 1, mBmpCell.Height);
+            mGCol.DrawLine(Colors.PTabBorderBold,
+                mBmpCol.Width - 1, 0,
+                mBmpCol.Width - 1, mBmpCol.Height);
+            mGCol.DrawLine(Colors.PTabBorderBold,
+                picTabButton.Width - mBmpRow.Width - 3, 1,
+                mBmpCol.Width, 1);
 
-            Width = mBmpTabPageRow.Width + mBmpTabPageCell.Width;
-            Height = picTab.Height + mBmpTabPageCol.Height + mBmpTabPageCell.Height;
-            picTabPageCol.Width = mBmpTabPageCol.Width;
-            picTabPageCol.Height = mBmpTabPageCol.Height;
-            picTabPageRow.Width = mBmpTabPageRow.Width;
-            picTabPageRow.Height = mBmpTabPageRow.Height;
-            picTabPageCell.Width = mBmpTabPageCell.Width;
-            picTabPageCell.Height = mBmpTabPageCell.Height;
-            picTabPageCol.BackgroundImage = mBmpTabPageCol;
-            picTabPageRow.BackgroundImage = mBmpTabPageRow;
-            picTabPageCell.BackgroundImage = mBmpTabPageCell;
+            Width = mBmpRow.Width + mBmpCell.Width;
+            Height = picTabButton.Height + mBmpCol.Height + mBmpCell.Height;
+            picHeader.Width = mBmpCol.Width;
+            picHeader.Height = mBmpCol.Height;
+            picRow.Width = mBmpRow.Width;
+            picRow.Height = mBmpRow.Height;
+            picCell.Width = mBmpCell.Width;
+            picCell.Height = mBmpCell.Height;
+            picHeader.BackgroundImage = mBmpCol;
+            picRow.BackgroundImage = mBmpRow;
+            picCell.BackgroundImage = mBmpCell;
 
-            picTab.Left = 0;
-            picTab.Top = 0;
-            picTabPageRow.Left = picTab.Left;
-            picTabPageCol.Left = picTabPageRow.Right;
-            picTabPageCell.Left = picTabPageRow.Right;
-            btnClose.Left = picTabPageCell.Right - btnClose.Width;
-            btnMinimize.Left = btnClose.Left - btnMinimize.Width - 4;
+            picTabButton.Left = 0;
+            picTabButton.Top = 0;
+            picRow.Left = picTabButton.Left;
+            picHeader.Left = picRow.Right;
+            picCell.Left = picRow.Right;
 
-            picTabPageCol.Top = picTab.Bottom;
-            picTabPageRow.Top = picTab.Bottom;
-            picTabPageCell.Top = picTabPageCol.Bottom;
-            btnClose.Top = 0;
-            btnMinimize.Top = 0;
+            picHeader.Top = picTabButton.Bottom;
+            picRow.Top = picTabButton.Bottom;
+            picCell.Top = picHeader.Bottom;
         }
 
-        private void releaseImage() {
-            if (null != mBmpTabPageCol) {
-                mBmpTabPageCol.Dispose();
-                mBmpTabPageCol = null;
-                mGTabPageCol.Dispose();
-                mGTabPageCol = null;
+        private void releaseBackgroundImage() {
+            if (null != mBmpCol) {
+                mBmpCol.Dispose();
+                mBmpCol = null;
+                mGCol.Dispose();
+                mGCol = null;
             }
-            if (null != mBmpTabPageRow) {
-                mBmpTabPageRow.Dispose();
-                mBmpTabPageRow = null;
-                mGTabPageRow.Dispose();
-                mGTabPageRow = null;
+            if (null != mBmpRow) {
+                mBmpRow.Dispose();
+                mBmpRow = null;
+                mGRow.Dispose();
+                mGRow = null;
             }
-            if (null != mBmpTabPageCell) {
-                mBmpTabPageCell.Dispose();
-                mBmpTabPageCell = null;
-                mGTabPageCell.Dispose();
-                mGTabPageCell = null;
+            if (null != mBmpCell) {
+                mBmpCell.Dispose();
+                mBmpCell = null;
+                mGCell.Dispose();
+                mGCell = null;
             }
 
-            if (null != picTabPageCol.BackgroundImage) {
-                picTabPageCol.BackgroundImage.Dispose();
-                picTabPageCol.BackgroundImage = null;
+            if (null != picHeader.BackgroundImage) {
+                picHeader.BackgroundImage.Dispose();
+                picHeader.BackgroundImage = null;
             }
-            if (null != picTabPageRow.BackgroundImage) {
-                picTabPageRow.BackgroundImage.Dispose();
-                picTabPageRow.BackgroundImage = null;
+            if (null != picRow.BackgroundImage) {
+                picRow.BackgroundImage.Dispose();
+                picRow.BackgroundImage = null;
             }
-            if (null != picTabPageCell.BackgroundImage) {
-                picTabPageCell.BackgroundImage.Dispose();
-                picTabPageCell.BackgroundImage = null;
+            if (null != picCell.BackgroundImage) {
+                picCell.BackgroundImage.Dispose();
+                picCell.BackgroundImage = null;
             }
         }
     }

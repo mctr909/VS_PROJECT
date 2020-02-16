@@ -46,12 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonCtrl.cs" />
     <Compile Include="Comp.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Comp.Designer.cs">
       <DependentUpon>Comp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fonts.cs" />
     <Compile Include="Range.cs" />
     <Compile Include="Colors.cs" />
     <Compile Include="Envelope.cs">

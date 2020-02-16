@@ -23,126 +23,92 @@
         /// コード エディターで変更しないでください。
         /// </summary>
         private void InitializeComponent() {
-            this.picTab = new System.Windows.Forms.PictureBox();
-            this.picTabPageRow = new System.Windows.Forms.PictureBox();
-            this.btnClose = new System.Windows.Forms.PictureBox();
-            this.picTabPageCol = new System.Windows.Forms.PictureBox();
-            this.picTabPageCell = new System.Windows.Forms.PictureBox();
-            this.btnMinimize = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.picTab)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picTabPageRow)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnClose)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picTabPageCol)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picTabPageCell)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnMinimize)).BeginInit();
+            this.picTabButton = new System.Windows.Forms.PictureBox();
+            this.picRow = new System.Windows.Forms.PictureBox();
+            this.picHeader = new System.Windows.Forms.PictureBox();
+            this.picCell = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.picTabButton)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picRow)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picHeader)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picCell)).BeginInit();
             this.SuspendLayout();
             // 
-            // picTab
+            // picTabButton
             // 
-            this.picTab.BackColor = System.Drawing.Color.Transparent;
-            this.picTab.Location = new System.Drawing.Point(12, 3);
-            this.picTab.Name = "picTab";
-            this.picTab.Size = new System.Drawing.Size(175, 28);
-            this.picTab.TabIndex = 0;
-            this.picTab.TabStop = false;
+            this.picTabButton.BackColor = System.Drawing.Color.Transparent;
+            this.picTabButton.Location = new System.Drawing.Point(16, 15);
+            this.picTabButton.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+            this.picTabButton.Name = "picTabButton";
+            this.picTabButton.Size = new System.Drawing.Size(567, 56);
+            this.picTabButton.TabIndex = 0;
+            this.picTabButton.TabStop = false;
             // 
-            // picTabPageRow
+            // picRow
             // 
-            this.picTabPageRow.BackColor = System.Drawing.Color.DarkGray;
-            this.picTabPageRow.Location = new System.Drawing.Point(12, 37);
-            this.picTabPageRow.Name = "picTabPageRow";
-            this.picTabPageRow.Size = new System.Drawing.Size(42, 141);
-            this.picTabPageRow.TabIndex = 1;
-            this.picTabPageRow.TabStop = false;
+            this.picRow.BackColor = System.Drawing.Color.DarkGray;
+            this.picRow.Location = new System.Drawing.Point(16, 83);
+            this.picRow.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+            this.picRow.Name = "picRow";
+            this.picRow.Size = new System.Drawing.Size(91, 282);
+            this.picRow.TabIndex = 1;
+            this.picRow.TabStop = false;
             // 
-            // btnClose
+            // picHeader
             // 
-            this.btnClose.BackColor = System.Drawing.Color.Transparent;
-            this.btnClose.Image = global::Envelope.Properties.Resources.close_leave;
-            this.btnClose.Location = new System.Drawing.Point(243, 3);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(30, 30);
-            this.btnClose.TabIndex = 2;
-            this.btnClose.TabStop = false;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            this.btnClose.MouseEnter += new System.EventHandler(this.btnClose_MouseEnter);
-            this.btnClose.MouseLeave += new System.EventHandler(this.btnClose_MouseLeave);
+            this.picHeader.BackColor = System.Drawing.Color.Gray;
+            this.picHeader.Location = new System.Drawing.Point(121, 83);
+            this.picHeader.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+            this.picHeader.Name = "picHeader";
+            this.picHeader.Size = new System.Drawing.Size(462, 76);
+            this.picHeader.TabIndex = 3;
+            this.picHeader.TabStop = false;
+            this.picHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picTabPageCol_MouseDown);
+            this.picHeader.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picTabPageCol_MouseMove);
+            this.picHeader.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picTabPageCol_MouseUp);
             // 
-            // picTabPageCol
+            // picCell
             // 
-            this.picTabPageCol.BackColor = System.Drawing.Color.Gray;
-            this.picTabPageCol.Location = new System.Drawing.Point(60, 37);
-            this.picTabPageCol.Name = "picTabPageCol";
-            this.picTabPageCol.Size = new System.Drawing.Size(213, 38);
-            this.picTabPageCol.TabIndex = 3;
-            this.picTabPageCol.TabStop = false;
-            this.picTabPageCol.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picTabPageCol_MouseDown);
-            this.picTabPageCol.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picTabPageCol_MouseMove);
-            this.picTabPageCol.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picTabPageCol_MouseUp);
-            // 
-            // picTabPageCell
-            // 
-            this.picTabPageCell.BackColor = System.Drawing.Color.Silver;
-            this.picTabPageCell.Location = new System.Drawing.Point(60, 81);
-            this.picTabPageCell.Name = "picTabPageCell";
-            this.picTabPageCell.Size = new System.Drawing.Size(213, 97);
-            this.picTabPageCell.TabIndex = 4;
-            this.picTabPageCell.TabStop = false;
-            this.picTabPageCell.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseDown);
-            this.picTabPageCell.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseMove);
-            this.picTabPageCell.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseUp);
-            // 
-            // btnMinimize
-            // 
-            this.btnMinimize.BackColor = System.Drawing.Color.Transparent;
-            this.btnMinimize.Image = global::Envelope.Properties.Resources.minimize_leave;
-            this.btnMinimize.Location = new System.Drawing.Point(207, 3);
-            this.btnMinimize.Name = "btnMinimize";
-            this.btnMinimize.Size = new System.Drawing.Size(30, 30);
-            this.btnMinimize.TabIndex = 5;
-            this.btnMinimize.TabStop = false;
-            this.btnMinimize.Click += new System.EventHandler(this.btnMinimize_Click);
-            this.btnMinimize.MouseEnter += new System.EventHandler(this.btnMinimize_MouseEnter);
-            this.btnMinimize.MouseLeave += new System.EventHandler(this.btnMinimize_MouseLeave);
+            this.picCell.BackColor = System.Drawing.Color.Silver;
+            this.picCell.Location = new System.Drawing.Point(121, 171);
+            this.picCell.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+            this.picCell.Name = "picCell";
+            this.picCell.Size = new System.Drawing.Size(462, 194);
+            this.picCell.TabIndex = 4;
+            this.picCell.TabStop = false;
+            this.picCell.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseDown);
+            this.picCell.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseMove);
+            this.picCell.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseUp);
             // 
             // Envelope
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(81)))), ((int)(((byte)(144)))));
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(285, 190);
-            this.Controls.Add(this.btnMinimize);
-            this.Controls.Add(this.picTabPageCell);
-            this.Controls.Add(this.picTabPageCol);
-            this.Controls.Add(this.btnClose);
-            this.Controls.Add(this.picTabPageRow);
-            this.Controls.Add(this.picTab);
+            this.ClientSize = new System.Drawing.Size(600, 380);
+            this.Controls.Add(this.picCell);
+            this.Controls.Add(this.picHeader);
+            this.Controls.Add(this.picRow);
+            this.Controls.Add(this.picTabButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.Name = "Envelope";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Envelope_Load);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Envelope_MouseDown);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Envelope_MouseMove);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Envelope_MouseUp);
-            ((System.ComponentModel.ISupportInitialize)(this.picTab)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picTabPageRow)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnClose)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picTabPageCol)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picTabPageCell)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnMinimize)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picTabButton)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picRow)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picHeader)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picCell)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox picTab;
-        private System.Windows.Forms.PictureBox picTabPageRow;
-        private System.Windows.Forms.PictureBox btnClose;
-        private System.Windows.Forms.PictureBox picTabPageCol;
-        private System.Windows.Forms.PictureBox picTabPageCell;
-        private System.Windows.Forms.PictureBox btnMinimize;
+        private System.Windows.Forms.PictureBox picTabButton;
+        private System.Windows.Forms.PictureBox picRow;
+        private System.Windows.Forms.PictureBox picHeader;
+        private System.Windows.Forms.PictureBox picCell;
     }
 }
 
