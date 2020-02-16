@@ -62,9 +62,9 @@
             this.picHeader.Size = new System.Drawing.Size(462, 76);
             this.picHeader.TabIndex = 3;
             this.picHeader.TabStop = false;
-            this.picHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picTabPageCol_MouseDown);
-            this.picHeader.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picTabPageCol_MouseMove);
-            this.picHeader.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picTabPageCol_MouseUp);
+            this.picHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picHeader_MouseDown);
+            this.picHeader.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picHeader_MouseMove);
+            this.picHeader.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picHeader_MouseUp);
             // 
             // picCell
             // 
@@ -75,9 +75,9 @@
             this.picCell.Size = new System.Drawing.Size(462, 194);
             this.picCell.TabIndex = 4;
             this.picCell.TabStop = false;
-            this.picCell.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseDown);
-            this.picCell.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseMove);
-            this.picCell.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseUp);
+            this.picCell.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picCell_MouseDown);
+            this.picCell.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picCell_MouseMove);
+            this.picCell.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picCell_MouseUp);
             // 
             // Envelope
             // 

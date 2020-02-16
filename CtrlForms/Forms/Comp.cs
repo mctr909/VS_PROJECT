@@ -36,7 +36,7 @@ namespace Envelope {
             draw();
         }
 
-        private void picTabPageCell_MouseDown(object sender, MouseEventArgs e) {
+        private void picCell_MouseDown(object sender, MouseEventArgs e) {
             var pos = picCell.PointToClient(Cursor.Position);
             var posX = pos.X * 6.0 / AmpDispUnit - 60;
             var posY = (picCell.Height - pos.Y) * 6.0 / AmpDispUnit - 60;
@@ -53,12 +53,12 @@ namespace Envelope {
             }
         }
 
-        private void picTabPageCell_MouseUp(object sender, MouseEventArgs e) {
+        private void picCell_MouseUp(object sender, MouseEventArgs e) {
             mScrollThreshold = false;
             mScrollGain = false;
         }
 
-        private void picTabPageCell_MouseMove(object sender, MouseEventArgs e) {
+        private void picCell_MouseMove(object sender, MouseEventArgs e) {
             var pos = picCell.PointToClient(Cursor.Position);
             var posX = pos.X * 6.0 / AmpDispUnit - 60;
             var posY = (picCell.Height - pos.Y) * 6.0 / AmpDispUnit - 60;

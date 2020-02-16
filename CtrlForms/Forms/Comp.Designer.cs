@@ -40,9 +40,9 @@
             this.picCell.Size = new System.Drawing.Size(462, 194);
             this.picCell.TabIndex = 9;
             this.picCell.TabStop = false;
-            this.picCell.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseDown);
-            this.picCell.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseMove);
-            this.picCell.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picTabPageCell_MouseUp);
+            this.picCell.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picCell_MouseDown);
+            this.picCell.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picCell_MouseMove);
+            this.picCell.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picCell_MouseUp);
             // 
             // picFooter
             // 

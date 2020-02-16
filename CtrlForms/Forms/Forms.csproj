@@ -106,5 +106,9 @@
   <ItemGroup>
     <None Include="Icon\minimize_leave.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icon\maximize_hover.png" />
+    <Content Include="Icon\maximize_leave.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

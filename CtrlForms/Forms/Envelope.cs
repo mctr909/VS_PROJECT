@@ -465,7 +465,7 @@ namespace Envelope {
             mAmp.Sustain = 1.0;
         }
 
-        private void picTabPageCol_MouseDown(object sender, MouseEventArgs e) {
+        private void picHeader_MouseDown(object sender, MouseEventArgs e) {
             var pos = picHeader.PointToClient(Cursor.Position);
             if (pos.Y < TableHeaderHeight) {
                 return;
@@ -475,14 +475,14 @@ namespace Envelope {
             Cursor.Current = Cursors.VSplit;
         }
 
-        private void picTabPageCol_MouseUp(object sender, MouseEventArgs e) {
+        private void picHeader_MouseUp(object sender, MouseEventArgs e) {
             mTimeScroll = false;
             mPitch.Commit();
             mCutoff.Commit();
             mAmp.Commit();
         }
 
-        private void picTabPageCol_MouseMove(object sender, MouseEventArgs e) {
+        private void picHeader_MouseMove(object sender, MouseEventArgs e) {
             if (!mTimeScroll) {
                 return;
             }
@@ -560,8 +560,8 @@ namespace Envelope {
             }
         }
 
-        private void picTabPageCell_MouseDown(object sender, MouseEventArgs e) {
-            mCurPos = picHeader.PointToClient(Cursor.Position);
+        private void picCell_MouseDown(object sender, MouseEventArgs e) {
+            mCurPos = picCell.PointToClient(Cursor.Position);
             switch (mTabButtons.CurrentTab) {
             case "Pitch":
                 switch (mCurPos.X / TableColumnWidth) {
@@ -596,11 +596,11 @@ namespace Envelope {
             }
         }
 
-        private void picTabPageCell_MouseUp(object sender, MouseEventArgs e) {
+        private void picCell_MouseUp(object sender, MouseEventArgs e) {
             mValueScroll = false;
         }
 
-        private void picTabPageCell_MouseMove(object sender, MouseEventArgs e) {
+        private void picCell_MouseMove(object sender, MouseEventArgs e) {
             if (!mValueScroll) {
                 return;
             }

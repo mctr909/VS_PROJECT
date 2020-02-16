@@ -83,6 +83,26 @@ namespace Envelope.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
+        internal static System.Drawing.Bitmap maximize_hover {
+            get {
+                object obj = ResourceManager.GetObject("maximize_hover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap maximize_leave {
+            get {
+                object obj = ResourceManager.GetObject("maximize_leave", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
         internal static System.Drawing.Bitmap minimize_hover {
             get {
                 object obj = ResourceManager.GetObject("minimize_hover", resourceCulture);
