@@ -136,9 +136,9 @@ namespace Envelope {
             mGValue.DrawLine(Colors.PGraphLine, pThresholdX, pThresholdY, AmpDispUnit * 10, pGainY);
             mGValue.DrawLine(Colors.PGraphLineAlpha, AmpDispUnit * 10, pGainY, AmpDispUnit * 14, pGainYT);
 
-            mGValue.FillPie(Colors.BTableCell, pThresholdX - 4, pThresholdY - 4, 8, 8, 0, 360);
+            mGValue.FillPie(Colors.BGraphPoint, pThresholdX - 4, pThresholdY - 4, 8, 8, 0, 360);
             mGValue.DrawArc(Colors.PTableBorderLight, pThresholdX - 4, pThresholdY - 4, 8, 8, 0, 360);
-            mGValue.FillPie(Colors.BTableCell, AmpDispUnit * 10 - 4, pGainY - 4, 8, 8, 0, 360);
+            mGValue.FillPie(Colors.BGraphPoint, AmpDispUnit * 10 - 4, pGainY - 4, 8, 8, 0, 360);
             mGValue.DrawArc(Colors.PTableBorderLight, AmpDispUnit * 10 - 4, pGainY - 4, 8, 8, 0, 360);
 
             mGValue.DrawString(mThreshold.ToString("0.0db"), Fonts.Small, Colors.BFontTable, pThresholdX + 3, psThresholdY);

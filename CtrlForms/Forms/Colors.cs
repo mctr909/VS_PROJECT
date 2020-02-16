@@ -5,6 +5,7 @@ namespace Envelope {
     static class Colors {
         public static Color FormColor = Color.FromArgb(47, 95, 144);
 
+        public static Color GraphPoint = Color.FromArgb(63, TableCell.R, TableCell.G, TableCell.B);
         public static Color GraphLine = Color.FromArgb(127, 127, 127);
         public static Color GraphLineAlpha = Color.FromArgb(127, 127, 127, 127);
 
@@ -48,5 +49,6 @@ namespace Envelope {
         public static Brush BFontTabButtonEnable = new Pen(FontTabButtonEnable, 1.0f).Brush;
         public static Brush BFontTabButtonDisable = new Pen(FontTabButtonDisable, 1.0f).Brush;
         public static Brush BFontTable = new Pen(TableFont, 1.0f).Brush;
+        public static Brush BGraphPoint = new Pen(GraphPoint, 1.0f).Brush;
     }
 }

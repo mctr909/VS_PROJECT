@@ -13,8 +13,7 @@ namespace Envelope {
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Envelope());
+            Application.Run(new Comp());
         }
     }
 }
-             

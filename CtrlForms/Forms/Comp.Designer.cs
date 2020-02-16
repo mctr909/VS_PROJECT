@@ -60,7 +60,7 @@
             this.picRow.Location = new System.Drawing.Point(16, 15);
             this.picRow.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.picRow.Name = "picRow";
-            this.picRow.Size = new System.Drawing.Size(91, 282);
+            this.picRow.Size = new System.Drawing.Size(91, 194);
             this.picRow.TabIndex = 6;
             this.picRow.TabStop = false;
             // 

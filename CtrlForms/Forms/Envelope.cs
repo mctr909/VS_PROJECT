@@ -186,14 +186,14 @@ namespace Envelope {
 
                 releaseImageValue();
 
-                mGValue.DrawLine(Colors.PGraphLine, 0, pRise, TableColumnWidth, pTop);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pFall);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, 0, pRise, TableColumnWidth, pTop);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pFall);
 
-                mGValue.FillPie(Colors.BTableCell, -4, pRise - 4, 8, 8, 0, 360);
-                mGValue.FillPie(Colors.BTableCell, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
-                mGValue.FillPie(Colors.BTableCell, TableColumnWidth * 4 - 4, pFall - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BGraphPoint, -4, pRise - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BGraphPoint, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BGraphPoint, TableColumnWidth * 4 - 4, pFall - 4, 8, 8, 0, 360);
                 mGValue.DrawArc(Colors.PTableBorderLight, -4, pRise - 4, 8, 8, 0, 360);
                 mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
                 mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 4 - 4, pFall - 4, 8, 8, 0, 360);
@@ -234,7 +234,7 @@ namespace Envelope {
                     Fall = 20000;
                 }
 
-                var pOfs = mPicValue.Height + (int)(CutoffDispUnit * 4 * 1.5) - 1;
+                var pOfs = mPicValue.Height + (int)(CutoffDispUnit * 4 * 1.5);
                 var pRise = pOfs - (int)(Math.Log10(Rise) * CutoffDispUnit * 4);
                 var pTop = pOfs - (int)(Math.Log10(Top) * CutoffDispUnit * 4);
                 var pSustain = pOfs - (int)(Math.Log10(Sustain) * CutoffDispUnit * 4);
@@ -259,16 +259,16 @@ namespace Envelope {
 
                 releaseImageValue();
 
-                mGValue.DrawLine(Colors.PGraphLine, 0, pRise, TableColumnWidth, pTop);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pSustain);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 4, pSustain, TableColumnWidth * 5, pFall);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, 0, pRise, TableColumnWidth, pTop);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pSustain);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth * 4, pSustain, TableColumnWidth * 5, pFall);
 
-                mGValue.FillPie(Colors.BTableCell, -4, pRise - 4, 8, 8, 0, 360);
-                mGValue.FillPie(Colors.BTableCell, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
-                mGValue.FillPie(Colors.BTableCell, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
-                mGValue.FillPie(Colors.BTableCell, TableColumnWidth * 5 - 5, pFall - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BGraphPoint, -4, pRise - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BGraphPoint, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BGraphPoint, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BGraphPoint, TableColumnWidth * 5 - 5, pFall - 4, 8, 8, 0, 360);
                 mGValue.DrawArc(Colors.PTableBorderLight, -4, pRise - 4, 8, 8, 0, 360);
                 mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
                 mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
@@ -316,15 +316,15 @@ namespace Envelope {
 
                 releaseImageValue();
 
-                mGValue.DrawLine(Colors.PGraphLine, 0, pRise, TableColumnWidth, pTop);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pSustain);
-                mGValue.DrawLine(Colors.PGraphLine, TableColumnWidth * 4, pSustain, TableColumnWidth * 5, pFall);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, 0, pRise, TableColumnWidth, pTop);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth, pTop, TableColumnWidth * 2, pTop);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth * 2, pTop, TableColumnWidth * 3, pSustain);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth * 3, pSustain, TableColumnWidth * 4, pSustain);
+                mGValue.DrawLine(Colors.PGraphLineAlpha, TableColumnWidth * 4, pSustain, TableColumnWidth * 5, pFall);
 
-                mGValue.FillPie(Colors.BTableCell, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BGraphPoint, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
                 mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth - 4, pTop - 4, 8, 8, 0, 360);
-                mGValue.FillPie(Colors.BTableCell, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
+                mGValue.FillPie(Colors.BGraphPoint, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
                 mGValue.DrawArc(Colors.PTableBorderLight, TableColumnWidth * 3 - 4, pSustain - 4, 8, 8, 0, 360);
 
                 mGValue.DrawString(dbTop.ToString("0.0db"), Fonts.Small, Colors.BFontTable, TableColumnWidth + 3, psTop);
@@ -752,30 +752,24 @@ namespace Envelope {
                 TableColumnWidth * 3, mBmpCol.Height);
 
             mGRow.DrawLine(Colors.PTableBorder,
-                0, PitchDispUnit + mBmpCol.Height,
-                mBmpRow.Width, PitchDispUnit + mBmpCol.Height);
+                0, PitchDispUnit + mBmpCol.Height - 1,
+                mBmpRow.Width, PitchDispUnit + mBmpCol.Height - 1);
             mGRow.DrawLine(Colors.PTableBorderLight,
-                0, PitchDispUnit * 2 + mBmpCol.Height,
-                mBmpRow.Width, PitchDispUnit * 2 + mBmpCol.Height);
+                0, PitchDispUnit * 2 + mBmpCol.Height - 1,
+                mBmpRow.Width, PitchDispUnit * 2 + mBmpCol.Height - 1);
             mGRow.DrawLine(Colors.PTableBorder,
-                0, PitchDispUnit * 3 + mBmpCol.Height,
-                mBmpRow.Width, PitchDispUnit * 3 + mBmpCol.Height);
-            mGRow.DrawLine(Colors.PTableBorder,
-                0, PitchDispUnit * 4 + mBmpCol.Height,
-                mBmpRow.Width, PitchDispUnit * 4 + mBmpCol.Height);
+                0, PitchDispUnit * 3 + mBmpCol.Height - 1,
+                mBmpRow.Width, PitchDispUnit * 3 + mBmpCol.Height - 1);
 
             mGCell.DrawLine(Colors.PTableBorder,
-                0, PitchDispUnit,
-                mBmpCell.Width - TableColumnWidth, PitchDispUnit);
+                0, PitchDispUnit - 1,
+                mBmpCell.Width - TableColumnWidth, PitchDispUnit - 1);
             mGCell.DrawLine(Colors.PTableBorderLight,
-                0, PitchDispUnit * 2,
-                mBmpCell.Width - TableColumnWidth, PitchDispUnit * 2);
+                0, PitchDispUnit * 2 - 1,
+                mBmpCell.Width - TableColumnWidth, PitchDispUnit * 2 - 1);
             mGCell.DrawLine(Colors.PTableBorder,
-                0, PitchDispUnit * 3,
-                mBmpCell.Width - TableColumnWidth, PitchDispUnit * 3);
-            mGCell.DrawLine(Colors.PTableBorder,
-                0, PitchDispUnit * 4,
-                mBmpCell.Width - TableColumnWidth, PitchDispUnit * 4);
+                0, PitchDispUnit * 3 - 1,
+                mBmpCell.Width - TableColumnWidth, PitchDispUnit * 3 - 1);
 
             mGCell.DrawLine(Colors.PTableBorder,
                 TableColumnWidth, 0,
