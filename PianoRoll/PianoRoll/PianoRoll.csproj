@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9562FD88-695C-48D9-BC9F-591899D4C04C}</ProjectGuid>
+    <ProjectGuid>{F24FBE54-D686-4170-9B52-8E4237DB1F08}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>PianoRoll</RootNamespace>
     <AssemblyName>PianoRoll</AssemblyName>
@@ -52,19 +52,10 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="PianoRoll.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PianoRoll.Designer.cs">
-      <DependentUpon>PianoRoll.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PianoRoll.resx">
-      <DependentUpon>PianoRoll.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -74,6 +65,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -87,6 +79,144 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick024.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick040.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick048.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick060.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick080.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick096.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick120.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick160.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick192.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick240.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick320.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick384.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick480.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick640.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tick960.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\eventlist.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\pianoroll.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\write.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\select.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\eventlist_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\pianoroll_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\select_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\write_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_note.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_exp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_vol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_pan.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_pitch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_del.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_del_dep.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_del_time.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_vib.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_vib_dep.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_vib_rate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_rev.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_cho.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_fc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_fq.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_attack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_release.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_tempo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\edit_inst.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\time_zoom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\time_zoomout.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tone_zoom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon\tone_zoomout.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

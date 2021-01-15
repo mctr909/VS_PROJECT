@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Test {
+namespace PianoRoll {
     static class Program {
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
