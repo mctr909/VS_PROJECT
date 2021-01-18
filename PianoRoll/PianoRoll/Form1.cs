@@ -364,10 +364,9 @@ namespace PianoRoll {
         private void picRoll_MouseMove(object sender, MouseEventArgs e) {
             snapCursor(picRoll.PointToClient(Cursor.Position));
             mDragEnd.X = mCursor.X;
+            mDragEnd.Y = mCursor.Y;
             if (tsbWrite.Checked) {
-                mDragEnd.Y = mDragBegin.Y;
-            } else {
-                mDragEnd.Y = mCursor.Y;
+                mDragBegin.Y = mDragEnd.Y;
             }
         }
 
@@ -500,13 +499,13 @@ namespace PianoRoll {
 
             if (picRoll.Height <= pos.Y) {
                 pos.Y = picRoll.Height - 1;
-                if (tsbSelect.Checked && mIsDrag && vScroll.Value < vScroll.Maximum) {
+                if (mIsDrag && vScroll.Value < vScroll.Maximum) {
                     vScroll.Value++;
                 }
             }
             if (pos.Y < 0) {
                 pos.Y = 0;
-                if (tsbSelect.Checked && mIsDrag && vScroll.Minimum <= vScroll.Value - 1) {
+                if (mIsDrag && vScroll.Minimum <= vScroll.Value - 1) {
                     vScroll.Value--;
                 }
             }
@@ -755,8 +754,8 @@ namespace PianoRoll {
         }
 
         private void addNoteEvent() {
-            mEventList.Add(new Event(mBeginTime, 0, 0x90, mBeginTone, 127));
-            mEventList.Add(new Event(mEndTime, 0, 0x80, mBeginTone, 0));
+            mEventList.Add(new Event(mBeginTime, 0, 0x90, mEndTone, 127));
+            mEventList.Add(new Event(mEndTime, 0, 0x80, mEndTone, 0));
         }
     }
 }
