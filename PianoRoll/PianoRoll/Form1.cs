@@ -12,25 +12,48 @@ using System.Windows.Forms;
 
 namespace PianoRoll {
     public partial class Form1 : Form {
-        private enum E_EDIT_MODE  {
+        private enum E_DRAW_EVENT {
             NOTE,
             INST,
             VOL,
             EXP,
             PAN,
             PITCH,
-            VIB_DEP,
+            VIB,
             VIB_RATE,
             REV,
+            CHO,
             DEL_DEP,
             DEL_TIME,
-            CHO,
-            FC,
-            Q,
+            CUTOFF,
+            RESONANCE,
             ATTACK,
             RELEASE,
             TEMPO
         }
+
+        private class DrawEvent {
+            public E_DRAW_EVENT type;
+            public int data1;
+            public int data2;
+
+            public int x1;
+            public int y1;
+            public int x2;
+            public int y2;
+
+            public DrawEvent(E_DRAW_EVENT type, int posX, params int[] data) {
+                this.type = type;
+                data1 = 1 <= data.Length ? data[0] : 0;
+                data2 = 2 <= data.Length ? data[1] : 0;
+                y1 = 0;
+                y2 = 0;
+                x1 = posX;
+                x2 = -1;
+            }
+        }
+
+        private List<DrawEvent> mDrawEventList = new List<DrawEvent>();
 
         private static readonly Dictionary<string, int> Snaps = new Dictionary<string, int> {
             { "4分",    960 },
@@ -105,35 +128,7 @@ namespace PianoRoll {
         private bool mPressAlt = false;
         private Keys mPressKey = Keys.None;
 
-        private struct Event {
-            public int tick;
-            public byte track;
-            public byte status;
-            public byte data1;
-            public byte data2;
-            public Event(int tick, params int[] data) {
-                this.tick = tick;
-                track = 0;
-                status = 0;
-                data1 = 0;
-                data2 = 0;
-                switch (data.Length) {
-                case 3:
-                    track = (byte)data[0];
-                    status = (byte)data[1];
-                    data1 = (byte)data[2];
-                    break;
-                case 4:
-                    track = (byte)data[0];
-                    status = (byte)data[1];
-                    data1 = (byte)data[2];
-                    data2 = (byte)data[3];
-                    break;
-                }
-            }
-        }
-
-        private List<Event> mEventList = new List<Event>();
+        private List<SMF.Event> mEventList = new List<SMF.Event>();
 
         public Form1() {
             InitializeComponent();
@@ -369,6 +364,7 @@ namespace PianoRoll {
             } else {
                 mDragEnd.Y = mCursor.Y;
             }
+            putDrawEvents();
         }
 
         private void picRoll_MouseWheel(object sender, MouseEventArgs e) {
@@ -383,6 +379,7 @@ namespace PianoRoll {
                         vScroll.Value++;
                     }
                 }
+                putDrawEvents();
                 break;
             case Keys.ControlKey:
                 if (0 < Math.Sign(e.Delta)) {
@@ -390,6 +387,7 @@ namespace PianoRoll {
                 } else {
                     timeZoomout();
                 }
+                putDrawEvents();
                 break;
             case Keys.ShiftKey:
                 if (0 < Math.Sign(e.Delta)) {
@@ -397,6 +395,7 @@ namespace PianoRoll {
                 } else {
                     toneZoomout();
                 }
+                putDrawEvents();
                 break;
             default:
                 break;
@@ -412,23 +411,31 @@ namespace PianoRoll {
             mPressKey = Keys.None;
             mPressAlt = false;
         }
+
+        private void hScroll_Scroll(object sender, ScrollEventArgs e) {
+            putDrawEvents();
+        }
         #endregion
 
         #region zoom event
         private void tsbTimeZoom_Click(object sender, EventArgs e) {
             timeZoom();
+            putDrawEvents();
         }
 
         private void tsbTimeZoomout_Click(object sender, EventArgs e) {
             timeZoomout();
+            putDrawEvents();
         }
 
         private void tsbToneZoom_Click(object sender, EventArgs e) {
             toneZoom();
+            putDrawEvents();
         }
 
         private void tsbToneZoomout_Click(object sender, EventArgs e) {
             toneZoomout();
+            putDrawEvents();
         }
         #endregion
 
@@ -573,6 +580,7 @@ namespace PianoRoll {
                 fontSize++;
             }
 
+            putDrawEvents();
             drawRoll();
         }
 
@@ -734,6 +742,14 @@ namespace PianoRoll {
                 mgRoll.DrawLine(Pens.Red, mCursor.X, 0, mCursor.X, mBmpRoll.Height - 1);
             }
 
+            foreach (var ev in mDrawEventList) {
+                switch (ev.type) {
+                case E_DRAW_EVENT.NOTE:
+                    drawNote(ev.x1, ev.y1, ev.x2, ev.y2);
+                    break;
+                }
+            }
+
             for (int y = mDispTones - 1, no = 128 - vScroll.Value; 0 <= y; y--, no++) {
                 if (no % 12 == 0) {
                     var py = mKeyHeight * y + ofsY;
@@ -755,8 +771,58 @@ namespace PianoRoll {
         }
 
         private void addNoteEvent() {
-            mEventList.Add(new Event(mBeginTime, 0, 0x90, mBeginTone, 127));
-            mEventList.Add(new Event(mEndTime, 0, 0x80, mBeginTone, 0));
+            mEventList.Add(new SMF.Event(mBeginTime, 0, 0x90, mBeginTone, 127));
+            mEventList.Add(new SMF.Event(mEndTime, 0, 0x80, mBeginTone, 0));
+            putDrawEvents();
+        }
+
+        private void putDrawEvents() {
+            var beginTime = hScroll.Value;
+            var endTime = hScroll.Value + mTimeScale * mBmpRoll.Width / QuarterNoteWidth;
+            var ofsY = mBmpRoll.Height % mKeyHeight;
+
+            mDrawEventList.Clear();
+
+            foreach (var ev in mEventList) {
+                var curTime = ev.tick - beginTime;
+                var posX = curTime * QuarterNoteWidth / mTimeScale;
+
+                switch (ev.Type) {
+                case SMF.E_STATUS.NOTE_OFF:
+                    for (int i = 0; i < mDrawEventList.Count; i++) {
+                        var lEv = mDrawEventList[i];
+                        if (lEv.type == E_DRAW_EVENT.NOTE && lEv.data1 == ev.data1 && lEv.x2 == -1) {
+                            var tone = 127 + vScroll.Minimum - vScroll.Value - ev.data1;
+                            lEv.y1 = mKeyHeight * tone + ofsY;
+                            lEv.y2 = mKeyHeight * (tone + 1) + ofsY;
+                            lEv.x2 = posX - 1;
+                        }
+                    }
+                    break;
+                case SMF.E_STATUS.NOTE_ON:
+                    if (hasNoteOff(ev.data1, ev.tick)) {
+                        mDrawEventList.Add(new DrawEvent(E_DRAW_EVENT.NOTE, posX, ev.data1));
+                    }
+                    break;
+                }
+            }
+        }
+
+        private bool hasNoteOff(int noteNum, int beginTick) {
+            var beginTime = hScroll.Value;
+            var noteOnMin = int.MaxValue;
+            var noteOffMin = int.MaxValue;
+            foreach (var ev in mEventList) {
+                if (ev.data1 == noteNum && beginTick <= ev.tick) {
+                    if (ev.Type == SMF.E_STATUS.NOTE_ON && ev.tick < noteOnMin) {
+                        noteOnMin = ev.tick;
+                    }
+                    if (ev.Type == SMF.E_STATUS.NOTE_OFF && ev.tick < noteOffMin) {
+                        noteOffMin = ev.tick;
+                    }
+                }
+            }
+            return beginTime < noteOffMin && noteOnMin < noteOffMin;
         }
     }
 }
