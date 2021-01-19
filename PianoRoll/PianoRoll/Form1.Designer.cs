@@ -105,30 +105,33 @@
             this.pnlRoll.Controls.Add(this.vScroll);
             this.pnlRoll.Controls.Add(this.hScroll);
             this.pnlRoll.Controls.Add(this.picRoll);
-            this.pnlRoll.Location = new System.Drawing.Point(12, 77);
+            this.pnlRoll.Location = new System.Drawing.Point(26, 154);
+            this.pnlRoll.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.pnlRoll.Name = "pnlRoll";
-            this.pnlRoll.Size = new System.Drawing.Size(373, 190);
+            this.pnlRoll.Size = new System.Drawing.Size(808, 380);
             this.pnlRoll.TabIndex = 1;
             // 
             // vScroll
             // 
-            this.vScroll.Location = new System.Drawing.Point(350, 3);
+            this.vScroll.Location = new System.Drawing.Point(758, 6);
             this.vScroll.Name = "vScroll";
-            this.vScroll.Size = new System.Drawing.Size(17, 167);
+            this.vScroll.Size = new System.Drawing.Size(17, 334);
             this.vScroll.TabIndex = 2;
             // 
             // hScroll
             // 
-            this.hScroll.Location = new System.Drawing.Point(3, 173);
+            this.hScroll.Location = new System.Drawing.Point(7, 346);
             this.hScroll.Name = "hScroll";
-            this.hScroll.Size = new System.Drawing.Size(344, 17);
+            this.hScroll.Size = new System.Drawing.Size(745, 17);
             this.hScroll.TabIndex = 1;
+            this.hScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hScroll_Scroll);
             // 
             // picRoll
             // 
-            this.picRoll.Location = new System.Drawing.Point(3, 3);
+            this.picRoll.Location = new System.Drawing.Point(7, 6);
+            this.picRoll.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.picRoll.Name = "picRoll";
-            this.picRoll.Size = new System.Drawing.Size(344, 167);
+            this.picRoll.Size = new System.Drawing.Size(745, 334);
             this.picRoll.TabIndex = 0;
             this.picRoll.TabStop = false;
             this.picRoll.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picRoll_MouseDown);
@@ -137,6 +140,7 @@
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbRoll,
             this.tsbEventList,
@@ -159,7 +163,8 @@
             this.tslStatus});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(494, 31);
+            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.toolStrip1.Size = new System.Drawing.Size(1070, 35);
             this.toolStrip1.TabIndex = 2;
             // 
             // tsbRoll
@@ -169,7 +174,7 @@
             this.tsbRoll.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbRoll.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbRoll.Name = "tsbRoll";
-            this.tsbRoll.Size = new System.Drawing.Size(28, 28);
+            this.tsbRoll.Size = new System.Drawing.Size(28, 32);
             this.tsbRoll.Text = "toolStripButton1";
             this.tsbRoll.ToolTipText = "ピアノロール入力";
             this.tsbRoll.Click += new System.EventHandler(this.tsbRoll_Click);
@@ -181,19 +186,19 @@
             this.tsbEventList.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbEventList.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbEventList.Name = "tsbEventList";
-            this.tsbEventList.Size = new System.Drawing.Size(28, 28);
+            this.tsbEventList.Size = new System.Drawing.Size(28, 32);
             this.tsbEventList.Text = "リスト入力";
             this.tsbEventList.Click += new System.EventHandler(this.tsbEventList_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 35);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 35);
             // 
             // tsbWrite
             // 
@@ -202,7 +207,7 @@
             this.tsbWrite.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbWrite.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbWrite.Name = "tsbWrite";
-            this.tsbWrite.Size = new System.Drawing.Size(28, 28);
+            this.tsbWrite.Size = new System.Drawing.Size(28, 32);
             this.tsbWrite.Text = "書き込み";
             this.tsbWrite.ToolTipText = "書き込みモード";
             this.tsbWrite.Click += new System.EventHandler(this.tsbWrite_Click);
@@ -214,7 +219,7 @@
             this.tsbSelect.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbSelect.Name = "tsbSelect";
-            this.tsbSelect.Size = new System.Drawing.Size(29, 28);
+            this.tsbSelect.Size = new System.Drawing.Size(29, 32);
             this.tsbSelect.Text = "選択";
             this.tsbSelect.ToolTipText = "選択モード";
             this.tsbSelect.Click += new System.EventHandler(this.tsbSelect_Click);
@@ -222,12 +227,12 @@
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 35);
             // 
             // tsdEditMode
             // 
@@ -259,7 +264,7 @@
             this.tsdEditMode.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsdEditMode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsdEditMode.Name = "tsdEditMode";
-            this.tsdEditMode.Size = new System.Drawing.Size(37, 28);
+            this.tsdEditMode.Size = new System.Drawing.Size(46, 32);
             this.tsdEditMode.Text = "入力種別";
             // 
             // tsmEditModeNote
@@ -267,35 +272,35 @@
             this.tsmEditModeNote.Image = global::PianoRoll.Properties.Resources.edit_note;
             this.tsmEditModeNote.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeNote.Name = "tsmEditModeNote";
-            this.tsmEditModeNote.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeNote.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeNote.Text = "音符";
             this.tsmEditModeNote.Click += new System.EventHandler(this.tsmEditModeNote_Click);
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(154, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(261, 6);
             // 
             // tsmEditModeInst
             // 
             this.tsmEditModeInst.Image = global::PianoRoll.Properties.Resources.edit_inst;
             this.tsmEditModeInst.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeInst.Name = "tsmEditModeInst";
-            this.tsmEditModeInst.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeInst.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeInst.Text = "音色";
             this.tsmEditModeInst.Click += new System.EventHandler(this.tsmEditModeInst_Click);
             // 
             // toolStripSeparator14
             // 
             this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(154, 6);
+            this.toolStripSeparator14.Size = new System.Drawing.Size(261, 6);
             // 
             // tsmEditModeVol
             // 
             this.tsmEditModeVol.Image = global::PianoRoll.Properties.Resources.edit_vol;
             this.tsmEditModeVol.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeVol.Name = "tsmEditModeVol";
-            this.tsmEditModeVol.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeVol.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeVol.Text = "音量";
             this.tsmEditModeVol.Click += new System.EventHandler(this.tsmEditModeVol_Click);
             // 
@@ -304,7 +309,7 @@
             this.tsmEditModeExp.Image = global::PianoRoll.Properties.Resources.edit_exp;
             this.tsmEditModeExp.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeExp.Name = "tsmEditModeExp";
-            this.tsmEditModeExp.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeExp.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeExp.Text = "強弱";
             this.tsmEditModeExp.Click += new System.EventHandler(this.tsmEditModeExp_Click);
             // 
@@ -313,21 +318,21 @@
             this.tsmEditModePan.Image = global::PianoRoll.Properties.Resources.edit_pan;
             this.tsmEditModePan.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModePan.Name = "tsmEditModePan";
-            this.tsmEditModePan.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModePan.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModePan.Text = "定位";
             this.tsmEditModePan.Click += new System.EventHandler(this.tsmEditModePan_Click);
             // 
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(154, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(261, 6);
             // 
             // tsmEditModePitch
             // 
             this.tsmEditModePitch.Image = global::PianoRoll.Properties.Resources.edit_pitch;
             this.tsmEditModePitch.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModePitch.Name = "tsmEditModePitch";
-            this.tsmEditModePitch.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModePitch.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModePitch.Text = "ピッチ";
             this.tsmEditModePitch.Click += new System.EventHandler(this.tsmEditModePitch_Click);
             // 
@@ -339,7 +344,7 @@
             this.tsmEditModeVib.Image = global::PianoRoll.Properties.Resources.edit_vib;
             this.tsmEditModeVib.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeVib.Name = "tsmEditModeVib";
-            this.tsmEditModeVib.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeVib.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeVib.Text = "ビブラート";
             // 
             // tsmEditModeVibDep
@@ -347,7 +352,7 @@
             this.tsmEditModeVibDep.Image = global::PianoRoll.Properties.Resources.edit_vib_dep;
             this.tsmEditModeVibDep.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeVibDep.Name = "tsmEditModeVibDep";
-            this.tsmEditModeVibDep.Size = new System.Drawing.Size(102, 30);
+            this.tsmEditModeVibDep.Size = new System.Drawing.Size(154, 38);
             this.tsmEditModeVibDep.Text = "深さ";
             this.tsmEditModeVibDep.Click += new System.EventHandler(this.tsmEditModeVibDep_Click);
             // 
@@ -356,14 +361,14 @@
             this.tsmEditModeVibRate.Image = global::PianoRoll.Properties.Resources.edit_vib_rate;
             this.tsmEditModeVibRate.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeVibRate.Name = "tsmEditModeVibRate";
-            this.tsmEditModeVibRate.Size = new System.Drawing.Size(102, 30);
+            this.tsmEditModeVibRate.Size = new System.Drawing.Size(154, 38);
             this.tsmEditModeVibRate.Text = "速さ";
             this.tsmEditModeVibRate.Click += new System.EventHandler(this.tsmEditModeVibRate_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(154, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(261, 6);
             // 
             // tsmEditModeDel
             // 
@@ -373,7 +378,7 @@
             this.tsmEditModeDel.Image = global::PianoRoll.Properties.Resources.edit_del;
             this.tsmEditModeDel.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeDel.Name = "tsmEditModeDel";
-            this.tsmEditModeDel.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeDel.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeDel.Text = "ディレイ";
             // 
             // tsmEditModeDelDep
@@ -381,7 +386,7 @@
             this.tsmEditModeDelDep.Image = global::PianoRoll.Properties.Resources.edit_del_dep;
             this.tsmEditModeDelDep.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeDelDep.Name = "tsmEditModeDelDep";
-            this.tsmEditModeDelDep.Size = new System.Drawing.Size(106, 30);
+            this.tsmEditModeDelDep.Size = new System.Drawing.Size(162, 38);
             this.tsmEditModeDelDep.Text = "深さ";
             this.tsmEditModeDelDep.Click += new System.EventHandler(this.tsmEditModeDelDep_Click);
             // 
@@ -390,7 +395,7 @@
             this.tsmEditModeDelTime.Image = global::PianoRoll.Properties.Resources.edit_del_time;
             this.tsmEditModeDelTime.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeDelTime.Name = "tsmEditModeDelTime";
-            this.tsmEditModeDelTime.Size = new System.Drawing.Size(106, 30);
+            this.tsmEditModeDelTime.Size = new System.Drawing.Size(162, 38);
             this.tsmEditModeDelTime.Text = "間隔";
             this.tsmEditModeDelTime.Click += new System.EventHandler(this.tsmEditModeDelTime_Click);
             // 
@@ -399,7 +404,7 @@
             this.tsmEditModeRev.Image = global::PianoRoll.Properties.Resources.edit_rev;
             this.tsmEditModeRev.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeRev.Name = "tsmEditModeRev";
-            this.tsmEditModeRev.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeRev.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeRev.Text = "リバーブ";
             this.tsmEditModeRev.Click += new System.EventHandler(this.tsmEditModeRev_Click);
             // 
@@ -408,21 +413,21 @@
             this.tsmEditModeCho.Image = global::PianoRoll.Properties.Resources.edit_cho;
             this.tsmEditModeCho.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeCho.Name = "tsmEditModeCho";
-            this.tsmEditModeCho.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeCho.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeCho.Text = "コーラス";
             this.tsmEditModeCho.Click += new System.EventHandler(this.tsmEditModeCho_Click);
             // 
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(154, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(261, 6);
             // 
             // tsmEditModeFc
             // 
             this.tsmEditModeFc.Image = global::PianoRoll.Properties.Resources.edit_fc;
             this.tsmEditModeFc.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeFc.Name = "tsmEditModeFc";
-            this.tsmEditModeFc.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeFc.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeFc.Text = "カットオフ";
             this.tsmEditModeFc.Click += new System.EventHandler(this.tsmEditModeFc_Click);
             // 
@@ -431,21 +436,21 @@
             this.tsmEditModeFq.Image = global::PianoRoll.Properties.Resources.edit_fq;
             this.tsmEditModeFq.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeFq.Name = "tsmEditModeFq";
-            this.tsmEditModeFq.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeFq.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeFq.Text = "レゾナンス";
             this.tsmEditModeFq.Click += new System.EventHandler(this.tsmEditModeFq_Click);
             // 
             // toolStripSeparator12
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(154, 6);
+            this.toolStripSeparator12.Size = new System.Drawing.Size(261, 6);
             // 
             // tsmEditModeAttack
             // 
             this.tsmEditModeAttack.Image = global::PianoRoll.Properties.Resources.edit_attack;
             this.tsmEditModeAttack.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeAttack.Name = "tsmEditModeAttack";
-            this.tsmEditModeAttack.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeAttack.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeAttack.Text = "立ち上がり時間";
             this.tsmEditModeAttack.Click += new System.EventHandler(this.tsmEditModeAttack_Click);
             // 
@@ -454,21 +459,21 @@
             this.tsmEditModeRelease.Image = global::PianoRoll.Properties.Resources.edit_release;
             this.tsmEditModeRelease.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeRelease.Name = "tsmEditModeRelease";
-            this.tsmEditModeRelease.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeRelease.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeRelease.Text = "持続時間";
             this.tsmEditModeRelease.Click += new System.EventHandler(this.tsmEditModeRelease_Click);
             // 
             // toolStripSeparator13
             // 
             this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new System.Drawing.Size(154, 6);
+            this.toolStripSeparator13.Size = new System.Drawing.Size(261, 6);
             // 
             // tsmEditModeTempo
             // 
             this.tsmEditModeTempo.Image = global::PianoRoll.Properties.Resources.edit_tempo;
             this.tsmEditModeTempo.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeTempo.Name = "tsmEditModeTempo";
-            this.tsmEditModeTempo.Size = new System.Drawing.Size(157, 30);
+            this.tsmEditModeTempo.Size = new System.Drawing.Size(264, 38);
             this.tsmEditModeTempo.Text = "テンポ";
             this.tsmEditModeTempo.Click += new System.EventHandler(this.tsmEditModeTempo_Click);
             // 
@@ -497,7 +502,7 @@
             this.tsdTimeDiv.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsdTimeDiv.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsdTimeDiv.Name = "tsdTimeDiv";
-            this.tsdTimeDiv.Size = new System.Drawing.Size(29, 28);
+            this.tsdTimeDiv.Size = new System.Drawing.Size(38, 32);
             this.tsdTimeDiv.Text = "入力単位";
             // 
             // tsmTick960
@@ -505,7 +510,7 @@
             this.tsmTick960.Image = global::PianoRoll.Properties.Resources.tick960;
             this.tsmTick960.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick960.Name = "tsmTick960";
-            this.tsmTick960.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick960.Size = new System.Drawing.Size(201, 38);
             this.tsmTick960.Text = "4分";
             this.tsmTick960.Click += new System.EventHandler(this.tsmTick960_Click);
             // 
@@ -514,7 +519,7 @@
             this.tsmTick480.Image = global::PianoRoll.Properties.Resources.tick480;
             this.tsmTick480.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick480.Name = "tsmTick480";
-            this.tsmTick480.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick480.Size = new System.Drawing.Size(201, 38);
             this.tsmTick480.Text = "8分";
             this.tsmTick480.Click += new System.EventHandler(this.tsmTick480_Click);
             // 
@@ -525,7 +530,7 @@
             this.tsmTick240.Image = global::PianoRoll.Properties.Resources.tick240;
             this.tsmTick240.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick240.Name = "tsmTick240";
-            this.tsmTick240.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick240.Size = new System.Drawing.Size(201, 38);
             this.tsmTick240.Text = "16分";
             this.tsmTick240.Click += new System.EventHandler(this.tsmTick240_Click);
             // 
@@ -534,7 +539,7 @@
             this.tsmTick120.Image = global::PianoRoll.Properties.Resources.tick120;
             this.tsmTick120.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick120.Name = "tsmTick120";
-            this.tsmTick120.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick120.Size = new System.Drawing.Size(201, 38);
             this.tsmTick120.Text = "32分";
             this.tsmTick120.Click += new System.EventHandler(this.tsmTick120_Click);
             // 
@@ -543,21 +548,21 @@
             this.tsmTick060.Image = global::PianoRoll.Properties.Resources.tick060;
             this.tsmTick060.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick060.Name = "tsmTick060";
-            this.tsmTick060.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick060.Size = new System.Drawing.Size(201, 38);
             this.tsmTick060.Text = "64分";
             this.tsmTick060.Click += new System.EventHandler(this.tsmTick060_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(113, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(198, 6);
             // 
             // tsmTick640
             // 
             this.tsmTick640.Image = global::PianoRoll.Properties.Resources.tick640;
             this.tsmTick640.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick640.Name = "tsmTick640";
-            this.tsmTick640.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick640.Size = new System.Drawing.Size(201, 38);
             this.tsmTick640.Text = "3連4分";
             this.tsmTick640.Click += new System.EventHandler(this.tsmTick640_Click);
             // 
@@ -566,7 +571,7 @@
             this.tsmTick320.Image = global::PianoRoll.Properties.Resources.tick320;
             this.tsmTick320.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick320.Name = "tsmTick320";
-            this.tsmTick320.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick320.Size = new System.Drawing.Size(201, 38);
             this.tsmTick320.Text = "3連8分";
             this.tsmTick320.Click += new System.EventHandler(this.tsmTick320_Click);
             // 
@@ -575,7 +580,7 @@
             this.tsmTick160.Image = global::PianoRoll.Properties.Resources.tick160;
             this.tsmTick160.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick160.Name = "tsmTick160";
-            this.tsmTick160.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick160.Size = new System.Drawing.Size(201, 38);
             this.tsmTick160.Text = "3連16分";
             this.tsmTick160.Click += new System.EventHandler(this.tsmTick160_Click);
             // 
@@ -584,7 +589,7 @@
             this.tsmTick080.Image = global::PianoRoll.Properties.Resources.tick080;
             this.tsmTick080.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick080.Name = "tsmTick080";
-            this.tsmTick080.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick080.Size = new System.Drawing.Size(201, 38);
             this.tsmTick080.Text = "3連32分";
             this.tsmTick080.Click += new System.EventHandler(this.tsmTick080_Click);
             // 
@@ -593,21 +598,21 @@
             this.tsmTick040.Image = global::PianoRoll.Properties.Resources.tick040;
             this.tsmTick040.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick040.Name = "tsmTick040";
-            this.tsmTick040.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick040.Size = new System.Drawing.Size(201, 38);
             this.tsmTick040.Text = "3連64分";
             this.tsmTick040.Click += new System.EventHandler(this.tsmTick040_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(113, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(198, 6);
             // 
             // tsmTick384
             // 
             this.tsmTick384.Image = global::PianoRoll.Properties.Resources.tick384;
             this.tsmTick384.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick384.Name = "tsmTick384";
-            this.tsmTick384.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick384.Size = new System.Drawing.Size(201, 38);
             this.tsmTick384.Text = "5連4分";
             this.tsmTick384.Click += new System.EventHandler(this.tsmTick384_Click);
             // 
@@ -616,7 +621,7 @@
             this.tsmTick192.Image = global::PianoRoll.Properties.Resources.tick192;
             this.tsmTick192.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick192.Name = "tsmTick192";
-            this.tsmTick192.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick192.Size = new System.Drawing.Size(201, 38);
             this.tsmTick192.Text = "5連8分";
             this.tsmTick192.Click += new System.EventHandler(this.tsmTick192_Click);
             // 
@@ -625,7 +630,7 @@
             this.tsmTick096.Image = global::PianoRoll.Properties.Resources.tick096;
             this.tsmTick096.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick096.Name = "tsmTick096";
-            this.tsmTick096.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick096.Size = new System.Drawing.Size(201, 38);
             this.tsmTick096.Text = "5連16分";
             this.tsmTick096.Click += new System.EventHandler(this.tsmTick096_Click);
             // 
@@ -634,7 +639,7 @@
             this.tsmTick048.Image = global::PianoRoll.Properties.Resources.tick048;
             this.tsmTick048.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick048.Name = "tsmTick048";
-            this.tsmTick048.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick048.Size = new System.Drawing.Size(201, 38);
             this.tsmTick048.Text = "5連32分";
             this.tsmTick048.Click += new System.EventHandler(this.tsmTick048_Click);
             // 
@@ -643,19 +648,19 @@
             this.tsmTick024.Image = global::PianoRoll.Properties.Resources.tick024;
             this.tsmTick024.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmTick024.Name = "tsmTick024";
-            this.tsmTick024.Size = new System.Drawing.Size(116, 30);
+            this.tsmTick024.Size = new System.Drawing.Size(201, 38);
             this.tsmTick024.Text = "5連64分";
             this.tsmTick024.Click += new System.EventHandler(this.tsmTick024_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 35);
             // 
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 35);
             // 
             // tsbTimeZoom
             // 
@@ -664,7 +669,7 @@
             this.tsbTimeZoom.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbTimeZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbTimeZoom.Name = "tsbTimeZoom";
-            this.tsbTimeZoom.Size = new System.Drawing.Size(28, 28);
+            this.tsbTimeZoom.Size = new System.Drawing.Size(28, 32);
             this.tsbTimeZoom.Text = "時間方向拡大\r\nctrl + マウスホイール↑";
             this.tsbTimeZoom.Click += new System.EventHandler(this.tsbTimeZoom_Click);
             // 
@@ -675,7 +680,7 @@
             this.tsbTimeZoomout.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbTimeZoomout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbTimeZoomout.Name = "tsbTimeZoomout";
-            this.tsbTimeZoomout.Size = new System.Drawing.Size(28, 28);
+            this.tsbTimeZoomout.Size = new System.Drawing.Size(28, 32);
             this.tsbTimeZoomout.Text = "時間方向縮小\r\nctrl + マウスホイール↓";
             this.tsbTimeZoomout.Click += new System.EventHandler(this.tsbTimeZoomout_Click);
             // 
@@ -686,7 +691,7 @@
             this.tsbToneZoom.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbToneZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbToneZoom.Name = "tsbToneZoom";
-            this.tsbToneZoom.Size = new System.Drawing.Size(28, 28);
+            this.tsbToneZoom.Size = new System.Drawing.Size(28, 32);
             this.tsbToneZoom.Text = "音程方向拡大\r\nshift + マウスホイール↑";
             this.tsbToneZoom.Click += new System.EventHandler(this.tsbToneZoom_Click);
             // 
@@ -697,24 +702,24 @@
             this.tsbToneZoomout.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbToneZoomout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbToneZoomout.Name = "tsbToneZoomout";
-            this.tsbToneZoomout.Size = new System.Drawing.Size(28, 28);
+            this.tsbToneZoomout.Size = new System.Drawing.Size(28, 32);
             this.tsbToneZoomout.Text = "音程方向縮小\r\nshift + マウスホイール↓";
             this.tsbToneZoomout.Click += new System.EventHandler(this.tsbToneZoomout_Click);
             // 
             // toolStripSeparator16
             // 
             this.toolStripSeparator16.Name = "toolStripSeparator16";
-            this.toolStripSeparator16.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator16.Size = new System.Drawing.Size(6, 35);
             // 
             // toolStripSeparator17
             // 
             this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator17.Size = new System.Drawing.Size(6, 35);
             // 
             // tslStatus
             // 
             this.tslStatus.Name = "tslStatus";
-            this.tslStatus.Size = new System.Drawing.Size(86, 28);
+            this.tslStatus.Size = new System.Drawing.Size(175, 32);
             this.tslStatus.Text = "toolStripLabel1";
             // 
             // timer1
@@ -724,20 +729,22 @@
             // picMesureBar
             // 
             this.picMesureBar.BackColor = System.Drawing.Color.White;
-            this.picMesureBar.Location = new System.Drawing.Point(15, 46);
+            this.picMesureBar.Location = new System.Drawing.Point(33, 92);
+            this.picMesureBar.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.picMesureBar.Name = "picMesureBar";
-            this.picMesureBar.Size = new System.Drawing.Size(344, 25);
+            this.picMesureBar.Size = new System.Drawing.Size(745, 50);
             this.picMesureBar.TabIndex = 3;
             this.picMesureBar.TabStop = false;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(494, 279);
+            this.ClientSize = new System.Drawing.Size(1070, 558);
             this.Controls.Add(this.picMesureBar);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.pnlRoll);
+            this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.Name = "Form1";
             this.Text = "Form1";
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
