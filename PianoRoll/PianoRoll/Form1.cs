@@ -75,7 +75,7 @@ namespace PianoRoll {
             28, 24, 20, 18, 15, 12, 10, 8, 6, 5
         };
 
-        private static readonly int QuarterNoteWidth = 80;
+        private static readonly int QuarterNoteWidth = 96;
         private static readonly StringFormat NoteNameFormat = new StringFormat() {
             Alignment = StringAlignment.Near,
             LineAlignment = StringAlignment.Near
