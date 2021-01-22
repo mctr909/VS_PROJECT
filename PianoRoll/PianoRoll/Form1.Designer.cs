@@ -164,7 +164,7 @@
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(1070, 35);
+            this.toolStrip1.Size = new System.Drawing.Size(1070, 38);
             this.toolStrip1.TabIndex = 2;
             // 
             // tsbRoll
@@ -174,7 +174,7 @@
             this.tsbRoll.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbRoll.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbRoll.Name = "tsbRoll";
-            this.tsbRoll.Size = new System.Drawing.Size(28, 32);
+            this.tsbRoll.Size = new System.Drawing.Size(28, 35);
             this.tsbRoll.Text = "toolStripButton1";
             this.tsbRoll.ToolTipText = "ピアノロール入力";
             this.tsbRoll.Click += new System.EventHandler(this.tsbRoll_Click);
@@ -186,19 +186,19 @@
             this.tsbEventList.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbEventList.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbEventList.Name = "tsbEventList";
-            this.tsbEventList.Size = new System.Drawing.Size(28, 32);
+            this.tsbEventList.Size = new System.Drawing.Size(28, 35);
             this.tsbEventList.Text = "リスト入力";
             this.tsbEventList.Click += new System.EventHandler(this.tsbEventList_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 35);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 38);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 35);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 38);
             // 
             // tsbWrite
             // 
@@ -207,9 +207,9 @@
             this.tsbWrite.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbWrite.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbWrite.Name = "tsbWrite";
-            this.tsbWrite.Size = new System.Drawing.Size(28, 32);
+            this.tsbWrite.Size = new System.Drawing.Size(28, 35);
             this.tsbWrite.Text = "書き込み";
-            this.tsbWrite.ToolTipText = "書き込みモード";
+            this.tsbWrite.ToolTipText = "書き込みモード\r\nF1";
             this.tsbWrite.Click += new System.EventHandler(this.tsbWrite_Click);
             // 
             // tsbSelect
@@ -219,20 +219,20 @@
             this.tsbSelect.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbSelect.Name = "tsbSelect";
-            this.tsbSelect.Size = new System.Drawing.Size(29, 32);
+            this.tsbSelect.Size = new System.Drawing.Size(29, 35);
             this.tsbSelect.Text = "選択";
-            this.tsbSelect.ToolTipText = "選択モード";
+            this.tsbSelect.ToolTipText = "選択モード\r\nF2";
             this.tsbSelect.Click += new System.EventHandler(this.tsbSelect_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 38);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 35);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 38);
             // 
             // tsdEditMode
             // 
@@ -264,7 +264,7 @@
             this.tsdEditMode.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsdEditMode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsdEditMode.Name = "tsdEditMode";
-            this.tsdEditMode.Size = new System.Drawing.Size(46, 32);
+            this.tsdEditMode.Size = new System.Drawing.Size(46, 35);
             this.tsdEditMode.Text = "入力種別";
             // 
             // tsmEditModeNote
@@ -273,7 +273,7 @@
             this.tsmEditModeNote.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmEditModeNote.Name = "tsmEditModeNote";
             this.tsmEditModeNote.Size = new System.Drawing.Size(264, 38);
-            this.tsmEditModeNote.Text = "音符";
+            this.tsmEditModeNote.Text = "音符  F3";
             this.tsmEditModeNote.Click += new System.EventHandler(this.tsmEditModeNote_Click);
             // 
             // toolStripSeparator8
@@ -502,7 +502,7 @@
             this.tsdTimeDiv.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsdTimeDiv.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsdTimeDiv.Name = "tsdTimeDiv";
-            this.tsdTimeDiv.Size = new System.Drawing.Size(38, 32);
+            this.tsdTimeDiv.Size = new System.Drawing.Size(38, 35);
             this.tsdTimeDiv.Text = "入力単位";
             // 
             // tsmTick960
@@ -655,12 +655,12 @@
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 35);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 38);
             // 
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 35);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 38);
             // 
             // tsbTimeZoom
             // 
@@ -669,7 +669,7 @@
             this.tsbTimeZoom.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbTimeZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbTimeZoom.Name = "tsbTimeZoom";
-            this.tsbTimeZoom.Size = new System.Drawing.Size(28, 32);
+            this.tsbTimeZoom.Size = new System.Drawing.Size(28, 35);
             this.tsbTimeZoom.Text = "時間方向拡大\r\nctrl + マウスホイール↑";
             this.tsbTimeZoom.Click += new System.EventHandler(this.tsbTimeZoom_Click);
             // 
@@ -680,7 +680,7 @@
             this.tsbTimeZoomout.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbTimeZoomout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbTimeZoomout.Name = "tsbTimeZoomout";
-            this.tsbTimeZoomout.Size = new System.Drawing.Size(28, 32);
+            this.tsbTimeZoomout.Size = new System.Drawing.Size(28, 35);
             this.tsbTimeZoomout.Text = "時間方向縮小\r\nctrl + マウスホイール↓";
             this.tsbTimeZoomout.Click += new System.EventHandler(this.tsbTimeZoomout_Click);
             // 
@@ -691,7 +691,7 @@
             this.tsbToneZoom.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbToneZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbToneZoom.Name = "tsbToneZoom";
-            this.tsbToneZoom.Size = new System.Drawing.Size(28, 32);
+            this.tsbToneZoom.Size = new System.Drawing.Size(28, 35);
             this.tsbToneZoom.Text = "音程方向拡大\r\nshift + マウスホイール↑";
             this.tsbToneZoom.Click += new System.EventHandler(this.tsbToneZoom_Click);
             // 
@@ -702,24 +702,24 @@
             this.tsbToneZoomout.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbToneZoomout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbToneZoomout.Name = "tsbToneZoomout";
-            this.tsbToneZoomout.Size = new System.Drawing.Size(28, 32);
+            this.tsbToneZoomout.Size = new System.Drawing.Size(28, 35);
             this.tsbToneZoomout.Text = "音程方向縮小\r\nshift + マウスホイール↓";
             this.tsbToneZoomout.Click += new System.EventHandler(this.tsbToneZoomout_Click);
             // 
             // toolStripSeparator16
             // 
             this.toolStripSeparator16.Name = "toolStripSeparator16";
-            this.toolStripSeparator16.Size = new System.Drawing.Size(6, 35);
+            this.toolStripSeparator16.Size = new System.Drawing.Size(6, 38);
             // 
             // toolStripSeparator17
             // 
             this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new System.Drawing.Size(6, 35);
+            this.toolStripSeparator17.Size = new System.Drawing.Size(6, 38);
             // 
             // tslStatus
             // 
             this.tslStatus.Name = "tslStatus";
-            this.tslStatus.Size = new System.Drawing.Size(175, 32);
+            this.tslStatus.Size = new System.Drawing.Size(175, 35);
             this.tslStatus.Text = "toolStripLabel1";
             // 
             // timer1
