@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using SMF;
+
 namespace PianoRoll {
     public partial class Form1 : Form {
         private enum E_DRAW_EVENT {
@@ -119,7 +121,7 @@ namespace PianoRoll {
         private bool mPressAlt = false;
         private Keys mPressKey = Keys.None;
 
-        private List<SMF.Event> mEventList = new List<SMF.Event>();
+        private List<Event> mEventList = new List<Event>();
 
         public Form1() {
             InitializeComponent();
@@ -780,8 +782,8 @@ namespace PianoRoll {
         }
 
         private void addNoteEvent() {
-            mEventList.Add(new SMF.Event(mTimeBegin, 0, 0x90, mToneBegin, 127));
-            mEventList.Add(new SMF.Event(mTimeEnd, 0, 0x80, mToneBegin, 0));
+            mEventList.Add(new Event(mTimeBegin, 0, 0, E_STATUS.NOTE_ON, mToneBegin, 127));
+            mEventList.Add(new Event(mTimeEnd, 0, 0, E_STATUS.NOTE_OFF, mToneBegin, 0));
         }
 
         private void putDrawEvents() {
@@ -791,7 +793,7 @@ namespace PianoRoll {
             var dispNoteList = new List<DrawEvent>();
             foreach (var ev in mEventList) {
                 switch (ev.Type) {
-                case SMF.E_STATUS.NOTE_OFF:
+                case E_STATUS.NOTE_OFF:
                     for (int i = 0; i < dispNoteList.Count; i++) {
                         var dispEv = dispNoteList[i];
                         if (dispEv.data1 == ev.data[1]) {
@@ -804,7 +806,7 @@ namespace PianoRoll {
                         }
                     }
                     break;
-                case SMF.E_STATUS.NOTE_ON:
+                case E_STATUS.NOTE_ON:
                     if (ev.tick <= endTime) {
                         dispNoteList.Add(new DrawEvent(E_DRAW_EVENT.NOTE, ev.tick, ev.data[1]));
                     }

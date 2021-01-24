@@ -167,18 +167,107 @@ namespace SMF {
 
         public Meta Meta { get { return Meta.Instance(data); } }
 
-        public Event(int tick, int track, params int[] data) {
+        public Event(int tick, int track, int ch, E_STATUS type, params int[] value) {
             this.tick = tick;
             this.track = track;
-            this.data = new byte[data.Length];
-            for (int i = 0; i < data.Length; i++) {
-                this.data[i] = (byte)data[i];
+            switch (value.Length) {
+            case 1:
+                data = new byte[] {
+                    (byte)((byte)type | ch),
+                    (byte)value[0]
+                };
+                break;
+            case 2:
+                data = new byte[] {
+                    (byte)((byte)type | ch),
+                    (byte)value[0],
+                    (byte)value[1]
+                };
+                break;
+            default:
+                data = new byte[] {
+                    (byte)((byte)type | ch)
+                };
+                break;
+            }
+        }
+
+        public Event(int tick, int track, int ch, E_CONTROL type, params int[] value) {
+            this.tick = tick;
+            this.track = track;
+            switch (value.Length) {
+            case 1:
+                data = new byte[] {
+                    (byte)((byte)E_STATUS.CONTROL | ch),
+                    (byte)type,
+                    (byte)value[0]
+                };
+                break;
+            default:
+                data = new byte[] {
+                    (byte)((byte)E_STATUS.CONTROL | ch),
+                    (byte)type,
+                    0
+                };
+                break;
             }
         }
 
         public Event(int tick, int track, Meta meta) {
             this.tick = tick;
             this.track = track;
+            meta.Copy(out data);
+        }
+
+        public Event(int ch, E_STATUS type, params int[] value) {
+            tick = 0;
+            track = 0;
+            switch (value.Length) {
+            case 1:
+                data = new byte[] {
+                    (byte)((byte)type | ch),
+                    (byte)value[0]
+                };
+                break;
+            case 2:
+                data = new byte[] {
+                    (byte)((byte)type | ch),
+                    (byte)value[0],
+                    (byte)value[1]
+                };
+                break;
+            default:
+                data = new byte[] {
+                    (byte)((byte)type | ch)
+                };
+                break;
+            }
+        }
+
+        public Event(int ch, E_CONTROL type, params int[] value) {
+            tick = 0;
+            track = 0;
+            switch (value.Length) {
+            case 1:
+                data = new byte[] {
+                    (byte)((byte)E_STATUS.CONTROL | ch),
+                    (byte)type,
+                    (byte)value[0]
+                };
+                break;
+            default:
+                data = new byte[] {
+                    (byte)((byte)E_STATUS.CONTROL | ch),
+                    (byte)type,
+                    0
+                };
+                break;
+            }
+        }
+
+        public Event(Meta meta) {
+            tick = 0;
+            track = 0;
             meta.Copy(out data);
         }
 
