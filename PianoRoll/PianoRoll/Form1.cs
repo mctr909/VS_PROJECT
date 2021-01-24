@@ -68,10 +68,10 @@ namespace PianoRoll {
         };
 
         private static readonly int[] TimeScales = new int[] {
-            120, 160, 240, 320, 480, 640, 960, 1280, 1920, 2560
+            120, 240, 480, 960, 1920
         };
 
-        private static readonly int[] KeyHeights = new int[] {
+        private static readonly int[] ToneHeights = new int[] {
             28, 24, 20, 18, 15, 12, 10, 8, 6, 5
         };
 
@@ -82,7 +82,7 @@ namespace PianoRoll {
         };
 
         private static readonly Pen Gray12 = new Pen(Color.FromArgb(167, 31, 31, 31), 1.0f);
-        private static readonly Pen Gray66 = new Pen(Color.FromArgb(167, 168, 168, 168), 1.0f);
+        private static readonly Pen Gray75 = new Pen(Color.FromArgb(167, 191, 191, 191), 1.0f);
         private static readonly Pen Gray80 = new Pen(Color.FromArgb(167, 204, 204, 204), 1.0f);
         private static readonly Pen Gray90 = new Pen(Color.FromArgb(167, 229, 229, 229), 1.0f);
         private static readonly Pen FocusToneColor = new Pen(Color.FromArgb(95, 127, 255, 127), 1.0f);
@@ -101,21 +101,19 @@ namespace PianoRoll {
 
         private Font mNoteNameFont = new Font("MS Gothic", 9.0f, FontStyle.Regular);
 
-        private int mTimeScaleIdx = 6;
-        private int mTimeScale = TimeScales[6];
-
-        private int mKeyHeightIdx = 6;
-        private int mKeyHeight = KeyHeights[6];
-
         private int mTimeSnap = 240;
 
-        private Point mCursor;
+        private int mTimeScaleIdx = 3;
+        private int mTimeScale = TimeScales[3];
+        private int mToneHeightIdx = 6;
+        private int mToneHeight = ToneHeights[6];
 
+        private Point mCursor;
         private int mDispTones;
-        private int mBeginTone;
-        private int mEndTone;
-        private int mBeginTime;
-        private int mEndTime;
+        private int mToneBegin;
+        private int mToneEnd;
+        private int mTimeBegin;
+        private int mTimeEnd;
 
         private bool mIsDrag = false;
         private bool mPressAlt = false;
@@ -134,6 +132,9 @@ namespace PianoRoll {
             picRoll.MouseWheel += new MouseEventHandler(picRoll_MouseWheel);
             KeyDown += new KeyEventHandler(picRoll_KeyDown);
             KeyUp += new KeyEventHandler(picRoll_KeyUp);
+
+            hScroll.Minimum = 0;
+            hScroll.Maximum = 960 * 4 * 4;
 
             timer1.Interval = 16;
             timer1.Enabled = true;
@@ -303,32 +304,32 @@ namespace PianoRoll {
             case MouseButtons.Right:
                 break;
             case MouseButtons.Left:
-                mBeginTime = hScroll.Value + mTimeScale * mCursor.X / QuarterNoteWidth;
-                mBeginTone = 127 + vScroll.Minimum - vScroll.Value - mCursor.Y / mKeyHeight;
+                mTimeBegin = snapTimeScroll(mCursor.X);
+                mToneBegin = 127 + vScroll.Minimum - vScroll.Value - mCursor.Y / mToneHeight;
                 mIsDrag = true;
                 break;
             }
         }
 
         private void picRoll_MouseUp(object sender, MouseEventArgs e) {
-            if (mEndTime < mBeginTime) {
-                var tmp = mEndTime;
-                mEndTime = mBeginTime;
+            if (mTimeEnd < mTimeBegin) {
+                var tmp = mTimeEnd;
+                mTimeEnd = mTimeBegin;
                 if (tsbWrite.Checked) {
-                    mEndTime += mTimeSnap;
+                    mTimeEnd += mTimeSnap;
                 }
-                mBeginTime = tmp;
+                mTimeBegin = tmp;
             } else {
-                mEndTime += mTimeSnap;
+                mTimeEnd += mTimeSnap;
             }
 
-            if (mEndTone < mBeginTone) {
-                var tmp = mEndTone;
-                mEndTone = mBeginTone;
-                mBeginTone = tmp;
+            if (mToneEnd < mToneBegin) {
+                var tmp = mToneEnd;
+                mToneEnd = mToneBegin;
+                mToneBegin = tmp;
             }
 
-            tslStatus.Text = string.Format("Tone:{0}-{1} Time:{2}-{3}", mBeginTone, mEndTone, mBeginTime, mEndTime);
+            tslStatus.Text = string.Format("Tone:{0}-{1} Time:{2}-{3}", mToneBegin, mToneEnd, mTimeBegin, mTimeEnd);
             if (tsbWrite.Checked && tsmEditModeNote.Checked) {
                 addNoteEvent();
                 putDrawEvents();
@@ -338,13 +339,13 @@ namespace PianoRoll {
 
         private void picRoll_MouseMove(object sender, MouseEventArgs e) {
             snapCursor(picRoll.PointToClient(Cursor.Position));
-            mEndTime = hScroll.Value + mTimeScale * mCursor.X / QuarterNoteWidth;
-            mEndTone = 127 + vScroll.Minimum - vScroll.Value - mCursor.Y / mKeyHeight;
-            if (mEndTone < 0) {
-                mEndTone = 0;
+            mTimeEnd = snapTimeScroll(mCursor.X);
+            mToneEnd = 127 + vScroll.Minimum - vScroll.Value - mCursor.Y / mToneHeight;
+            if (mToneEnd < 0) {
+                mToneEnd = 0;
             }
             if (tsbWrite.Checked) {
-                mBeginTone = mEndTone;
+                mToneBegin = mToneEnd;
             }
         }
 
@@ -402,10 +403,6 @@ namespace PianoRoll {
                 break;
             }
         }
-
-        private void hScroll_Scroll(object sender, ScrollEventArgs e) {
-            hScroll.Value = hScroll.Value / mTimeSnap * mTimeSnap;
-        }
         #endregion
 
         #region zoom event
@@ -450,12 +447,12 @@ namespace PianoRoll {
         }
 
         private void toneZoom() {
-            if (0 < mKeyHeightIdx) {
-                mKeyHeightIdx--;
-                mKeyHeight = KeyHeights[mKeyHeightIdx];
+            if (0 < mToneHeightIdx) {
+                mToneHeightIdx--;
+                mToneHeight = ToneHeights[mToneHeightIdx];
                 setSize();
             }
-            if (0 == mKeyHeightIdx) {
+            if (0 == mToneHeightIdx) {
                 tsbToneZoom.Enabled = false;
             }
             tsbToneZoomout.Enabled = true;
@@ -463,18 +460,22 @@ namespace PianoRoll {
         }
 
         private void toneZoomout() {
-            if (mKeyHeightIdx < KeyHeights.Length - 1) {
-                mKeyHeightIdx++;
-                mKeyHeight = KeyHeights[mKeyHeightIdx];
+            if (mToneHeightIdx < ToneHeights.Length - 1) {
+                mToneHeightIdx++;
+                mToneHeight = ToneHeights[mToneHeightIdx];
                 setSize();
             }
-            if (mKeyHeightIdx == KeyHeights.Length - 1) {
+            if (mToneHeightIdx == ToneHeights.Length - 1) {
                 tsbToneZoomout.Enabled = false;
             }
             tsbToneZoom.Enabled = true;
             snapCursor(mCursor);
         }
         #endregion
+
+        private int snapTimeScroll(int x = 0) {
+            return hScroll.Value / mTimeSnap * mTimeSnap + mTimeScale * x / QuarterNoteWidth;
+        }
 
         private void snapCursor(Point pos) {
             if (picRoll.Width <= pos.X) {
@@ -505,10 +506,10 @@ namespace PianoRoll {
                     vScroll.Value--;
                 }
             }
-            var ofsY = mBmpRoll.Height % mKeyHeight;
-            pos.Y = (pos.Y - ofsY) / mKeyHeight * mKeyHeight;
+            var ofsY = mBmpRoll.Height % mToneHeight;
+            pos.Y = (pos.Y - ofsY) / mToneHeight * mToneHeight;
 
-            var tone = pos.Y / mKeyHeight;
+            var tone = pos.Y / mToneHeight;
             if (tone < 0) {
                 tone = 0;
             } else if (127 < tone) {
@@ -516,7 +517,7 @@ namespace PianoRoll {
             }
 
             mCursor.X = pos.X;
-            mCursor.Y = tone * mKeyHeight + ofsY;
+            mCursor.Y = tone * mToneHeight + ofsY;
         }
 
         private void setSize() {
@@ -549,7 +550,7 @@ namespace PianoRoll {
             mBmpRoll = new Bitmap(picRoll.Width, picRoll.Height);
             mgRoll = Graphics.FromImage(mBmpRoll);
 
-            mDispTones = picRoll.Height / mKeyHeight;
+            mDispTones = picRoll.Height / mToneHeight;
             if (128 < mDispTones) {
                 mDispTones = 128;
             }
@@ -557,15 +558,14 @@ namespace PianoRoll {
             vScroll.Minimum = mDispTones;
             vScroll.SmallChange = 1;
             vScroll.LargeChange = 1;
-            hScroll.Maximum = 960 * 4 * 16;
             hScroll.LargeChange = mTimeSnap;
             hScroll.SmallChange = mTimeSnap;
 
-            int fontSize = 7;
+            int fontSize = 9;
             while (fontSize < 17) {
                 var newFont = new Font(mNoteNameFont.Name, fontSize);
-                var fsize = mgRoll.MeasureString("C", newFont).Height - 2;
-                if (mKeyHeight <= fsize) {
+                var fsize = mgRoll.MeasureString("-1", newFont).Height - 3;
+                if (mToneHeight <= fsize) {
                     break;
                 }
                 mNoteNameFont = newFont;
@@ -671,36 +671,38 @@ namespace PianoRoll {
             mTimeSnap = Snaps[obj.Text];
             hScroll.LargeChange = mTimeSnap;
             hScroll.SmallChange = mTimeSnap;
+
+            drawRoll();
         }
 
         private void drawRoll() {
             mgRoll.Clear(Color.Transparent);
 
-            var ofsY = mBmpRoll.Height % mKeyHeight;
+            var ofsY = mBmpRoll.Height % mToneHeight;
 
             for (int y = mDispTones - 1, no = 128 - vScroll.Value; 0 <= y; y--, no++) {
-                var py = mKeyHeight * y + ofsY;
+                var py = mToneHeight * y + ofsY;
                 switch (no % 12) {
                 case 1:
                 case 3:
                 case 6:
                 case 8:
                 case 10:
-                    mgRoll.FillRectangle(Gray80.Brush, 0, py + 1, mBmpRoll.Width, mKeyHeight - 1);
-                    mgRoll.DrawLine(Gray66, 0, py, mBmpRoll.Width, py);
+                    mgRoll.FillRectangle(Gray80.Brush, 0, py + 1, mBmpRoll.Width, mToneHeight - 1);
+                    mgRoll.DrawLine(Gray75, 0, py, mBmpRoll.Width, py);
                     break;
                 case 11:
                     mgRoll.DrawLine(Gray12, 0, py, mBmpRoll.Width, py);
                     break;
                 default:
-                    mgRoll.DrawLine(Gray66, 0, py, mBmpRoll.Width, py);
+                    mgRoll.DrawLine(Gray75, 0, py, mBmpRoll.Width, py);
                     break;
                 }
             }
 
             if (mIsDrag) {
-                var x1 = (mBeginTime - hScroll.Value) * QuarterNoteWidth / mTimeScale;
-                var x2 = (mEndTime - hScroll.Value) * QuarterNoteWidth / mTimeScale;
+                var x1 = (mTimeBegin - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
+                var x2 = (mTimeEnd - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
                 if (x1 <= x2) {
                     x2 += QuarterNoteWidth * mTimeSnap / mTimeScale;
                 } else {
@@ -714,12 +716,12 @@ namespace PianoRoll {
                     x1 = tmp;
                 }
 
-                var y1 = (127 + vScroll.Minimum - vScroll.Value - mBeginTone) * mKeyHeight + ofsY;
-                var y2 = (127 + vScroll.Minimum - vScroll.Value - mEndTone) * mKeyHeight + ofsY;
+                var y1 = (127 + vScroll.Minimum - vScroll.Value - mToneBegin) * mToneHeight + ofsY;
+                var y2 = (127 + vScroll.Minimum - vScroll.Value - mToneEnd) * mToneHeight + ofsY;
                 if (y1 <= y2) {
-                    y2 += mKeyHeight;
+                    y2 += mToneHeight;
                 } else {
-                    y1 += mKeyHeight;
+                    y1 += mToneHeight;
                 }
                 if (y2 < y1) {
                     var tmp = y2;
@@ -735,20 +737,21 @@ namespace PianoRoll {
                     drawNote(x1, y1, x2, y2);
                 }
             } else {
-                mgRoll.FillRectangle(FocusToneColor.Brush, 1, mCursor.Y + 1, mBmpRoll.Width - 1, mKeyHeight - 1);
+                mgRoll.FillRectangle(FocusToneColor.Brush, 1, mCursor.Y + 1, mBmpRoll.Width - 1, mToneHeight - 1);
                 mgRoll.DrawLine(Pens.Red, mCursor.X, 0, mCursor.X, mBmpRoll.Height - 1);
             }
 
+            putDrawEvents();
             foreach (var ev in mDrawEventList) {
                 int x1, x2;
                 int y1, y2;
                 switch (ev.type) {
                 case E_DRAW_EVENT.NOTE:
                     var tone = 127 + vScroll.Minimum - vScroll.Value - ev.data1;
-                    x1 = (ev.begin - hScroll.Value) * QuarterNoteWidth / mTimeScale;
-                    x2 = (ev.end - hScroll.Value) * QuarterNoteWidth / mTimeScale;
-                    y1 = mKeyHeight * tone + ofsY;
-                    y2 = mKeyHeight * (tone + 1) + ofsY;
+                    x1 = (ev.begin - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
+                    x2 = (ev.end - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
+                    y1 = mToneHeight * tone + ofsY;
+                    y2 = mToneHeight * (tone + 1) + ofsY;
                     drawNote(x1, y1, x2, y2);
                     break;
                 }
@@ -756,10 +759,10 @@ namespace PianoRoll {
 
             for (int y = mDispTones - 1, no = 128 - vScroll.Value; 0 <= y; y--, no++) {
                 if (no % 12 == 0) {
-                    var py = mKeyHeight * y + ofsY;
-                    var name = "C" + (no / 12 - 1);
-                    var fsize = mgRoll.MeasureString(name, mNoteNameFont).Height - 2;
-                    mgRoll.DrawString(name, mNoteNameFont, Gray12.Brush, 0, py + mKeyHeight - fsize);
+                    var py = mToneHeight * y + ofsY;
+                    var name = (no / 12 - 1).ToString();
+                    var fsize = mgRoll.MeasureString(name, mNoteNameFont).Height - 3;
+                    mgRoll.DrawString(name, mNoteNameFont, Gray12.Brush, 0, py + mToneHeight - fsize);
                 }
             }
 
@@ -777,34 +780,35 @@ namespace PianoRoll {
         }
 
         private void addNoteEvent() {
-            mEventList.Add(new SMF.Event(mBeginTime, 0, 0x90, mBeginTone, 127));
-            mEventList.Add(new SMF.Event(mEndTime, 0, 0x80, mBeginTone, 0));
+            mEventList.Add(new SMF.Event(mTimeBegin, 0, 0x90, mToneBegin, 127));
+            mEventList.Add(new SMF.Event(mTimeEnd, 0, 0x80, mToneBegin, 0));
         }
 
         private void putDrawEvents() {
             mDrawEventList.Clear();
+            var beginTime = snapTimeScroll();
+            var endTime = snapTimeScroll(mBmpRoll.Width);
+            var dispNoteList = new List<DrawEvent>();
             foreach (var ev in mEventList) {
                 switch (ev.Type) {
                 case SMF.E_STATUS.NOTE_OFF:
-                    for (int i = 0; i < mDrawEventList.Count; i++) {
-                        var lEv = mDrawEventList[i];
-                        if (lEv.type == E_DRAW_EVENT.NOTE && lEv.data1 == ev.data1 && lEv.end == -1) {
-                            lEv.end = ev.tick;
+                    for (int i = 0; i < dispNoteList.Count; i++) {
+                        var dispEv = dispNoteList[i];
+                        if (dispEv.data1 == ev.data[1]) {
+                            if (beginTime <= ev.tick) {
+                                dispEv.end = ev.tick;
+                                mDrawEventList.Add(dispEv);
+                            }
+                            dispNoteList.RemoveAt(i);
+                            i--;
                         }
                     }
                     break;
                 case SMF.E_STATUS.NOTE_ON:
-                    mDrawEventList.Add(new DrawEvent(E_DRAW_EVENT.NOTE, ev.tick, ev.data1));
+                    if (ev.tick <= endTime) {
+                        dispNoteList.Add(new DrawEvent(E_DRAW_EVENT.NOTE, ev.tick, ev.data[1]));
+                    }
                     break;
-                }
-            }
-
-            var beginTime = hScroll.Value;
-            var endTime = hScroll.Value + mTimeScale * mBmpRoll.Width / QuarterNoteWidth;
-            for (int i = mDrawEventList.Count - 1; i >= 0; i--) {
-                var ev = mDrawEventList[i];
-                if ((ev.begin < beginTime && ev.end < beginTime) || (endTime < ev.begin && endTime < ev.end)) {
-                    mDrawEventList.RemoveAt(i);
                 }
             }
         }
