@@ -135,8 +135,13 @@ namespace PianoRoll {
             KeyDown += new KeyEventHandler(picRoll_KeyDown);
             KeyUp += new KeyEventHandler(picRoll_KeyUp);
 
+            var s = new SMF.SMF("C:\\Users\\owner\\Desktop\\onestop.mid");
+            foreach(var e in s.EventList) {
+                mEventList.Add(e);
+            }
+
             hScroll.Minimum = 0;
-            hScroll.Maximum = 960 * 4 * 4;
+            hScroll.Maximum = s.MaxTime;
 
             timer1.Interval = 16;
             timer1.Enabled = true;
@@ -796,9 +801,9 @@ namespace PianoRoll {
                 case E_STATUS.NOTE_OFF:
                     for (int i = 0; i < dispNoteList.Count; i++) {
                         var dispEv = dispNoteList[i];
-                        if (dispEv.data1 == ev.data[1]) {
-                            if (beginTime <= ev.tick) {
-                                dispEv.end = ev.tick;
+                        if (dispEv.data1 == ev.Data[1]) {
+                            if (beginTime <= ev.Tick) {
+                                dispEv.end = ev.Tick;
                                 mDrawEventList.Add(dispEv);
                             }
                             dispNoteList.RemoveAt(i);
@@ -807,8 +812,8 @@ namespace PianoRoll {
                     }
                     break;
                 case E_STATUS.NOTE_ON:
-                    if (ev.tick <= endTime) {
-                        dispNoteList.Add(new DrawEvent(E_DRAW_EVENT.NOTE, ev.tick, ev.data[1]));
+                    if (ev.Tick <= endTime) {
+                        dispNoteList.Add(new DrawEvent(E_DRAW_EVENT.NOTE, ev.Tick, ev.Data[1]));
                     }
                     break;
                 }
