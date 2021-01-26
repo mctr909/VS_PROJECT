@@ -36,11 +36,13 @@ namespace PianoRoll {
 
         private class DrawEvent {
             public E_DRAW_EVENT type;
+            public bool isEditTrack;
             public int begin;
             public int end;
             public int data1;
             public int data2;
-            public DrawEvent(E_DRAW_EVENT type, int begin, params int[] data) {
+            public DrawEvent(E_DRAW_EVENT type, bool isEditTrack, int begin, params int[] data) {
+                this.isEditTrack = isEditTrack;
                 this.type = type;
                 this.begin = begin;
                 end = -1;
@@ -87,10 +89,17 @@ namespace PianoRoll {
         private static readonly Pen Gray75 = new Pen(Color.FromArgb(167, 191, 191, 191), 1.0f);
         private static readonly Pen Gray80 = new Pen(Color.FromArgb(167, 204, 204, 204), 1.0f);
         private static readonly Pen Gray90 = new Pen(Color.FromArgb(167, 229, 229, 229), 1.0f);
-        private static readonly Pen FocusToneColor = new Pen(Color.FromArgb(95, 127, 255, 127), 1.0f);
+
+        private static readonly Pen FocusToneColor = new Pen(Color.FromArgb(95, 95, 255, 95), 1.0f);
+
         private static readonly Brush SolidToneColor = new Pen(Color.FromArgb(255, 10, 224, 10), 1.0f).Brush;
-        private static readonly Pen SolidToneColorH = new Pen(Color.FromArgb(255, 95, 255, 95), 1.0f);
-        private static readonly Pen SolidToneColorL = new Pen(Color.FromArgb(255, 15, 167, 15), 1.0f);
+        private static readonly Pen SolidToneColorH = new Pen(Color.FromArgb(255, 105, 245, 105), 1.0f);
+        private static readonly Pen SolidToneColorL = new Pen(Color.FromArgb(255, 15, 177, 15), 1.0f);
+
+        private static readonly Brush BackToneColor = new Pen(Color.FromArgb(255, 10, 214, 214), 1.0f).Brush;
+        private static readonly Pen BackToneColorH = new Pen(Color.FromArgb(255, 95, 245, 245), 1.0f);
+        private static readonly Pen BackToneColorL = new Pen(Color.FromArgb(255, 15, 167, 167), 1.0f);
+
         private static readonly Brush SelectAreaColor = new Pen(Color.FromArgb(32, 0, 255, 0), 1.0f).Brush;
         private static readonly Pen SelectBorderColor = new Pen(Color.DarkBlue) {
             Width = 1.0f,
@@ -135,7 +144,7 @@ namespace PianoRoll {
             KeyDown += new KeyEventHandler(picRoll_KeyDown);
             KeyUp += new KeyEventHandler(picRoll_KeyUp);
 
-            var s = new SMF.SMF("C:\\Users\\owner\\Desktop\\onestop.mid");
+            var s = new SMF.SMF("C:\\Users\\owner\\Desktop\\X01751G22GS.MID");
             foreach(var e in s.EventList) {
                 mEventList.Add(e);
             }
@@ -683,7 +692,7 @@ namespace PianoRoll {
         }
 
         private void drawRoll() {
-            mgRoll.Clear(Color.Transparent);
+            mgRoll.Clear(Color.FromArgb(255, 255, 245));
 
             var ofsY = mBmpRoll.Height % mToneHeight;
 
@@ -706,6 +715,41 @@ namespace PianoRoll {
                     break;
                 }
             }
+
+            putDrawEvents();
+            foreach (var ev in mDrawEventList) {
+                int x1, x2;
+                int y1, y2;
+                switch (ev.type) {
+                case E_DRAW_EVENT.NOTE:
+                    var tone = 127 + vScroll.Minimum - vScroll.Value - ev.data1;
+                    x1 = (ev.begin - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
+                    x2 = (ev.end - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
+                    y1 = mToneHeight * tone + ofsY;
+                    y2 = mToneHeight * (tone + 1) + ofsY;
+                    if (!ev.isEditTrack) {
+                        drawBackNote(x1, y1, x2, y2);
+                    }
+                    break;
+                }
+            }
+            foreach (var ev in mDrawEventList) {
+                int x1, x2;
+                int y1, y2;
+                switch (ev.type) {
+                case E_DRAW_EVENT.NOTE:
+                    var tone = 127 + vScroll.Minimum - vScroll.Value - ev.data1;
+                    x1 = (ev.begin - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
+                    x2 = (ev.end - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
+                    y1 = mToneHeight * tone + ofsY;
+                    y2 = mToneHeight * (tone + 1) + ofsY;
+                    if (ev.isEditTrack) {
+                        drawNote(x1, y1, x2, y2);
+                    }
+                    break;
+                }
+            }
+
 
             if (mIsDrag) {
                 var x1 = (mTimeBegin - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
@@ -744,24 +788,8 @@ namespace PianoRoll {
                     drawNote(x1, y1, x2, y2);
                 }
             } else {
-                mgRoll.FillRectangle(FocusToneColor.Brush, 1, mCursor.Y + 1, mBmpRoll.Width - 1, mToneHeight - 1);
-                mgRoll.DrawLine(Pens.Red, mCursor.X, 0, mCursor.X, mBmpRoll.Height - 1);
-            }
-
-            putDrawEvents();
-            foreach (var ev in mDrawEventList) {
-                int x1, x2;
-                int y1, y2;
-                switch (ev.type) {
-                case E_DRAW_EVENT.NOTE:
-                    var tone = 127 + vScroll.Minimum - vScroll.Value - ev.data1;
-                    x1 = (ev.begin - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
-                    x2 = (ev.end - snapTimeScroll()) * QuarterNoteWidth / mTimeScale;
-                    y1 = mToneHeight * tone + ofsY;
-                    y2 = mToneHeight * (tone + 1) + ofsY;
-                    drawNote(x1, y1, x2, y2);
-                    break;
-                }
+                mgRoll.FillRectangle(FocusToneColor.Brush, 1, mCursor.Y + 1, mBmpRoll.Width - 1, mToneHeight);
+                mgRoll.DrawLine(Pens.Red, mCursor.X, 0, mCursor.X, mBmpRoll.Height);
             }
 
             for (int y = mDispTones - 1, no = 128 - vScroll.Value; 0 <= y; y--, no++) {
@@ -784,6 +812,16 @@ namespace PianoRoll {
             mgRoll.DrawLine(SolidToneColorH, x1, y1, x2 - 1, y1);
             mgRoll.DrawLine(SolidToneColorL, x2, y2, x2, y1 + 1);
             mgRoll.DrawLine(SolidToneColorH, x1, y1, x1, y2 - 1);
+        }
+
+        private void drawBackNote(int x1, int y1, int x2, int y2) {
+            x1 += 1;
+            y1 += 1;
+            mgRoll.FillRectangle(BackToneColor, x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+            mgRoll.DrawLine(BackToneColorL, x1, y2, x2, y2);
+            mgRoll.DrawLine(BackToneColorH, x1, y1, x2 - 1, y1);
+            mgRoll.DrawLine(BackToneColorL, x2, y2, x2, y1 + 1);
+            mgRoll.DrawLine(BackToneColorH, x1, y1, x1, y2 - 1);
         }
 
         private void addNoteEvent() {
@@ -813,7 +851,7 @@ namespace PianoRoll {
                     break;
                 case E_STATUS.NOTE_ON:
                     if (ev.Tick <= endTime) {
-                        dispNoteList.Add(new DrawEvent(E_DRAW_EVENT.NOTE, ev.Tick, ev.Data[1]));
+                        dispNoteList.Add(new DrawEvent(E_DRAW_EVENT.NOTE, ev.Track == 1, ev.Tick, ev.Data[1]));
                     }
                     break;
                 }
